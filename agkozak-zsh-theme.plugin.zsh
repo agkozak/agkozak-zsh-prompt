@@ -58,7 +58,7 @@ MODE_INDICATOR="%{$fg_bold[red]%}"
 
 # If the vi-mode plugin is not loaded, vi_mode_prompt_info() should do nothing
 if ! whence -w vi_mode_prompt_info > /dev/null 2>&1; then
-  vi_mode_prompt_info() {
+  function vi_mode_prompt_info {
     echo ''
   }
 fi

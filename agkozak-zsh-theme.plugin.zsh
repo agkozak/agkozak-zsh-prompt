@@ -16,12 +16,12 @@ setopt PROMPT_SUBST
 # Get current branch in git repository
 _parse_git_branch() {
   local git_branch=$( git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/' )
-  if [[ ! "${git_branch}" == "" ]]
+  if [[ ! ${git_branch} == '' ]]
   then
     local git_status=$( _parse_git_dirty )
     echo "(${git_branch}${git_status}) "
   else
-    echo ""
+    echo ''
   fi
 }
 
@@ -35,16 +35,16 @@ _parse_git_dirty() {
   local renamed=$( echo -n "${git_status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?" )
   local deleted=$( echo -n "${git_status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?" )
   local bits=''
-  [[ "${renamed}" == "0" ]] && bits=">${bits}"
-  [[ "${ahead}" == "0" ]] && bits="*${bits}"
-  [[ "${newfile}" == "0" ]] && bits="+${bits}"
-  [[ "${untracked}" == "0" ]] && bits="?${bits}"
-  [[ "${deleted}" == "0" ]] && bits="x${bits}"
-  [[ "${dirty}" == "0" ]] && bits="!${bits}"
-  if [[ ! "${bits}" == "" ]]; then
+  [[ ${renamed} == '0' ]] && bits=">${bits}"
+  [[ ${ahead} == '0' ]] && bits="*${bits}"
+  [[ ${newfile} == '0' ]] && bits="+${bits}"
+  [[ ${untracked} == '0' ]] && bits="?${bits}"
+  [[ ${deleted} == '0' ]] && bits="x${bits}"
+  [[ ${dirty} == '0' ]] && bits="!${bits}"
+  if [[ ! ${bits} == '' ]]; then
     echo " ${bits}"
   else
-    echo ""
+    echo ''
   fi
 }
 

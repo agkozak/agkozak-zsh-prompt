@@ -18,7 +18,7 @@ _parse_git_branch() {
   local git_branch=$( git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/' )
   if [[ ! ${git_branch} == '' ]]
   then
-    local git_status=$( _parse_git_dirty )
+    local git_status="$( _parse_git_dirty )"
     echo "(${git_branch}${git_status}) "
   else
     echo ''

@@ -54,8 +54,17 @@ if ! whence -w colors > /dev/null 2>&1; then
 	colors
 fi
 
+MODE_INDICATOR="%{$fg_bold[red]%}"
+
+# If the vi-mode plugin is not loaded, vi_mode_prompt_info() should do nothing
+if ! whence -w vi_mode_prompt_info > /dev/null 2>&1; then
+  vi_mode_prompt_info() {
+    echo ''
+  }
+fi
+
 # The main prompt
-PROMPT='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|%2~|%~)%{$reset_color%} %{$fg[yellow]%}$( parse_git_branch )%{$reset_color%}%% '
+PROMPT='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|%2~|%~)%{$reset_color%} %{$fg[yellow]%}$( parse_git_branch )%{$reset_color%}$( vi_mode_prompt_info )%%%{$reset_color%} '
 
 # The right prompt will show the exit code if it is not zero.
 RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"

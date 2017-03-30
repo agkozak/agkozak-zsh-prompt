@@ -15,7 +15,7 @@ setopt PROMPT_SUBST
 
 # Get current branch in git repository
 _parse_git_branch() {
-  local git_branch=$( git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/' )
+  local git_branch="$( git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/' )"
   if [[ ! ${git_branch} == '' ]]
   then
     local git_status="$( _parse_git_dirty )"

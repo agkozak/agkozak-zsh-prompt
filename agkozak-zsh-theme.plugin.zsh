@@ -64,7 +64,7 @@ if ! whence -w vi_mode_prompt_info > /dev/null 2>&1; then
 fi
 
 # The main prompt
-PROMPT='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|%2~|%~)%{$reset_color%} %{$fg[yellow]%}$( _parse_git_branch )%{$reset_color%}$( vi_mode_prompt_info )%%%{$reset_color%} '
+PROMPT='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|%2~|%~)%{$reset_color%} %{$fg[yellow]%}$( _parse_git_branch )%{$reset_color%}$( vi_mode_prompt_info )%#%{$reset_color%} '
 
 # The right prompt will show the exit code if it is not zero.
 RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"

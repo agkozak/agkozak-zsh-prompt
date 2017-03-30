@@ -28,12 +28,12 @@ _parse_git_branch() {
 # Get current status of git repository
 _parse_git_dirty() {
   local git_status="$( git status 2>&1 | tee )"
-  local dirty=$( echo -n "${git_status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?" )
-  local untracked=$( echo -n "${git_status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?" )
-  local ahead=$( echo -n "${git_status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?" )
-  local newfile=$( echo -n "${git_status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?" )
-  local renamed=$( echo -n "${git_status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?" )
-  local deleted=$( echo -n "${git_status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?" )
+  local dirty="$( echo -n "${git_status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?" )"
+  local untracked="$( echo -n "${git_status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?" )"
+  local ahead="$( echo -n "${git_status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?" )"
+  local newfile="$( echo -n "${git_status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?" )"
+  local renamed="$( echo -n "${git_status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?" )"
+  local deleted="$( echo -n "${git_status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?" )"
   local bits=''
   [[ ${renamed} == '0' ]] && bits=">${bits}"
   [[ ${ahead} == '0' ]] && bits="*${bits}"

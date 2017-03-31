@@ -57,7 +57,7 @@ if ! whence -w colors > /dev/null 2>&1; then
 	colors
 fi
 
-MODE_INDICATOR="%{$fg_bold[red]%}"
+MODE_INDICATOR="%{$fg_bold[black]%}%{$bg[white]%}"
 
 # If the vi-mode plugin is not loaded, vi_mode_prompt_info() should do nothing
 if ! whence -w vi_mode_prompt_info > /dev/null 2>&1; then

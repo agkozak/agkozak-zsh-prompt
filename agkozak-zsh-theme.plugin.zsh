@@ -47,6 +47,10 @@ _parse_git_dirty() {
   [[ ${bits} != '' ]] && echo " ${bits}" || echo ''
 }
 
+_vi_mode_indicator() {
+  echo "${${KEYMAP/vicmd/$mode_indicator}/(main|viins)/}"
+}
+
 # Autoload zsh colors module if it hasn't been autloaded already
 if ! whence -w colors > /dev/null 2>&1; then
 	autoload -Uz colors
@@ -54,10 +58,6 @@ if ! whence -w colors > /dev/null 2>&1; then
 fi
 
 mode_indicator="%{$fg_bold[black]%}%{$bg[white]%}"
-
-_vi_mode_indicator() {
-  echo "${${KEYMAP/vicmd/$mode_indicator}/(main|viins)/}"
-}
 
 # The main prompt
 PROMPT='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|%2~|%~)%{$reset_color%} %{$fg[yellow]%}$( _parse_git_branch )%{$reset_color%}$( _vi_mode_indicator )%#%{$reset_color%} '

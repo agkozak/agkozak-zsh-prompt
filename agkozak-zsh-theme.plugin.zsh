@@ -38,38 +38,38 @@ _branch_dirty() {
   porcelain=$( command git status --porcelain -b 2> /dev/null )
 
   # Modified
-  if grep '^ M ' <<< "$porcelain" &> /dev/null \
-    || grep '^AM ' <<< "$porcelain" &> /dev/null \
-    || grep '^ T ' <<< "$porcelain" &> /dev/null; then
+  if grep -q '^ M ' <<< "$porcelain" \
+    || grep -q '^AM ' <<< "$porcelain" \
+    || grep -q '^ T ' <<< "$porcelain"; then
     git_status="$modified$git_status"
   fi
 
   # Deleted
-  if grep '^ D ' <<< "$porcelain" &> /dev/null \
-    || grep '^D  ' <<< "$porcelain" &> /dev/null \
-    || grep '^AD ' <<< "$porcelain" &> /dev/null; then
+  if grep -q '^ D ' <<< "$porcelain" \
+    || grep -q '^D  ' <<< "$porcelain" \
+    || grep -q '^AD ' <<< "$porcelain"; then
     git_status="$deleted$git_status"
   fi
 
   # Untracked
-  if grep '^?? ' <<< "$porcelain" &> /dev/null; then
+  if grep -q '^?? ' <<< "$porcelain"; then
     git_status="$untracked$git_status"
   fi
 
   # New file
-  if grep '^A  ' <<< "$porcelain" &> /dev/null \
-    || grep '^M  ' <<< "$porcelain" &> /dev/null; then
+  if grep -q '^A  ' <<< "$porcelain" \
+    || grep -q '^M  ' <<< "$porcelain"; then
     git_status="$newfile$git_status"
   fi
 
   # Ahead
   # TODO: Does not work with antiquated versions of Git
-  if grep '^## [^ ]\+ .*ahead' <<< "$porcelain" &> /dev/null; then
+  if grep -q '^## [^ ]\+ .*ahead' <<< "$porcelain"; then
     git_status="$ahead$git_status"
   fi
 
   # Renamed
-  if grep '^R  ' <<< "$porcelain" &> /dev/null; then
+  if grep -q '^R  ' <<< "$porcelain"; then
     git_status="$renamed$git_status"
   fi
 

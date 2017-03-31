@@ -44,7 +44,7 @@ _parse_git_dirty() {
   [[ ${untracked} == '0' ]] && bits="?${bits}"
   [[ ${deleted} == '0' ]] && bits="x${bits}"
   [[ ${dirty} == '0' ]] && bits="!${bits}"
-  echo " ${bits}"
+  [[ ${bits} != '' ]] && echo " ${bits}" || echo ''
 }
 
 # Autoload zsh colors module if it hasn't been autloaded already

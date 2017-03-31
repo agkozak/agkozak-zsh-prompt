@@ -15,26 +15,29 @@ setopt PROMPT_SUBST
 
 # Get current branch in git repository
 _parse_git_branch() {
-  local git_branch="$( git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/' )"
-  if [[ ! ${git_branch} == '' ]]
-  then
-    local git_status="$( _parse_git_dirty )"
-    echo "(${git_branch}${git_status}) "
-  else
-    echo ''
+  local ref
+  ref=$( command git symbolic-ref --quiet HEAD 2> /dev/null )
+  local ret=$?
+  if [[ $ret != 0 ]]; then
+    [[ $ret == 128 ]] && return  # No git repo.
+    ref=$(command git rev-parse --short HEAD 2> /dev/null) || return
   fi
+  local git_status
+  git_status="$( _parse_git_dirty )"
+  echo "(${ref#refs/heads/}${git_status}) "
 }
 
 # Get current status of git repository
 _parse_git_dirty() {
-  local git_status="$( git status 2>&1 | tee )"
-  local dirty="$( echo -n "${git_status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?" )"
-  local untracked="$( echo -n "${git_status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?" )"
-  local ahead="$( echo -n "${git_status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?" )"
-  local newfile="$( echo -n "${git_status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?" )"
-  local renamed="$( echo -n "${git_status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?" )"
-  local deleted="$( echo -n "${git_status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?" )"
-  local bits=''
+  local git_status dirty untracked ahead newfile renamed deleted bits
+  git_status="$( git status 2>&1 | tee )"
+  dirty="$( echo -n "${git_status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?" )"
+  untracked="$( echo -n "${git_status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?" )"
+  ahead="$( echo -n "${git_status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?" )"
+  newfile="$( echo -n "${git_status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?" )"
+  renamed="$( echo -n "${git_status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?" )"
+  deleted="$( echo -n "${git_status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?" )"
+  bits=''
   [[ ${renamed} == '0' ]] && bits=">${bits}"
   [[ ${ahead} == '0' ]] && bits="*${bits}"
   [[ ${newfile} == '0' ]] && bits="+${bits}"

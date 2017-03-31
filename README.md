@@ -7,12 +7,12 @@
 
 Git Status | Symbol
 --- | ---
-Renamed | >
-Ahead | \*
-New file(s) | +
-Untracked | ?
+Modified | !
 Deleted | x
-Dirty | !
+Untracked | ?
+New file(s) | +
+Ahead | \*
+Renamed | >
 
 `agkozak-zsh-theme` uses functions from [ezprompt](https://github.com/jmatth/ezprompt). It works indepedently of any `zsh` framework; in the absense of a framework, it can be loaded thus:
 

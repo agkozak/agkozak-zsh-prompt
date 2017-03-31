@@ -31,7 +31,7 @@ _parse_git_branch() {
 _parse_git_dirty() {
   local git_status dirty untracked ahead newfile renamed deleted bits
   git_status="$( command git status 2>&1 | tee )"
-  dirty="$( echo -n "${git_status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?" )"
+  modified="$( echo -n "${git_status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?" )"
   untracked="$( echo -n "${git_status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?" )"
   ahead="$( echo -n "${git_status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?" )"
   newfile="$( echo -n "${git_status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?" )"
@@ -43,7 +43,7 @@ _parse_git_dirty() {
   [[ ${newfile} == '0' ]] && bits="+${bits}"
   [[ ${untracked} == '0' ]] && bits="?${bits}"
   [[ ${deleted} == '0' ]] && bits="x${bits}"
-  [[ ${dirty} == '0' ]] && bits="!${bits}"
+  [[ ${modified} == '0' ]] && bits="!${bits}"
   [[ ${bits} != '' ]] && echo " ${bits}" || echo ''
 }
 

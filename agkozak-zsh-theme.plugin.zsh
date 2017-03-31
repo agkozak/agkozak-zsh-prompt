@@ -20,7 +20,7 @@ _parse_git_branch() {
   local ret=$?
   if [[ $ret != 0 ]]; then
     [[ $ret == 128 ]] && return  # No git repo.
-    ref=$(command git rev-parse --short HEAD 2> /dev/null) || return
+    ref=$( command git rev-parse --short HEAD 2> /dev/null ) || return
   fi
   local git_status
   git_status="$( _parse_git_dirty )"
@@ -30,7 +30,7 @@ _parse_git_branch() {
 # Get current status of git repository
 _parse_git_dirty() {
   local git_status dirty untracked ahead newfile renamed deleted bits
-  git_status="$( git status 2>&1 | tee )"
+  git_status="$( command git status 2>&1 | tee )"
   dirty="$( echo -n "${git_status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?" )"
   untracked="$( echo -n "${git_status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?" )"
   ahead="$( echo -n "${git_status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?" )"

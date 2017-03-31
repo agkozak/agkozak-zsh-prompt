@@ -18,7 +18,7 @@ Dirty | !
 
      source /path/to/agkozak-zsh-theme/agkozak-zsh-theme.zsh
 
-When used along with [`oh-my-zsh`'s `vi-mode` plugin](https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/plugins/vi-mode/vi-mode.plugin.zsh) (which also requires no framework), `agkozak-zsh-theme`'s prompt changes color when one switches from insert mode to command mode and back.
+When used along with [`oh-my-zsh`'s `vi-mode` plugin](https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/plugins/vi-mode/vi-mode.plugin.zsh) (which also requires no framework), `agkozak-zsh-theme`'s prompt changes when one switches from insert mode to command mode and back.
 
 Individual frameworks have different ways of loading plugins from git repositories. I use [zplugin](https://github.com/zdharma/zplugin), so my `.zshrc` has the line
 

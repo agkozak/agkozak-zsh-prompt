@@ -38,42 +38,37 @@ _parse_git_dirty() {
   porcelain=$( command git status --porcelain -b 2> /dev/null )
 
   # Modified
-  if echo "$porcelain" | grep '^ M ' &> /dev/null; then
-    git_status="$modified$git_status"
-  elif echo "$porcelain" | grep '^AM ' &> /dev/null; then
-    git_status="$modified$git_status"
-  elif echo "$porcelain" | grep '^ T ' &> /dev/null; then
+  if grep '^ M ' <<< "$porcelain" &> /dev/null \
+    || grep '^AM ' <<< "$porcelain" &> /dev/null \
+    || grep '^ T ' <<< "$porcelain" &> /dev/null; then
     git_status="$modified$git_status"
   fi
 
   # Deleted
-  if echo "$porcelain" | grep '^ D ' &> /dev/null; then
-    git_status="$deleted$git_status"
-  elif echo "$porcelain" | grep '^D  ' &> /dev/null; then
-    git_status="$deleted$git_status"
-  elif echo "$porcelain" | grep '^AD ' &> /dev/null; then
+  if grep '^ D ' <<< "$porcelain" &> /dev/null \
+    || grep '^D  ' <<< "$porcelain" &> /dev/null \
+    || grep '^AD ' <<< "$porcelain" &> /dev/null; then
     git_status="$deleted$git_status"
   fi
 
   # Untracked
-  if echo "$porcelain" | command grep '^?? ' &> /dev/null; then
+  if grep '^?? ' <<< "$porcelain" &> /dev/null; then
     git_status="$untracked$git_status"
   fi
 
   # New file
-  if echo "$porcelain" | grep '^A  ' &> /dev/null; then
-    git_status="$newfile$git_status"
-  elif echo "$porcelain" | grep '^M  ' &> /dev/null; then
+  if grep '^A  ' <<< "$porcelain" &> /dev/null \
+    || grep '^M  ' <<< "$porcelain" &> /dev/null; then
     git_status="$newfile$git_status"
   fi
 
   # Ahead
-  if echo "$porcelain" | grep '^## [^ ]\+ .*ahead' &> /dev/null; then
+  if grep '^## [^ ]\+ .*ahead' <<< "$porcelain" &> /dev/null; then
     git_status="$ahead$git_status"
   fi
 
   # Renamed
-  if echo "$porcelain" | grep '^R  ' &> /dev/null; then
+  if grep '^R  ' <<< "$porcelain" &> /dev/null; then
     git_status="$renamed$git_status"
   fi
 

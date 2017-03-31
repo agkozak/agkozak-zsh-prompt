@@ -9,7 +9,6 @@
 #
 # https://github.com/agkozak/agkozak-zsh-theme
 #
-# Functions derived from https://github.com/jmatth/ezprompt/blob/master/js/easyprompt.js
 
 setopt PROMPT_SUBST
 
@@ -22,29 +21,63 @@ _parse_git_branch() {
     [[ $ret == 128 ]] && return  # No git repo.
     ref=$( command git rev-parse --short HEAD 2> /dev/null ) || return
   fi
-  local git_status
-  git_status="$( _parse_git_dirty )"
-  echo "(${ref#refs/heads/}${git_status}) "
+  echo "(${ref#refs/heads/}$( _parse_git_dirty )) "
 }
 
 # Get current status of git repository
 _parse_git_dirty() {
-  local git_status dirty untracked ahead newfile renamed deleted bits
-  git_status="$( command git status 2>&1 | tee )"
-  modified="$( echo -n "${git_status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?" )"
-  untracked="$( echo -n "${git_status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?" )"
-  ahead="$( echo -n "${git_status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?" )"
-  newfile="$( echo -n "${git_status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?" )"
-  renamed="$( echo -n "${git_status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?" )"
-  deleted="$( echo -n "${git_status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?" )"
-  bits=''
-  [[ ${renamed} == '0' ]] && bits=">${bits}"
-  [[ ${ahead} == '0' ]] && bits="*${bits}"
-  [[ ${newfile} == '0' ]] && bits="+${bits}"
-  [[ ${untracked} == '0' ]] && bits="?${bits}"
-  [[ ${deleted} == '0' ]] && bits="x${bits}"
-  [[ ${modified} == '0' ]] && bits="!${bits}"
-  [[ ${bits} != '' ]] && echo " ${bits}" || echo ''
+  readonly modified='!'
+  readonly deleted='x'
+  readonly untracked='?'
+  readonly newfile='+'
+  readonly ahead='*'
+  readonly renamed='>'
+
+  local porcelain git_status
+
+  porcelain=$( command git status --porcelain -b 2> /dev/null )
+
+  # Modified
+  if echo "$porcelain" | grep '^ M ' &> /dev/null; then
+    git_status="$modified$git_status"
+  elif echo "$porcelain" | grep '^AM ' &> /dev/null; then
+    git_status="$modified$git_status"
+  elif echo "$porcelain" | grep '^ T ' &> /dev/null; then
+    git_status="$modified$git_status"
+  fi
+
+  # Deleted
+  if echo "$porcelain" | grep '^ D ' &> /dev/null; then
+    git_status="$deleted$git_status"
+  elif echo "$porcelain" | grep '^D  ' &> /dev/null; then
+    git_status="$deleted$git_status"
+  elif echo "$porcelain" | grep '^AD ' &> /dev/null; then
+    git_status="$deleted$git_status"
+  fi
+
+  # Untracked
+  if echo "$porcelain" | command grep '^?? ' &> /dev/null; then
+    git_status="$untracked$git_status"
+  fi
+
+  # New file
+  if echo "$porcelain" | grep '^A  ' &> /dev/null; then
+    git_status="$newfile$git_status"
+  elif echo "$porcelain" | grep '^M  ' &> /dev/null; then
+    git_status="$newfile$git_status"
+  fi
+
+  # Ahead
+  if echo "$porcelain" | grep '^## [^ ]\+ .*ahead' &> /dev/null; then
+    git_status="$ahead$git_status"
+  fi
+
+  # Renamed
+  if echo "$porcelain" | grep '^R  ' &> /dev/null; then
+    git_status="$renamed$git_status"
+  fi
+
+  [[ ${git_status} != '' ]] && echo " ${git_status}" || echo ''
 }
 
 _vi_mode_indicator() {

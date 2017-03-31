@@ -14,7 +14,7 @@ New file(s) | +
 Ahead | \*
 Renamed | >
 
-`agkozak-zsh-theme` uses functions from [ezprompt](https://github.com/jmatth/ezprompt). It works indepedently of any `zsh` framework; in the absense of a framework, it can be loaded thus:
+`agkozak-zsh-theme` works indepedently of any `zsh` framework; in the absense of a framework, it can be loaded thus:
 
      source /path/to/agkozak-zsh-theme/agkozak-zsh-theme.zsh
 

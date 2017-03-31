@@ -12,20 +12,20 @@
 
 setopt PROMPT_SUBST
 
-# Get current branch in git repository
-_parse_git_branch() {
+# Display current branch and status
+_branch_status() {
   local ref
   ref=$( command git symbolic-ref --quiet HEAD 2> /dev/null )
   local ret=$?
   if [[ $ret != 0 ]]; then
-    [[ $ret == 128 ]] && return  # No git repo.
+    [[ $ret == 128 ]] && return  # No git repository here.
     ref=$( command git rev-parse --short HEAD 2> /dev/null ) || return
   fi
-  echo "(${ref#refs/heads/}$( _parse_git_dirty )) "
+  echo "(${ref#refs/heads/}$( _branch_dirty )) "
 }
 
-# Get current status of git repository
-_parse_git_dirty() {
+# Display status of current branch
+_branch_dirty() {
   readonly modified='!'
   readonly deleted='x'
   readonly untracked='?'
@@ -63,6 +63,7 @@ _parse_git_dirty() {
   fi
 
   # Ahead
+  # TODO: Does not work with antiquated versions of Git
   if grep '^## [^ ]\+ .*ahead' <<< "$porcelain" &> /dev/null; then
     git_status="$ahead$git_status"
   fi
@@ -81,14 +82,14 @@ _vi_mode_indicator() {
 
 # Autoload zsh colors module if it hasn't been autloaded already
 if ! whence -w colors > /dev/null 2>&1; then
-	autoload -Uz colors
-	colors
+  autoload -Uz colors
+  colors
 fi
 
 mode_indicator="%{$fg_bold[black]%}%{$bg[white]%}"
 
 # The main prompt
-PROMPT='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|%2~|%~)%{$reset_color%} %{$fg[yellow]%}$( _parse_git_branch )%{$reset_color%}$( _vi_mode_indicator )%#%{$reset_color%} '
+PROMPT='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|%2~|%~)%{$reset_color%} %{$fg[yellow]%}$( _branch_status )%{$reset_color%}$( _vi_mode_indicator )%#%{$reset_color%} '
 
 # The right prompt will show the exit code if it is not zero.
 RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"

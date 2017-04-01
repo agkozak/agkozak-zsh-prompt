@@ -37,11 +37,27 @@ _branch_dirty() {
 
   porcelain=$( command git status --porcelain -b 2> /dev/null )
 
-  # Modified
-  if grep -q '^ M ' <<< "$porcelain" \
-    || grep -q '^AM ' <<< "$porcelain" \
-    || grep -q '^ T ' <<< "$porcelain"; then
-    git_status="$modified$git_status"
+
+  # Renamed
+  if grep -q '^R  ' <<< "$porcelain"; then
+    git_status="$renamed$git_status"
+  fi
+
+  # Ahead
+  # TODO: Does not work with antiquated versions of Git
+  if grep -q '^## [^ ]\+ .*ahead' <<< "$porcelain"; then
+    git_status="$ahead$git_status"
+  fi
+
+  # New file
+  if grep -q '^A  ' <<< "$porcelain" \
+    || grep -q '^M  ' <<< "$porcelain"; then
+    git_status="$newfile$git_status"
+  fi
+
+  # Untracked
+  if grep -q '^?? ' <<< "$porcelain"; then
+    git_status="$untracked$git_status"
   fi
 
   # Deleted
@@ -51,26 +67,11 @@ _branch_dirty() {
     git_status="$deleted$git_status"
   fi
 
-  # Untracked
-  if grep -q '^?? ' <<< "$porcelain"; then
-    git_status="$untracked$git_status"
-  fi
-
-  # New file
-  if grep -q '^A  ' <<< "$porcelain" \
-    || grep -q '^M  ' <<< "$porcelain"; then
-    git_status="$newfile$git_status"
-  fi
-
-  # Ahead
-  # TODO: Does not work with antiquated versions of Git
-  if grep -q '^## [^ ]\+ .*ahead' <<< "$porcelain"; then
-    git_status="$ahead$git_status"
-  fi
-
-  # Renamed
-  if grep -q '^R  ' <<< "$porcelain"; then
-    git_status="$renamed$git_status"
+  # Modified
+  if grep -q '^ M ' <<< "$porcelain" \
+    || grep -q '^AM ' <<< "$porcelain" \
+    || grep -q '^ T ' <<< "$porcelain"; then
+    git_status="$modified$git_status"
   fi
 
   [[ ${git_status} != '' ]] && echo " ${git_status}" || echo ''

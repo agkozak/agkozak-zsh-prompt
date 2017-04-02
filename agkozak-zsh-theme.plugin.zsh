@@ -31,11 +31,11 @@ _branch_dirty() {
   git_status=$( git status 2>&1 )
 
   modified=$( grep -q 'modified:' <<< "$git_status"; echo "$?" )
-  untracked=$( grep -q "Untracked files" <<< "$git_status"; echo "$?" )
-  ahead=$( grep -q "Your branch is ahead of" <<<  "$git_status"; echo "$?" )
-  newfile=$( grep -q "new file:" <<< "$git_status"; echo "$?" )
-  renamed=$( grep -q "renamed:" <<< "$git_status"; echo "$?" )
-  deleted=$( grep -q "deleted" <<< "$git_status"; echo "$?" )
+  untracked=$( grep -q 'Untracked files' <<< "$git_status"; echo "$?" )
+  ahead=$( grep -q 'Your branch is ahead of' <<<  "$git_status"; echo "$?" )
+  newfile=$( grep -q 'new file:' <<< "$git_status"; echo "$?" )
+  renamed=$( grep -q 'renamed:' <<< "$git_status"; echo "$?" )
+  deleted=$( grep -q 'deleted' <<< "$git_status"; echo "$?" )
 
   bits=''
   [[ $renamed = '0' ]] && bits=">${bits}"

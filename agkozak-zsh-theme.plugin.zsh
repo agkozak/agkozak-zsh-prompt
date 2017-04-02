@@ -26,55 +26,29 @@ _branch_status() {
 
 # Display status of current branch
 _branch_dirty() {
-  readonly modified='!'
-  readonly deleted='x'
-  readonly untracked='?'
-  readonly newfile='+'
-  readonly ahead='*'
-  readonly renamed='>'
+  local git_status bits
 
-  local porcelain git_status
+  git_status=$( git status 2>&1 )
 
-  porcelain=$( command git status --porcelain -b 2> /dev/null )
+  modified=$( grep -q 'modified:' <<< $git_status; echo "$?" )
+  untracked=$( grep -q "Untracked files" <<< $git_status; echo "$?" )
+  ahead=$( grep -q "Your branch is ahead of" <<<  $git_status; echo "$?" )
+  newfile=$( grep -q "new file:" <<< $git_status; echo "$?" )
+  renamed=$( grep -q "renamed:" <<< $git_status; echo "$?" )
+  deleted=$( grep -q "deleted" <<< $git_status; echo "$?" )
 
-
-  # Renamed
-  if grep -q '^R  ' <<< "$porcelain"; then
-    git_status="$renamed$git_status"
+  bits=''
+  [[ $renamed = '0' ]] && bits=">${bits}"
+  [[ $ahead = '0' ]] && bits="*${bits}"
+  [[ $newfile = '0' ]] && bits="+${bits}"
+  [[ $untracked = '0' ]] && bits="?${bits}"
+  [[ $deleted = '0' ]] && bits="x${bits}"
+  [[ $modified = '0' ]] && bits="!${bits}"
+  if [[ ! $bits = '' ]]; then
+    echo " $bits"
+  else
+    echo ''
   fi
-
-  # Ahead
-  # TODO: Does not work with antiquated versions of Git
-  if grep -q '^## [^ ]\+ .*ahead' <<< "$porcelain"; then
-    git_status="$ahead$git_status"
-  fi
-
-  # New file
-  if grep -q '^A  ' <<< "$porcelain" \
-    || grep -q '^M  ' <<< "$porcelain"; then
-    git_status="$newfile$git_status"
-  fi
-
-  # Untracked
-  if grep -q '^?? ' <<< "$porcelain"; then
-    git_status="$untracked$git_status"
-  fi
-
-  # Deleted
-  if grep -q '^ D ' <<< "$porcelain" \
-    || grep -q '^D  ' <<< "$porcelain" \
-    || grep -q '^AD ' <<< "$porcelain"; then
-    git_status="$deleted$git_status"
-  fi
-
-  # Modified
-  if grep -q '^ M ' <<< "$porcelain" \
-    || grep -q '^AM ' <<< "$porcelain" \
-    || grep -q '^ T ' <<< "$porcelain"; then
-    git_status="$modified$git_status"
-  fi
-
-  [[ ${git_status} != '' ]] && echo " ${git_status}" || echo ''
 }
 
 _vi_mode_indicator() {

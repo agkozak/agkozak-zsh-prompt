@@ -44,9 +44,6 @@ _branch_changes() {
            )
 
   for k in ${(@k)messages}; do
-    # if grep -q "$k" <<< "$git_status"; then
-    #   symbols="${messages[$k]}${symbols}"
-    # fi
     case "$git_status" in
       *${k}*) symbols="${messages[$k]}${symbols}" ;;
     esac

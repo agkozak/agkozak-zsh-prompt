@@ -26,7 +26,7 @@ _branch_status() {
 
 # Display status of current branch
 _branch_dirty() {
-  local git_status symbols
+  local git_status modified untracked ahead newfile renamed deleted symbols
 
   git_status=$(command git status 2>&1)
 

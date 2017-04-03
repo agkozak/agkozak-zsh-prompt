@@ -26,7 +26,7 @@ _branch_status() {
 
 # Display status of current branch
 _branch_dirty() {
-  local git_status bits
+  local git_status symbols
 
   git_status=$( git status 2>&1 )
 
@@ -37,15 +37,15 @@ _branch_dirty() {
   renamed=$( grep -q 'renamed:' <<< "$git_status"; echo "$?" )
   deleted=$( grep -q 'deleted' <<< "$git_status"; echo "$?" )
 
-  bits=''
-  [[ $renamed = '0' ]] && bits=">${bits}"
-  [[ $ahead = '0' ]] && bits="*${bits}"
-  [[ $newfile = '0' ]] && bits="+${bits}"
-  [[ $untracked = '0' ]] && bits="?${bits}"
-  [[ $deleted = '0' ]] && bits="x${bits}"
-  [[ $modified = '0' ]] && bits="!${bits}"
-  if [[ ! $bits = '' ]]; then
-    echo " $bits"
+  symbols=''
+  [[ $renamed = '0' ]] && symbols=">${symbols}"
+  [[ $ahead = '0' ]] && symbols="*${symbols}"
+  [[ $newfile = '0' ]] && symbols="+${symbols}"
+  [[ $untracked = '0' ]] && symbols="?${symbols}"
+  [[ $deleted = '0' ]] && symbols="x${symbols}"
+  [[ $modified = '0' ]] && symbols="!${symbols}"
+  if [[ ! $symbols = '' ]]; then
+    echo " $symbols"
   else
     echo ''
   fi

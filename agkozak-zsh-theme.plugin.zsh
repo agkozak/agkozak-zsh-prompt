@@ -15,27 +15,27 @@ setopt PROMPT_SUBST
 # Display current branch and status
 _branch_status() {
   local ref
-  ref=$( command git symbolic-ref --quiet HEAD 2> /dev/null )
+  ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
   local ret=$?
   if [[ $ret != 0 ]]; then
     [[ $ret == 128 ]] && return  # No git repository here.
-    ref=$( command git rev-parse --short HEAD 2> /dev/null ) || return
+    ref=$(command git rev-parse --short HEAD 2> /dev/null) || return
   fi
-  echo "(${ref#refs/heads/}$( _branch_dirty )) "
+  echo "(${ref#refs/heads/}$(_branch_dirty)) "
 }
 
 # Display status of current branch
 _branch_dirty() {
   local git_status symbols
 
-  git_status=$( git status 2>&1 )
+  git_status=$(command git status 2>&1)
 
-  modified=$( grep -q 'modified:' <<< "$git_status"; echo "$?" )
-  untracked=$( grep -q 'Untracked files' <<< "$git_status"; echo "$?" )
-  ahead=$( grep -q 'Your branch is ahead of' <<<  "$git_status"; echo "$?" )
-  newfile=$( grep -q 'new file:' <<< "$git_status"; echo "$?" )
-  renamed=$( grep -q 'renamed:' <<< "$git_status"; echo "$?" )
-  deleted=$( grep -q 'deleted' <<< "$git_status"; echo "$?" )
+  modified=$(grep -q 'modified:' <<< "$git_status"; echo "$?")
+  untracked=$(grep -q 'Untracked files' <<< "$git_status"; echo "$?")
+  ahead=$(grep -q 'Your branch is ahead of' <<<  "$git_status"; echo "$?")
+  newfile=$(grep -q 'new file:' <<< "$git_status"; echo "$?")
+  renamed=$(grep -q 'renamed:' <<< "$git_status"; echo "$?")
+  deleted=$(grep -q 'deleted' <<< "$git_status"; echo "$?")
 
   symbols=''
   [[ $renamed = '0' ]] && symbols=">${symbols}"
@@ -64,7 +64,7 @@ fi
 mode_indicator="%{$fg_bold[black]%}%{$bg[white]%}"
 
 # The main prompt
-PROMPT='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|%2~|%~)%{$reset_color%} %{$fg[yellow]%}$( _branch_status )%{$reset_color%}$( _vi_mode_indicator )%#%{$reset_color%} '
+PROMPT='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|%2~|%~)%{$reset_color%} %{$fg[yellow]%}$(_branch_status)%{$reset_color%}$(_vi_mode_indicator)%#%{$reset_color%} '
 
 # The right prompt will show the exit code if it is not zero.
 RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"

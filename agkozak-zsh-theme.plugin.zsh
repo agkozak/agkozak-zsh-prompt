@@ -21,11 +21,11 @@ _branch_status() {
     [[ $ret == 128 ]] && return  # No git repository here.
     ref=$(command git rev-parse --short HEAD 2> /dev/null) || return
   fi
-  echo "(${ref#refs/heads/}$(_branch_dirty)) "
+  echo "(${ref#refs/heads/}$(_branch_changes)) "
 }
 
 # Display status of current branch
-_branch_dirty() {
+_branch_changes() {
   local git_status modified untracked ahead newfile renamed deleted symbols
 
   git_status=$(command git status 2>&1)

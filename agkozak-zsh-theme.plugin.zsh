@@ -14,36 +14,44 @@ setopt PROMPT_SUBST
 
 # Display current branch and status
 _branch_status() {
-  local ref
+  local ref ret branch
   ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
-  local ret=$?
+  ret=$?
   if [[ $ret != 0 ]]; then
     [[ $ret == 128 ]] && return  # No git repository here.
     ref=$(command git rev-parse --short HEAD 2> /dev/null) || return
   fi
-  echo "(${ref#refs/heads/}$(_branch_changes)) "
+  branch="${ref#refs/heads/}"
+  echo "(${branch}$(_branch_changes)) "
 }
 
 # Display status of current branch
 _branch_changes() {
-  local git_status modified untracked ahead newfile renamed deleted symbols
+  local git_status symbols
 
   git_status=$(command git status 2>&1)
 
-  modified=$(grep -q 'modified:' <<< "$git_status"; echo "$?")
-  untracked=$(grep -q 'Untracked files' <<< "$git_status"; echo "$?")
-  ahead=$(grep -q 'Your branch is ahead of' <<<  "$git_status"; echo "$?")
-  newfile=$(grep -q 'new file:' <<< "$git_status"; echo "$?")
-  renamed=$(grep -q 'renamed:' <<< "$git_status"; echo "$?")
-  deleted=$(grep -q 'deleted' <<< "$git_status"; echo "$?")
+  declare -A messages   # An associative array whose keys correspond to text
+                        # potentially found in the `git status` message, and
+                        # whose values are the git status symbols in the prompt.
+  messages=(
+              'renamed:'                '>'
+              'Your branch is ahead of' '*'
+              'new file:'               '+'
+              'Untracked files'         '?'
+              'deleted'                 'x'
+              'modified:'               '!'
+           )
 
-  symbols=''
-  [[ $renamed = '0' ]] && symbols=">${symbols}"
-  [[ $ahead = '0' ]] && symbols="*${symbols}"
-  [[ $newfile = '0' ]] && symbols="+${symbols}"
-  [[ $untracked = '0' ]] && symbols="?${symbols}"
-  [[ $deleted = '0' ]] && symbols="x${symbols}"
-  [[ $modified = '0' ]] && symbols="!${symbols}"
+  for k in ${(@k)messages}; do
+    # if grep -q "$k" <<< "$git_status"; then
+    #   symbols="${messages[$k]}${symbols}"
+    # fi
+    case "$git_status" in
+      *${k}*) symbols="${messages[$k]}${symbols}" ;;
+    esac
+  done
+
   if [[ ! $symbols = '' ]]; then
     echo " $symbols"
   else

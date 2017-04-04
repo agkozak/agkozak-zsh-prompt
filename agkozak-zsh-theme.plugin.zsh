@@ -45,7 +45,7 @@ _branch_changes() {
 
   for k in ${(@k)messages}; do
     case "$git_status" in
-      *${k}*) symbols="${messages[$k]}${symbols}" ;;
+      *${k}*) symbols="${messages[$k]}${symbols}";;
     esac
   done
 

@@ -1,4 +1,3 @@
-
 # `agkozak-zsh-theme`
 ![screenshot](https://github.com/agkozak/agkozak-zsh-theme/raw/master/img/agkozak-zsh-theme.jpg)
 

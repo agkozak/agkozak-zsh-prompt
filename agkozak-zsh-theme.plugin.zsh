@@ -5,7 +5,7 @@
 #  \__,_|\__, |_|\_\___/___\__,_|_|\_\
 #        |___/
 #
-# A dynamic color Git prompt for zsh
+# A dynamic color prompt for zsh with Git, vi mode, and exit status indicators
 #
 # Copyright (C) 2017 Alexandros Kozák
 #
@@ -25,6 +25,8 @@
 # https://github.com/agkozak/agkozak-zsh-theme
 #
 # shellcheck disable=SC2148
+
+setopt PROMPT_SUBST
 
 # Display current branch and status
 _branch_status() {
@@ -46,9 +48,10 @@ _branch_changes() {
 
   git_status=$(command git status 2>&1)
 
-  typeset -A messages   # An associative array whose keys correspond to text
-                        # potentially found in the `git status` message, and
-                        # whose values are the git status symbols in the prompt.
+  # $messages is an associative array whose keys are text to be looked for in
+  # $git_status and whose values are symbols used in the prompt to represent
+  # changes to the working branch
+  declare -A messages
 
   # shellcheck disable=SC2190
   messages=(
@@ -74,18 +77,11 @@ _has_colors() {
   [[ $(tput colors) -ge 8 ]]
 }
 
-setopt PROMPT_SUBST
-
-# Necessary to prevent oh-my-zsh's vi-mode plugin from interefering
-# shellcheck disable=SC2034
-MODE_INDICATOR=''
-
+# Redraw prompt when vi mode changes
 zle-keymap-select() {
   zle reset-prompt
   zle -R
 }
-
-zle -N zle-keymap-select
 
 # Redraw prompt when terminal size changes
 TRAPWINCH() {
@@ -101,6 +97,8 @@ _vi_mode_indicator() {
   esac
 }
 
+zle -N zle-keymap-select
+
 if _has_colors; then
   # Autoload zsh colors module if it hasn't been autoloaded already
   if ! whence -w colors > /dev/null 2>&1; then
@@ -113,7 +111,6 @@ if _has_colors; then
 
   # The right prompt will show the exit code if it is not zero.
   RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"
-
 else
   PS1='%n@%m %(3~|.../%2~|%~)$(_branch_status) $(_vi_mode_indicator) '
   # shellcheck disable=SC2034

@@ -76,6 +76,7 @@ _has_colors() {
 
 setopt PROMPT_SUBST
 
+# Necessary to prevent oh-my-zsh's vi-mode plugin from interefering
 # shellcheck disable=SC2034
 MODE_INDICATOR=''
 

@@ -77,6 +77,25 @@ _has_colors() {
   [[ $(tput colors) -ge 8 ]]
 }
 
+_is_ssh() {
+  if [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
+    true
+  else
+    case "$EUID" in
+      0)
+        case $(ps -o comm= -p $PPID) in
+          sshd|*/sshd) true ;;
+        esac
+        ;;
+      *) false;
+    esac
+  fi
+}
+
+_display_ssh_status() {
+  _is_ssh && printf '%s' '@%m'
+}
+
 # Redraw prompt when vi mode changes
 zle-keymap-select() {
   zle reset-prompt
@@ -107,12 +126,12 @@ if _has_colors; then
   fi
 
   # shellcheck disable=SC2154
-  PS1='%{$fg_bold[green]%}%n@%m%{$reset_color%} %{$fg_bold[blue]%}%(3~|.../%2~|%~)%{$reset_color%}%{$fg[yellow]%}$(_branch_status)%{$reset_color%} $(_vi_mode_indicator) '
+  PS1='%{$fg_bold[green]%}%n$(_display_ssh_status)%{$reset_color%} %{$fg_bold[blue]%}%(3~|.../%2~|%~)%{$reset_color%}%{$fg[yellow]%}$(_branch_status)%{$reset_color%} $(_vi_mode_indicator) '
 
   # The right prompt will show the exit code if it is not zero.
   RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"
 else
-  PS1='%n@%m %(3~|.../%2~|%~)$(_branch_status) $(_vi_mode_indicator) '
+  PS1='%n$(_display_ssh_status) %(3~|.../%2~|%~)$(_branch_status) $(_vi_mode_indicator) '
   # shellcheck disable=SC2034
   RPS1="%(?..(%?%))"
 fi

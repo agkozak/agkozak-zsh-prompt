@@ -92,10 +92,6 @@ _is_ssh() {
   fi
 }
 
-_display_ssh_status() {
-  _is_ssh && printf '%s' '@%m'
-}
-
 # Redraw prompt when vi mode changes
 zle-keymap-select() {
   zle reset-prompt
@@ -118,6 +114,12 @@ _vi_mode_indicator() {
 
 zle -N zle-keymap-select
 
+if _is_ssh; then
+  _AGKOZAK_HOSTNAME_STRING='@%m'
+else
+  _AGKOZAK_HOSTNAME_STRING=''
+fi
+
 if _has_colors; then
   # Autoload zsh colors module if it hasn't been autoloaded already
   if ! whence -w colors > /dev/null 2>&1; then
@@ -126,12 +128,12 @@ if _has_colors; then
   fi
 
   # shellcheck disable=SC2154
-  PS1='%{$fg_bold[green]%}%n$(_display_ssh_status)%{$reset_color%} %{$fg_bold[blue]%}%(3~|.../%2~|%~)%{$reset_color%}%{$fg[yellow]%}$(_branch_status)%{$reset_color%} $(_vi_mode_indicator) '
+  PS1='%{$fg_bold[green]%}%n$_AGKOZAK_HOSTNAME_STRING%{$reset_color%} %{$fg_bold[blue]%}%(3~|.../%2~|%~)%{$reset_color%}%{$fg[yellow]%}$(_branch_status)%{$reset_color%} $(_vi_mode_indicator) '
 
   # The right prompt will show the exit code if it is not zero.
   RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"
 else
-  PS1='%n$(_display_ssh_status) %(3~|.../%2~|%~)$(_branch_status) $(_vi_mode_indicator) '
+  PS1='%n$_AGKOZAK_HOSTNAME_STRING %(3~|.../%2~|%~)$(_branch_status) $(_vi_mode_indicator) '
   # shellcheck disable=SC2034
   RPS1="%(?..(%?%))"
 fi

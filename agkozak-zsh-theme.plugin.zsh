@@ -70,7 +70,7 @@ _branch_changes() {
     esac
   done
 
-  [[ $symbols ]] && printf '%s' " $symbols"
+  [[ ! -z "$symbols" ]] && printf '%s' " $symbols"
 }
 
 _has_colors() {

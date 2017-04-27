@@ -112,6 +112,19 @@ _vi_mode_indicator() {
   esac
 }
 
+# Emulate bash's PROMPT_DIRTRIM behavior by prepending `~` before
+# abbreviated paths in the $HOME directory
+_zsh_prompt_dirtrim() {
+  case "$PWD" in
+    $HOME*)
+      local prompt_dirtrim
+      prompt_dirtrim=$(print -P "%(4~|.../%2~|%~)")
+      printf '%s' "${prompt_dirtrim/.../~/...}"
+      ;;
+    *) print -P "%(3~|.../%2~|%~)" ;;
+  esac
+}
+
 zle -N zle-keymap-select
 
 if _is_ssh; then
@@ -128,12 +141,14 @@ if _has_colors; then
   fi
 
   # shellcheck disable=SC2154
-  PS1='%{$fg_bold[green]%}%n$_AGKOZAK_HOSTNAME_STRING%{$reset_color%} %{$fg_bold[blue]%}%(3~|.../%2~|%~)%{$reset_color%}%{$fg[yellow]%}$(_branch_status)%{$reset_color%} $(_vi_mode_indicator) '
+  PS1='%{$fg_bold[green]%}%n$_AGKOZAK_HOSTNAME_STRING%{$reset_color%} %{$fg_bold[blue]%}$(_zsh_prompt_dirtrim)%{$reset_color%}%{$fg[yellow]%}$(_branch_status)%{$reset_color%} $(_vi_mode_indicator) '
 
   # The right prompt will show the exit code if it is not zero.
   RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"
 else
-  PS1='%n$_AGKOZAK_HOSTNAME_STRING %(3~|.../%2~|%~)$(_branch_status) $(_vi_mode_indicator) '
+  PS1='%n$_AGKOZAK_HOSTNAME_STRING $(_zsh_prompt_dirtrim)$(_branch_status) $(_vi_mode_indicator) '
   # shellcheck disable=SC2034
   RPS1="%(?..(%?%))"
 fi
+
+# vim: tabstop=2 expandtab:

@@ -144,7 +144,7 @@ precmd() {
 zle -N zle-keymap-select
 
 if _is_ssh; then
-  psvar[1]='@%m'
+  psvar[1]=$(print -P "@%m")
 else
   psvar[1]=''
 fi

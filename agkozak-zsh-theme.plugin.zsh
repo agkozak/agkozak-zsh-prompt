@@ -134,11 +134,10 @@ precmd() {
   case "$PWD" in
     $HOME*)
       psvar[2]=$(print -P "%(4~|.../%2~|%~)")
-      # shellcheck disable=SC2128
-      case "$psvar[2]" in
+      case ${psvar[2]} in
         '.../'*)
-          # shellcheck disable=SC2088,SC2128
-          psvar[2]=$(printf '~/%s' "$psvar[2]")
+          # shellcheck disable=SC2088
+          psvar[2]=$(printf '~/%s' "${psvar[2]}")
           ;;
       esac
       ;;
@@ -174,4 +173,3 @@ else
 fi
 
 # vim: tabstop=2 expandtab:
-

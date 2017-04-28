@@ -20,3 +20,5 @@ Renamed | >
 Individual frameworks have different ways of loading plugins from git repositories. I use [zplugin](https://github.com/zdharma/zplugin), so my `.zshrc` has the line
 
     zplugin load agkozak/agkozak-zsh-theme
+
+*Note: if you would like a prompt that works similarly in other shells, including `bash`, `ksh` (`ksh93`/`mksh`/`pdksh`), `dash`, and `busybox sh`, please try [agkozak-git-prompt](https://github.com/agkozak/agkozak-git-prompt).*

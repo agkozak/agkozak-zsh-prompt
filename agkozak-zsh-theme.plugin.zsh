@@ -24,7 +24,19 @@
 #
 # https://github.com/agkozak/agkozak-zsh-theme
 #
+
 # shellcheck disable=SC2148
+
+# $psvar[] Usage
+#
+# $psvar Index  Prompt String Equivalent    Usage
+#
+# $psvar[1]     %1v                         Hostname/abbreviated hostname (only
+#                                           displayed for SSH connections)
+# $psvar[2]     %2v                         Working directory or abbreviation
+#                                           thereof
+# $psvar[3]     %3v                         Current working Git branch, along
+#                                           with indicator of changes made
 
 setopt PROMPT_SUBST
 
@@ -39,7 +51,7 @@ _branch_status() {
     *) ref=$(git rev-parse --short HEAD 2> /dev/null) || return ;;
   esac
   branch=${ref#refs/heads/}
-  printf ' (%s%s)' "$branch" "$(_branch_changes)"
+  psvar[3]=" ($branch$(_branch_changes))"
 }
 
 # Display symbols representing the current branch's status
@@ -112,25 +124,29 @@ _vi_mode_indicator() {
   esac
 }
 
+# precmd() runs before each prompt is drawn
+#
 # Emulate bash's PROMPT_DIRTRIM behavior by prepending `~` before
 # abbreviated paths in the $HOME directory
-_zsh_prompt_dirtrim() {
+#
+# Calculate working Git branch and branch status
+precmd() {
   case "$PWD" in
     $HOME*)
-      local prompt_dirtrim
-      prompt_dirtrim=$(print -P "%(4~|.../%2~|%~)")
-      printf '%s' "${prompt_dirtrim/.../~/...}"
+      psvar[2]=$(print -P "%(4~|.../%2~|%~)")
+      psvar[2]=$(printf '%s' "${psvar[2]/.../~/...}")
       ;;
-    *) print -P "%(3~|.../%2~|%~)" ;;
+  *) psvar[2]=$(print -P "%(3~|.../%2~|%~)") ;;
   esac
+  _branch_status
 }
 
 zle -N zle-keymap-select
 
 if _is_ssh; then
-  _AGKOZAK_HOSTNAME_STRING='@%m'
+  psvar[1]='@%m'
 else
-  _AGKOZAK_HOSTNAME_STRING=''
+  psvar[1]=''
 fi
 
 if _has_colors; then
@@ -141,14 +157,15 @@ if _has_colors; then
   fi
 
   # shellcheck disable=SC2154
-  PS1='%{$fg_bold[green]%}%n$_AGKOZAK_HOSTNAME_STRING%{$reset_color%} %{$fg_bold[blue]%}$(_zsh_prompt_dirtrim)%{$reset_color%}%{$fg[yellow]%}$(_branch_status)%{$reset_color%} $(_vi_mode_indicator) '
+  PS1='%{$fg_bold[green]%}%n%1v%{$reset_color%} %{$fg_bold[blue]%}%2v%{$reset_color%}%{$fg[yellow]%}%3v%{$reset_color%} $(_vi_mode_indicator) '
 
   # The right prompt will show the exit code if it is not zero.
   RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"
 else
-  PS1='%n$_AGKOZAK_HOSTNAME_STRING $(_zsh_prompt_dirtrim)$(_branch_status) $(_vi_mode_indicator) '
+  PS1='%n%1v %2v%3v $(_vi_mode_indicator) '
   # shellcheck disable=SC2034
   RPS1="%(?..(%?%))"
 fi
 
 # vim: tabstop=2 expandtab:
+

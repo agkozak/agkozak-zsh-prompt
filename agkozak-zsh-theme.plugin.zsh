@@ -51,7 +51,7 @@ _branch_status() {
     *) ref=$(git rev-parse --short HEAD 2> /dev/null) || return ;;
   esac
   branch=${ref#refs/heads/}
-  psvar[3]=" ($branch$(_branch_changes))"
+  printf ' (%s%s)' "$branch" "$(_branch_changes)"
 }
 
 # Display symbols representing the current branch's status
@@ -138,7 +138,7 @@ precmd() {
       ;;
   *) psvar[2]=$(print -P "%(3~|.../%2~|%~)") ;;
   esac
-  _branch_status
+  psvar[3]=$(_branch_status)
 }
 
 zle -N zle-keymap-select

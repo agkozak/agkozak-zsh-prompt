@@ -134,7 +134,9 @@ precmd() {
   case "$PWD" in
     $HOME*)
       psvar[2]=$(print -P "%(4~|.../%2~|%~)")
-      psvar[2]=$(printf '%s' "${psvar[2]/.../~/...}")
+      case "$psvar[2]" in
+        '.../'*) psvar[2]=$(printf "~/$psvar[2]")
+      esac
       ;;
   *) psvar[2]=$(print -P "%(3~|.../%2~|%~)") ;;
   esac

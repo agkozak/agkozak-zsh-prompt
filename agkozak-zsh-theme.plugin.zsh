@@ -134,8 +134,12 @@ precmd() {
   case "$PWD" in
     $HOME*)
       psvar[2]=$(print -P "%(4~|.../%2~|%~)")
+      # shellcheck disable=SC2128
       case "$psvar[2]" in
-        '.../'*) psvar[2]=$(printf "~/$psvar[2]")
+        '.../'*)
+          # shellcheck disable=SC2088,SC2128
+          psvar[2]=$(printf '~/%s' "$psvar[2]")
+          ;;
       esac
       ;;
   *) psvar[2]=$(print -P "%(3~|.../%2~|%~)") ;;

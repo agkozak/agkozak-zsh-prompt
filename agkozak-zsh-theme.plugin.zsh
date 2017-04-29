@@ -40,6 +40,25 @@
 
 setopt PROMPT_SUBST
 
+_is_ssh() {
+  if [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
+    true
+  else
+    case "$EUID" in
+      0)
+        case $(ps -o comm= -p $PPID) in
+          sshd|*/sshd) true ;;
+        esac
+        ;;
+      *) false;
+    esac
+  fi
+}
+
+_has_colors() {
+  [[ $(tput colors) -ge 8 ]]
+}
+
 # Display current branch and status
 _branch_status() {
   local ref branch
@@ -85,45 +104,6 @@ _branch_changes() {
   [[ ! -z "$symbols" ]] && printf '%s' " $symbols"
 }
 
-_has_colors() {
-  [[ $(tput colors) -ge 8 ]]
-}
-
-_is_ssh() {
-  if [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
-    true
-  else
-    case "$EUID" in
-      0)
-        case $(ps -o comm= -p $PPID) in
-          sshd|*/sshd) true ;;
-        esac
-        ;;
-      *) false;
-    esac
-  fi
-}
-
-# Redraw prompt when vi mode changes
-zle-keymap-select() {
-  zle reset-prompt
-  zle -R
-}
-
-# Redraw prompt when terminal size changes
-TRAPWINCH() {
-  zle && zle -R
-}
-
-# When the user enters vi command mode, the % or # in the prompt changes into
-# a colon
-_vi_mode_indicator() {
-  case "$KEYMAP" in
-    vicmd) printf '%s' ':' ;;
-    *) printf '%s' '%#' ;;
-  esac
-}
-
 # precmd() runs before each prompt is drawn
 #
 # Emulate bash's PROMPT_DIRTRIM behavior by prepending `~` before
@@ -144,6 +124,26 @@ precmd() {
   *) psvar[2]=$(print -P "%(3~|.../%2~|%~)") ;;
   esac
   psvar[3]=$(_branch_status)
+}
+
+# When the user enters vi command mode, the % or # in the prompt changes into
+# a colon
+_vi_mode_indicator() {
+  case "$KEYMAP" in
+    vicmd) printf '%s' ':' ;;
+    *) printf '%s' '%#' ;;
+  esac
+}
+
+# Redraw prompt when vi mode changes
+zle-keymap-select() {
+  zle reset-prompt
+  zle -R
+}
+
+# Redraw prompt when terminal size changes
+TRAPWINCH() {
+  zle && zle -R
 }
 
 zle -N zle-keymap-select

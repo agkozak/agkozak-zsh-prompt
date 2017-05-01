@@ -21,4 +21,4 @@ Individual frameworks have different ways of loading plugins from git repositori
 
     zplugin load agkozak/agkozak-zsh-theme
 
-*Note: if you would like a prompt that works similarly in other shells, including `bash`, `ksh` (`ksh93`/`mksh`/`pdksh`), `dash`, and `busybox sh`, please try [agkozak-git-prompt](https://github.com/agkozak/agkozak-git-prompt).*
+*Note: if you would like a prompt that works similarly in more shells, including `zsh`, `bash`, `ksh` (`ksh93`/`mesh`/`pdksh`), `dash`, and `busybox sh`, please try [Polyglot Prompt](https://github.com/agkozak/polyglot).*

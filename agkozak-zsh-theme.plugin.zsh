@@ -82,6 +82,7 @@ _prompt_dirtrim() {
   local abbreviated_path
   [[ $AGKOZAK_PROMPT_DIRTRIM -ge 1 ]] || AGKOZAK_PROMPT_DIRTRIM=2
   case $PWD in
+    "$HOME") printf '%s' '~' ;;
     "$HOME"*)
       abbreviated_path=$(print -P "%($(($AGKOZAK_PROMPT_DIRTRIM + 2))~|.../%${AGKOZAK_PROMPT_DIRTRIM}~|%~)")
       case $abbreviated_path in

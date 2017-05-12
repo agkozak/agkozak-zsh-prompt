@@ -60,7 +60,7 @@ _has_colors() {
 }
 
 ############################################################
-# Emulation of bash's PROMPT_DIRTRIM for zsh
+# Emulation of bash's PROMPT_DIRTRIM=2 for other shells
 #
 # In $PWD, substitute $HOME with ~; if the remainder of the
 # $PWD has more than two directory elements to display,
@@ -77,8 +77,12 @@ _prompt_dirtrim() {
     | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}')
   case $first_two_dirs in
     $last_two_dirs|/$last_two_dirs)
+      # shellcheck disable=SC2088
       case "$PWD" in
+        $HOME) printf '%s' '~' ;;
+        $HOME$first_two_dirs*$last_two_dirs) printf '~/.../%s' "$last_two_dirs" ;;
         $HOME*) printf '~%s' "${PWD#$HOME}" ;;
+        $first_two_dirs*$last_two_dirs) printf '.../%s' "$last_two_dirs" ;;
         *) printf '%s' "$PWD" ;;
       esac
       ;;
@@ -174,6 +178,7 @@ zle -N zle-keymap-select
 if _is_ssh; then
   psvar[1]=$(print -P "@%m")
 else
+  # shellcheck disable=SC2034
   psvar[1]=''
 fi
 

@@ -60,40 +60,35 @@ _has_colors() {
 }
 
 ############################################################
-# Emulation of bash's PROMPT_DIRTRIM=2 for other shells
+# Emulation of bash's PROMPT_DIRTRIM=2 for zsh
 #
 # In $PWD, substitute $HOME with ~; if the remainder of the
 # $PWD has more than two directory elements to display,
 # abbreviate it with '...', e.g.
 #
+#   $HOME/dotfiles/polyglot/img
+#
+# will be displayed as
+#
 #   ~/.../polyglot/img
 ############################################################
 _prompt_dirtrim() {
-  local first_two_dirs last_two_dirs
-  first_two_dirs=$(echo "${PWD#$HOME}" | cut -d '/' -f1-3)
-  last_two_dirs=$(echo "${PWD#$HOME}" \
-    | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}' \
-    | cut -d '/' -f-2 \
-    | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}')
-  case $first_two_dirs in
-    $last_two_dirs|/$last_two_dirs)
+  local dir_count last_two_dirs
+  dir_count=$(echo "${PWD#$HOME}" | awk -F/ '{c += NF - 1} END {print c}')
+  if [[ $dir_count -le 2 ]]; then
       # shellcheck disable=SC2088
       case "$PWD" in
-        $HOME) printf '%s' '~' ;;
-        $HOME$first_two_dirs*$last_two_dirs) printf '~/.../%s' "$last_two_dirs" ;;
         $HOME*) printf '~%s' "${PWD#$HOME}" ;;
-        $first_two_dirs*$last_two_dirs) printf '.../%s' "$last_two_dirs" ;;
         *) printf '%s' "$PWD" ;;
       esac
-      ;;
-    *)
+  else
+    last_two_dirs=$(echo "${PWD#$HOME}" | awk -F/ '{print $(NF-1),$(NF)}' | sed 's/\ /\//')
       # shellcheck disable=SC2088
       case "$PWD" in
         $HOME*) printf '~/.../%s' "$last_two_dirs" ;;
         *) printf '.../%s' "$last_two_dirs" ;;
       esac
-      ;;
-  esac
+  fi
 }
 
 # Display current branch and status

@@ -82,7 +82,10 @@ _prompt_dirtrim() {
         *) printf '%s' "$PWD" ;;
       esac
   else
-    last_two_dirs=$(echo "${PWD#$HOME}" | awk -F/ '{print $(NF-1),$(NF)}' | sed 's/\ /\//')
+    last_two_dirs=$(echo "${PWD#$HOME}" \
+      | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}' \
+      | cut -d '/' -f-2 \
+      | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}')
       # shellcheck disable=SC2088
       case "$PWD" in
         $HOME*) printf '~/.../%s' "$last_two_dirs" ;;

@@ -47,7 +47,7 @@ _is_ssh() {
   if [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
     true
   else
-    case "$EUID" in
+    case $EUID in
       0)
         case $(ps -o comm= -p $PPID) in
           sshd|*/sshd) true ;;
@@ -84,7 +84,7 @@ _prompt_dirtrim() {
   dir_count=$(echo "${PWD#$HOME}" | awk -F/ '{c += NF - 1} END {print c}')
   if [[ $dir_count -le $1 ]]; then
       # shellcheck disable=SC2088
-      case "$PWD" in
+      case $PWD in
         $HOME*) printf '~%s' "${PWD#$HOME}" ;;
         *) printf '%s' "$PWD" ;;
       esac
@@ -94,7 +94,7 @@ _prompt_dirtrim() {
       | cut -d '/' -f-"$1" \
       | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}')
       # shellcheck disable=SC2088
-      case "$PWD" in
+      case $PWD in
         $HOME*) printf '~/.../%s' "$last_two_dirs" ;;
         *) printf '.../%s' "$last_two_dirs" ;;
       esac
@@ -138,7 +138,7 @@ _branch_changes() {
 
   # shellcheck disable=SC2154
   for k in ${(@k)messages}; do
-    case "$git_status" in
+    case $git_status in
       *${k}*) symbols="${messages[$k]}${symbols}" ;;
     esac
   done
@@ -161,7 +161,7 @@ precmd() {
 # When the user enters vi command mode, the % or # in the prompt changes into
 # a colon
 _vi_mode_indicator() {
-  case "$KEYMAP" in
+  case $KEYMAP in
     vicmd) printf '%s' ':' ;;
     *) printf '%s' '%#' ;;
   esac

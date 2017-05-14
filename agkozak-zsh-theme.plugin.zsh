@@ -40,6 +40,9 @@
 
 setopt PROMPT_SUBST
 
+# Set $AGKOZAK_PROMPT_DIRTRIM in an rc file to desired length of displayed path
+[[ -z $AGKOZAK_PROMPT_DIRTRIM ]] && AGKOZAK_PROMPT_DIRTRIM=2
+
 _is_ssh() {
   if [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
     true
@@ -60,7 +63,7 @@ _has_colors() {
 }
 
 ############################################################
-# Emulation of bash's PROMPT_DIRTRIM=2 for zsh
+# Emulation of bash's PROMPT_DIRTRIM for zsh
 #
 # In $PWD, substitute $HOME with ~; if the remainder of the
 # $PWD has more than two directory elements to display,
@@ -71,11 +74,15 @@ _has_colors() {
 # will be displayed as
 #
 #   ~/.../polyglot/img
+#
+# Arguments
+#  $1 Number of directory elements to display
 ############################################################
 _prompt_dirtrim() {
   local dir_count last_two_dirs
+  [[ $1 -lt 1 ]] && set 2 # $POLYGLOT_PROMPT_DIRTRIM should not be less than 1
   dir_count=$(echo "${PWD#$HOME}" | awk -F/ '{c += NF - 1} END {print c}')
-  if [[ $dir_count -le 2 ]]; then
+  if [[ $dir_count -le $1 ]]; then
       # shellcheck disable=SC2088
       case "$PWD" in
         $HOME*) printf '~%s' "${PWD#$HOME}" ;;
@@ -84,7 +91,7 @@ _prompt_dirtrim() {
   else
     last_two_dirs=$(echo "${PWD#$HOME}" \
       | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}' \
-      | cut -d '/' -f-2 \
+      | cut -d '/' -f-"$1" \
       | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}')
       # shellcheck disable=SC2088
       case "$PWD" in
@@ -136,7 +143,7 @@ _branch_changes() {
     esac
   done
 
-  [[ ! -z "$symbols" ]] && printf '%s' " $symbols"
+  [[ ! -z $symbols ]] && printf '%s' " $symbols"
 }
 
 ###########################################################
@@ -146,7 +153,7 @@ _branch_changes() {
 # 2) Calculates working branch and working copy status
 ###########################################################
 precmd() {
-  psvar[2]=$(_prompt_dirtrim)
+  psvar[2]=$(_prompt_dirtrim $AGKOZAK_PROMPT_DIRTRIM)
   # shellcheck disable=SC2119
   psvar[3]=$(_branch_status)
 }

@@ -2,7 +2,7 @@
 ![screenshot](https://github.com/agkozak/agkozak-zsh-theme/raw/master/img/agkozak-zsh-theme.jpg)
 
 
-`agkozak-zsh-theme` is a `zsh` theme that displays git branch and status and vi editing mode in the main prompt and also displays non-zero exit codes in `zsh`'s right prompt. An SSH connection is indicated by the presence of a hostname in the prompt; local connections show only a username. This prompt uses color when possible but avoids the non-ASCII glyphs so common in other zsh themes and is thus suitable for use with fonts that have a limited set of symbols. The git status symbols that it does use are as follows:
+**agkozak-zsh-theme** is a `zsh` theme that displays git branch and status and vi editing mode in the main prompt and also displays non-zero exit codes in `zsh`'s right prompt. An SSH connection is indicated by the presence of a hostname in the prompt; local connections show only a username. This prompt uses color when possible but avoids the non-ASCII glyphs so common in other zsh themes and is thus suitable for use with fonts that have a limited set of symbols. The git status symbols that it does use are as follows:
 
 Git Status | Symbol
 --- | ---
@@ -13,7 +13,9 @@ New file(s) | +
 Ahead | \*
 Renamed | >
 
-`agkozak-zsh-theme` can be used without any `zsh` framework and can be loaded thus:
+agkozak-zsh-theme emulates the behavior of `bash`'s PROMPT_DIRTRIM, and its default setting is 2. If you would like to make the display of your working directory longer or shorter, set the environment variable $AGKOZAK_PROMPT_DIRTRIM in you `.zshrc` file to whatever length you like.
+
+agkozak-zsh-theme can be used without any `zsh` framework and can be loaded thus:
 
      source /path/to/agkozak-zsh-theme/agkozak-zsh-theme.zsh
 

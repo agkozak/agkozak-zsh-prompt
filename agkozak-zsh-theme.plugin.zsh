@@ -149,7 +149,7 @@ _branch_changes() {
 ###########################################################
 # Runs right before the prompt is displayed
 #
-# 1) Imitates bash's PROMPT_DIRTRIM=2 behavior
+# 1) Imitates bash's PROMPT_DIRTRIM behavior
 # 2) Calculates working branch and working copy status
 ###########################################################
 precmd() {

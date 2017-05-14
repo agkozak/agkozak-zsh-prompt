@@ -1,8 +1,61 @@
-# `agkozak-zsh-theme`
-![screenshot](https://github.com/agkozak/agkozak-zsh-theme/raw/master/img/agkozak-zsh-theme.jpg)
+# agkozak-zsh-theme
 
+![agkozak-zsh-theme](img/agkozak-zsh-theme.png)
 
-**agkozak-zsh-theme** is a `zsh` theme that displays git branch and status and vi editing mode in the main prompt and also displays non-zero exit codes in `zsh`'s right prompt. An SSH connection is indicated by the presence of a hostname in the prompt; local connections show only a username. This prompt uses color when possible but avoids the non-ASCII glyphs so common in other zsh themes and is thus suitable for use with fonts that have a limited set of symbols. The git status symbols that it does use are as follows:
+**agkozak-zsh-theme** is a dynamic color Git prompt for `zsh` that uses basic ASCII symbols to show:
+
+* the username
+* whether a session is local or remote over SSH
+* an abbreviated path
+* the Git branch and status
+* the exit status of the last command, if it was not zero
+* if `vi` line editing is enabled, whether insert or command mode is active
+
+agkozak-zsh-theme can be simply sourced from your `.zshrc` file:
+
+    source /path/to/agkozak-zsh-theme.plugin.zsh
+
+It can also be used in coordination with a `zsh` framework. I use [zplugin](https://github.com/zdharma/zplugin), so my `.zshrc` has the line
+
+    zplugin load agkozak/agkozak-zsh-theme
+
+*Note: agkozak-zsh-theme is a subset of my [Polyglot Prompt](https://github.com/agkozak/polyglot), which also works in `bash`, `ksh93`, `mksh`, `pdksh`, `dash`, and `busybox sh`.*
+
+## Local and Remote Sessions
+
+When a session is local, only the username is shown; when it is remote over SSH (or `mosh`), the hostname is also shown:
+
+![Local and remote sessions](img/local-and-remote-sessions.png)
+
+## Abbreviated Paths
+
+By default agkozak-zsh-theme emulates the behavior that `bash` uses when `PROMPT_DIRTRIM` is set to `2`: a tilde (`~`) is prepended if the working directory is under the user's home directory, and then if more than two directory elements need to be shown, only the last two are displayed, along with an ellipsis, so that
+
+    /home/pi/src/neovim/config
+
+is displayed as
+
+![~/.../neovim/config](img/abbreviated_paths_1.png)
+
+whereas
+
+    /usr/src/sense-hat/examples
+
+is displayed as
+
+![.../sense-hat/examples](img/abbreviated_paths_2.png)
+
+that is, without a tilde.
+
+If you would like to display a different number of directory elements, set the environment variable `$AGKOZAK_PROMPT_DIRTRIM` in your `.zshrc` file thus:
+
+    AGKOZAK_PROMPT_DIRTRIM=4     # Or whatever number you like
+
+## Git Branch and Status
+
+If the current directory contains a Git repository, agkozak-zsh-theme displays the name of the working branch, along with some symbols to show changes to its status:
+
+![Git examples](img/git-examples.png)
 
 Git Status | Symbol
 --- | ---
@@ -13,14 +66,14 @@ New file(s) | +
 Ahead | \*
 Renamed | >
 
-agkozak-zsh-theme emulates the behavior of `bash`'s PROMPT_DIRTRIM, and its default setting is 2. If you would like to make the display of your working directory longer or shorter, set the environment variable $AGKOZAK_PROMPT_DIRTRIM in you `.zshrc` file to whatever length you like.
+## Exit Status
 
-agkozak-zsh-theme can be used without any `zsh` framework and can be loaded thus:
+If the exit status of the most recently executed command is other than zero (zero indicating success), the exit status will be displayed in the right prompt:
 
-     source /path/to/agkozak-zsh-theme/agkozak-zsh-theme.zsh
+![Exit status](img/exit-status.png)
 
-Individual frameworks have different ways of loading plugins from git repositories. I use [zplugin](https://github.com/zdharma/zplugin), so my `.zshrc` has the line
+# `vi` Editing Mode
 
-    zplugin load agkozak/agkozak-zsh-theme
+agkozak-zsh-theme indicates when the user has switched from `vi` insert mode to command mode by turning the `%` or `#` of the prompt into a colon:
 
-*Note: if you would like a prompt that works similarly in more shells, including `zsh`, `bash`, `ksh` (`ksh93`/`mksh`/`pdksh`), `dash`, and `busybox sh`, please try [Polyglot Prompt](https://github.com/agkozak/polyglot).*
+![`zsh` line editing](img/zsh-line-editing.png)

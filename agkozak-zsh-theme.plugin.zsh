@@ -40,7 +40,7 @@
 
 setopt PROMPT_SUBST
 
-# Set $AGKOZAK_PROMPT_DIRTRIM in an rc file to desired length of displayed path
+# Set $AGKOZAK_PROMPT_DIRTRIM in .zshrc to desired length of displayed path
 [[ -z $AGKOZAK_PROMPT_DIRTRIM ]] && AGKOZAK_PROMPT_DIRTRIM=2
 
 _is_ssh() {

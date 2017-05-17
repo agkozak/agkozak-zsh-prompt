@@ -89,7 +89,9 @@ _prompt_dirtrim() {
         '.../'*) abbreviated_path=$(printf '~/%s' $abbreviated_path) ;;
       esac
       ;;
-    *) abbreviated_path=$(print -P "%($(($AGKOZAK_PROMPT_DIRTRIM + 1))~|.../%${AGKOZAK_PROMPT_DIRTRIM}~|%~)")
+    *)
+      abbreviated_path=$(print -P "%($(($AGKOZAK_PROMPT_DIRTRIM + 1))~|.../%${AGKOZAK_PROMPT_DIRTRIM}~|%~)")
+      ;;
   esac
   printf '%s' $abbreviated_path
 }

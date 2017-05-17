@@ -43,6 +43,8 @@ setopt PROMPT_SUBST
 # Set $AGKOZAK_PROMPT_DIRTRIM in .zshrc to desired length of displayed path
 [[ -z $AGKOZAK_PROMPT_DIRTRIM ]] && AGKOZAK_PROMPT_DIRTRIM=2
 
+_AGKOZAK_HOME_LENGTH=$(echo "$HOME" | awk -F/ '{c += NF - 1} END {print c}')
+
 _is_ssh() {
   if [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
     true
@@ -79,26 +81,17 @@ _has_colors() {
 #  $1 Number of directory elements to display
 ############################################################
 _prompt_dirtrim() {
-  local dir_count last_two_dirs
-  [[ $1 -lt 1 ]] && set 2 # $POLYGLOT_PROMPT_DIRTRIM should not be less than 1
-  dir_count=$(echo "${PWD#$HOME}" | awk -F/ '{c += NF - 1} END {print c}')
-  if [[ $dir_count -le $1 ]]; then
-      # shellcheck disable=SC2088
-      case $PWD in
-        $HOME*) printf '~%s' "${PWD#$HOME}" ;;
-        *) printf '%s' "$PWD" ;;
+  local abbreviated_path
+  case $PWD in
+    "$HOME"*)
+      abbreviated_path=$(print -P "%($(($_AGKOZAK_HOME_LENGTH + $AGKOZAK_PROMPT_DIRTRIM))~|.../%${AGKOZAK_PROMPT_DIRTRIM}~|%~)")
+      case $abbreviated_path in
+        '.../'*) abbreviated_path=$(printf '~/%s' $abbreviated_path) ;;
       esac
-  else
-    last_two_dirs=$(echo "${PWD#$HOME}" \
-      | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}' \
-      | cut -d '/' -f-"$1" \
-      | awk '{ for(i=length();i!=0;i--) x=(x substr($0,i,1))  }{print x;x=""}')
-      # shellcheck disable=SC2088
-      case $PWD in
-        $HOME*) printf '~/.../%s' "$last_two_dirs" ;;
-        *) printf '.../%s' "$last_two_dirs" ;;
-      esac
-  fi
+      ;;
+    *) abbreviated_path=$(print -P "%($(($AGKOZAK_PROMPT_DIRTRIM + 1))~|.../%${AGKOZAK_PROMPT_DIRTRIM}~|%~)")
+  esac
+  printf '%s' $abbreviated_path
 }
 
 # Display current branch and status

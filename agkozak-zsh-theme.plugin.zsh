@@ -139,7 +139,7 @@ _branch_changes() {
     esac
   done
 
-  [[ ! -z $symbols ]] && printf ' %s' "$symbols"
+  [[ -n $symbols ]] && printf ' %s' "$symbols"
 }
 
 ###########################################################

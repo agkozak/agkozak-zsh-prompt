@@ -117,7 +117,7 @@ _branch_status() {
 _branch_changes() {
   local git_status symbols
 
-  git_status=$(command git status 2>&1)
+  git_status=$(LC_ALL=C command git status 2>&1)
 
   # $messages is an associative array whose keys are text to be looked for in
   # $git_status and whose values are symbols used in the prompt to represent

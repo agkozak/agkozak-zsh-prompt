@@ -44,7 +44,7 @@ setopt PROMPT_SUBST
 # Default is 2
 [[ $AGKOZAK_PROMPT_DIRTRIM -ge 1 ]] || AGKOZAK_PROMPT_DIRTRIM=2
 
-_is_ssh() {
+_agkozak_is_ssh() {
   if [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
     true
   else
@@ -60,7 +60,7 @@ _is_ssh() {
   fi
 }
 
-_has_colors() {
+_agkozak_has_colors() {
   [[ $(tput colors) -ge 8 ]]
 }
 
@@ -80,7 +80,7 @@ _has_colors() {
 # Arguments
 #  $1 Number of directory elements to display
 ############################################################
-_prompt_dirtrim() {
+_agkozak_prompt_dirtrim() {
   local abbreviated_path
   [[ $1 -ge 1 ]] || set 2
   case $PWD in
@@ -100,7 +100,7 @@ _prompt_dirtrim() {
 }
 
 # Display current branch and status
-_branch_status() {
+_agkozak_branch_status() {
   local ref branch
   ref=$(git symbolic-ref --quiet HEAD 2> /dev/null)
   case $? in        # See what the exit code is.
@@ -110,11 +110,11 @@ _branch_status() {
     *) ref=$(git rev-parse --short HEAD 2> /dev/null) || return ;;
   esac
   branch=${ref#refs/heads/}
-  printf ' (%s%s)' "$branch" "$(_branch_changes)"
+  printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
 }
 
 # Display symbols representing the current branch's status
-_branch_changes() {
+_agkozak_branch_changes() {
   local git_status symbols
 
   git_status=$(LC_ALL=C command git status 2>&1)
@@ -151,14 +151,14 @@ _branch_changes() {
 # 2) Calculates working branch and working copy status
 ###########################################################
 precmd() {
-  psvar[2]=$(_prompt_dirtrim $AGKOZAK_PROMPT_DIRTRIM)
+  psvar[2]=$(_agkozak_prompt_dirtrim $AGKOZAK_PROMPT_DIRTRIM)
   # shellcheck disable=SC2119
-  psvar[3]=$(_branch_status)
+  psvar[3]=$(_agkozak_branch_status)
 }
 
 # When the user enters vi command mode, the % or # in the prompt changes into
 # a colon
-_vi_mode_indicator() {
+_agkozak_vi_mode_indicator() {
   case $KEYMAP in
     vicmd) print -n ':' ;;
     *) print -n '%#' ;;
@@ -178,14 +178,14 @@ TRAPWINCH() {
 
 zle -N zle-keymap-select
 
-if _is_ssh; then
+if _agkozak_is_ssh; then
   psvar[1]=$(print -Pn "@%m")
 else
   # shellcheck disable=SC2034
   psvar[1]=''
 fi
 
-if _has_colors; then
+if _agkozak_has_colors; then
   # Autoload zsh colors module if it hasn't been autoloaded already
   if ! whence -w colors > /dev/null 2>&1; then
     autoload -Uz colors
@@ -193,7 +193,7 @@ if _has_colors; then
   fi
 
   # shellcheck disable=SC2154
-  PS1='%{$fg_bold[green]%}%n%1v%{$reset_color%} %{$fg_bold[blue]%}%2v%{$reset_color%}%{$fg[yellow]%}%3v%{$reset_color%} $(_vi_mode_indicator) '
+  PS1='%{$fg_bold[green]%}%n%1v%{$reset_color%} %{$fg_bold[blue]%}%2v%{$reset_color%}%{$fg[yellow]%}%3v%{$reset_color%} $(_agkozak_vi_mode_indicator) '
 
   # The right prompt will show the exit code if it is not zero.
   RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"

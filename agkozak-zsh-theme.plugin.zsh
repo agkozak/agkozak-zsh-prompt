@@ -203,4 +203,7 @@ else
   RPS1="%(?..(%?%))"
 fi
 
+# Clean up environment
+unset -f _agkozak_is_ssh _agkozak_has_colors
+
 # vim: tabstop=2 expandtab:

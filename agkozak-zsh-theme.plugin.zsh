@@ -198,7 +198,7 @@ if _agkozak_has_colors; then
   # The right prompt will show the exit code if it is not zero.
   RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"
 else
-  PS1='%n%1v %2v%3v $(_vi_mode_indicator) '
+  PS1='%n%1v %2v%3v $(_agkozak_vi_mode_indicator) '
   # shellcheck disable=SC2034
   RPS1="%(?..(%?%))"
 fi

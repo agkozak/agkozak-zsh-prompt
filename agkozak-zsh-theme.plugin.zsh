@@ -45,7 +45,7 @@ setopt PROMPT_SUBST
 [[ $AGKOZAK_PROMPT_DIRTRIM -ge 1 ]] || AGKOZAK_PROMPT_DIRTRIM=2
 
 _agkozak_is_ssh() {
-  if [[ -n $SSH_CONNECTION ]]; then
+  if [[ -n $SSH_CONNECTION ]] || [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
     true
   else
     case $EUID in

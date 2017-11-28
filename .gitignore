@@ -1,2 +1,4 @@
 *.zwc
 tags
+._zplugin/
+.zplugin_lstupd

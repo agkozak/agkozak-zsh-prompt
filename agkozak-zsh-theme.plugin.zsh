@@ -42,7 +42,7 @@ setopt PROMPT_SUBST
 
 # Set $AGKOZAK_PROMPT_DIRTRIM in .zshrc to desired length of displayed path
 # Default is 2
-[[ $AGKOZAK_PROMPT_DIRTRIM -ge 1 ]] || AGKOZAK_PROMPT_DIRTRIM=2
+(( AGKOZAK_PROMPT_DIRTRIM >= 1 )) || AGKOZAK_PROMPT_DIRTRIM=2
 
 _agkozak_is_ssh() {
   if [[ -n $SSH_CONNECTION ]] || [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
@@ -61,7 +61,7 @@ _agkozak_is_ssh() {
 }
 
 _agkozak_has_colors() {
-  [[ $(tput colors) -ge 8 ]]
+  (( $(tput colors) >= 8 ))
 }
 
 ############################################################
@@ -82,7 +82,7 @@ _agkozak_has_colors() {
 ############################################################
 _agkozak_prompt_dirtrim() {
   local abbreviated_path
-  [[ $1 -ge 1 ]] || set 2
+  (( $1 >= 1 )) || set 2
   case $PWD in
     $HOME) print -n '~' ;;
     $HOME*)

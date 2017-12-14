@@ -1,5 +1,8 @@
 # agkozak-zsh-theme
 
+[![License](https://img.shields.io/github/license/agkozak/agkozak-zsh-theme.svg)](https://opensource.org/licenses/GPL-3.0)
+[![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-theme.svg)](https://github.com/agkozak/agkozak-zsh-theme/stargazers)
+
 ![agkozak-zsh-theme](img/agkozak-zsh-theme.png)
 
 **agkozak-zsh-theme** is a dynamic color Git prompt for `zsh` that uses basic ASCII symbols to show:

@@ -80,12 +80,8 @@ _agkozak_prompt_dirtrim() {
   local abbreviated_path
   [[ $1 -ge 1 ]] || set 2
   case $PWD in
-    $HOME) print -n '~' ;;
     $HOME*)
-      abbreviated_path=$(print -Pn "%($(($1 + 2))~|.../%${1}~|%~)")
-      case $abbreviated_path in
-        '.../'*) abbreviated_path=$(printf '~/%s' "$abbreviated_path") ;;
-      esac
+      abbreviated_path=$(print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)")
       ;;
     *)
       abbreviated_path=$(print -Pn "%($(($1 + 1))~|.../%${1}~|%~)")

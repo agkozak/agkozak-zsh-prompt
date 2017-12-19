@@ -25,7 +25,7 @@
 # https://github.com/agkozak/agkozak-zsh-theme
 #
 
-# shellcheck disable=SC2148
+# shellcheck disable=SC2034,SC2088,SC2148,SC2154,SC2190
 
 # $psvar[] Usage
 #
@@ -83,7 +83,6 @@ _agkozak_prompt_dirtrim() {
     $HOME) print -n '~' ;;
     $HOME*)
       abbreviated_path=$(print -Pn "%($(($1 + 2))~|.../%${1}~|%~)")
-      # shellcheck disable=SC2088
       case $abbreviated_path in
         '.../'*) abbreviated_path=$(printf '~/%s' "$abbreviated_path") ;;
       esac
@@ -120,7 +119,6 @@ _agkozak_branch_changes() {
   # changes to the working branch
   declare -A messages
 
-  # shellcheck disable=SC2190
   messages=(
               'renamed:'                '>'
               'Your branch is ahead of' '*'
@@ -130,7 +128,6 @@ _agkozak_branch_changes() {
               'modified:'               '!'
            )
 
-  # shellcheck disable=SC2154
   for k in ${(@k)messages}; do
     case $git_status in
       *${k}*) symbols="${messages[$k]}${symbols}" ;;
@@ -148,7 +145,6 @@ _agkozak_branch_changes() {
 ###########################################################
 precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
-  # shellcheck disable=SC2119
   psvar[3]=$(_agkozak_branch_status)
 }
 
@@ -177,7 +173,6 @@ zle -N zle-keymap-select
 if _agkozak_is_ssh; then
   psvar[1]=$(print -Pn "@%m")
 else
-  # shellcheck disable=SC2034
   psvar[1]=''
 fi
 
@@ -188,14 +183,12 @@ if _agkozak_has_colors; then
     colors
   fi
 
-  # shellcheck disable=SC2154
   PS1='%{$fg_bold[green]%}%n%1v%{$reset_color%} %{$fg_bold[blue]%}%2v%{$reset_color%}%{$fg[yellow]%}%3v%{$reset_color%} $(_agkozak_vi_mode_indicator) '
 
   # The right prompt will show the exit code if it is not zero.
   RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"
 else
   PS1='%n%1v %2v%3v $(_agkozak_vi_mode_indicator) '
-  # shellcheck disable=SC2034
   RPS1="%(?..(%?%))"
 fi
 

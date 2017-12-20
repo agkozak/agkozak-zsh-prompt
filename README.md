@@ -80,3 +80,9 @@ If the exit status of the most recently executed command is other than zero (zer
 agkozak-zsh-theme indicates when the user has switched from `vi` insert mode to command mode by turning the `%` or `#` of the prompt into a colon:
 
 ![`zsh` line editing](img/zsh-line-editing.png)
+
+agkozak-zsh-theme does not enable `vi` editing mode for you. To do so, add
+
+    bindkey -v
+
+to your `.zshrc`.

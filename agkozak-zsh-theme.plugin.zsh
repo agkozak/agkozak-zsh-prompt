@@ -106,7 +106,7 @@ _agkozak_branch_status() {
 
 # Display symbols representing the current branch's status
 _agkozak_branch_changes() {
-  local git_status symbols
+  local git_status symbols k
 
   git_status=$(LC_ALL=C command git status 2>&1)
 

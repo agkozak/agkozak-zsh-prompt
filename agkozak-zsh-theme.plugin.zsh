@@ -40,6 +40,9 @@
 
 setopt PROMPT_SUBST
 
+###########################################################
+# Is the user connected via SSH?
+###########################################################
 _agkozak_is_ssh() {
   if [[ -n $SSH_CONNECTION ]] || [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
     true
@@ -56,6 +59,9 @@ _agkozak_is_ssh() {
   fi
 }
 
+###########################################################
+# Does the terminal support enough colors?
+###########################################################
 _agkozak_has_colors() {
   (( $(tput colors) >= 8 ))
 }
@@ -77,8 +83,8 @@ _agkozak_has_colors() {
 #  $1 Number of directory elements to display
 ############################################################
 _agkozak_prompt_dirtrim() {
-  local abbreviated_path
   [[ $1 -ge 1 ]] || set 2
+  local abbreviated_path
   case $PWD in
     $HOME*)
       abbreviated_path=$(print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)")
@@ -90,7 +96,10 @@ _agkozak_prompt_dirtrim() {
   print -n "$abbreviated_path"
 }
 
-# Display current branch and status
+###########################################################
+# Display current branch name, followed by symbols
+# representing changes to the working copy
+###########################################################
 _agkozak_branch_status() {
   local ref branch
   ref=$(git symbolic-ref --quiet HEAD 2> /dev/null)
@@ -104,15 +113,14 @@ _agkozak_branch_status() {
   printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
 }
 
-# Display symbols representing the current branch's status
+###########################################################
+# Display symbols representing changes to the working copy
+###########################################################
 _agkozak_branch_changes() {
-  local git_status symbols
+  local git_status symbols k
 
   git_status=$(LC_ALL=C command git status 2>&1)
 
-  # $messages is an associative array whose keys are text to be looked for in
-  # $git_status and whose values are symbols used in the prompt to represent
-  # changes to the working branch
   declare -A messages
 
   messages=(
@@ -144,8 +152,10 @@ precmd() {
   psvar[3]=$(_agkozak_branch_status)
 }
 
-# When the user enters vi command mode, the % or # in the prompt changes into
-# a colon
+###########################################################
+# When the user enters vi command mode, the % or # in the
+# prompt changes into a colon
+###########################################################
 _agkozak_vi_mode_indicator() {
   case $KEYMAP in
     vicmd) print -n ':' ;;
@@ -153,19 +163,24 @@ _agkozak_vi_mode_indicator() {
   esac
 }
 
-# Redraw prompt when vi mode changes
+###########################################################
+# Redraw the prompt when the vi mode changes
+###########################################################
 zle-keymap-select() {
   zle reset-prompt
   zle -R
 }
 
+###########################################################
 # Redraw prompt when terminal size changes
+###########################################################
 TRAPWINCH() {
   zle && zle -R
 }
 
 zle -N zle-keymap-select
 
+# Only display the $HOSTNAME for an ssh connection
 if _agkozak_is_ssh; then
   psvar[1]=$(print -Pn "@%m")
 else

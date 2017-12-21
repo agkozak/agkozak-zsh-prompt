@@ -1,3 +1,5 @@
+![agkozak-zsh-theme Logo](img/logo.png)
+
 # agkozak-zsh-theme
 
 [![License](https://img.shields.io/github/license/agkozak/agkozak-zsh-theme.svg)](https://opensource.org/licenses/MIT)

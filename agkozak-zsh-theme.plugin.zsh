@@ -197,16 +197,10 @@ else
 fi
 
 if _agkozak_has_colors; then
-  # Autoload zsh colors module if it hasn't been autoloaded already
-  if ! whence -w colors > /dev/null 2>&1; then
-    autoload -Uz colors
-    colors
-  fi
-
-  PS1='%{$fg_bold[green]%}%n%1v%{$reset_color%} %{$fg_bold[blue]%}%2v%{$reset_color%}%{$fg[yellow]%}%3v%{$reset_color%} $(_agkozak_vi_mode_indicator) '
+  PS1='%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b%B%F{yellow}%3v%f%b $(_agkozak_vi_mode_indicator) '
 
   # The right prompt will show the exit code if it is not zero.
-  RPS1="%(?..%{$fg_bold[red]%}(%?%)%{$reset_color%})"
+  RPS1="%(?..%B%F{red}(%?%)%f%b)"
 else
   PS1='%n%1v %2v%3v $(_agkozak_vi_mode_indicator) '
   RPS1="%(?..(%?%))"

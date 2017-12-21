@@ -5,8 +5,6 @@
 [![License](https://img.shields.io/github/license/agkozak/agkozak-zsh-theme.svg)](https://opensource.org/licenses/MIT)
 [![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-theme.svg)](https://github.com/agkozak/agkozak-zsh-theme/stargazers)
 
-![agkozak-zsh-theme](img/agkozak-zsh-theme.png)
-
 **agkozak-zsh-theme** is a dynamic color Git prompt for `zsh` that uses basic ASCII symbols to show:
 
 * the username
@@ -15,6 +13,8 @@
 * the Git branch and status
 * the exit status of the last command, if it was not zero
 * if `vi` line editing is enabled, whether insert or command mode is active
+
+![agkozak-zsh-theme](img/agkozak-zsh-theme.png)
 
 agkozak-zsh-theme can be simply sourced from your `.zshrc` file:
 

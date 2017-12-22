@@ -197,7 +197,7 @@ else
 fi
 
 if _agkozak_has_colors; then
-  PS1='%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b%B%F{yellow}%3v%f%b $(_agkozak_vi_mode_indicator) '
+  PS1='%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b%F{yellow}%3v%f $(_agkozak_vi_mode_indicator) '
 
   # The right prompt will show the exit code if it is not zero.
   RPS1="%(?..%B%F{red}(%?%)%f%b)"

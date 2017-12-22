@@ -95,6 +95,7 @@ _agkozak_prompt_dirtrim() {
   [[ $1 -ge 1 ]] || set 2
   local abbreviated_path
   case $PWD in
+    $HOME) print -n '~' ;;  # For TrueOS
     $HOME*)
       abbreviated_path=$(print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)")
       ;;

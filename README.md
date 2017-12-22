@@ -57,6 +57,8 @@ If you would like to display a different number of directory elements, set the e
 
     AGKOZAK_PROMPT_DIRTRIM=4     # Or whatever number you like
 
+![AGKOZAK_PROMPT_DIRTRIM=4](img/abbreviated_paths_3.png)
+
 ## Git Branch and Status
 
 If the current directory contains a Git repository, agkozak-zsh-theme displays the name of the working branch, along with some symbols to show changes to its status:

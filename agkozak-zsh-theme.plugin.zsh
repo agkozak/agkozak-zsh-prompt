@@ -156,7 +156,7 @@ _agkozak_branch_changes() {
 ###########################################################
 _agkozak_async() {
   # Save Git branch status to temporary file
-  _agkozak_branch_status > "/tmp/zsh_prompt_$$"
+  _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
 
   # Signal parent process
   kill -s USR1 $$
@@ -171,7 +171,7 @@ _agkozak_async() {
 precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
 
-  # do not clear RPROMPT, let it persist
+  psvar[3]=''
 
   # Kill running child process if necessary
   if (( AGKOZAK_ASYNC_PROC != 0 )); then
@@ -213,14 +213,14 @@ TRAPWINCH() {
 # On signal USR1, redraw prompt
 ###########################################################
 TRAPUSR1() {
-    # read from temp file
-    psvar[3]="$(cat /tmp/zsh_prompt_$$)"
+  # read from temp file
+  psvar[3]="$(cat /tmp/agkozak_zsh_theme_$$)"
 
-    # Reset asynchronous process number
-    AGKOZAK_ASYNC_PROC=0
+  # Reset asynchronous process number
+  AGKOZAK_ASYNC_PROC=0
 
-    # Redraw the prompt
-    zle && zle reset-prompt
+  # Redraw the prompt
+  zle && zle reset-prompt
 }
 
 AGKOZAK_ASYNC_PROC=0

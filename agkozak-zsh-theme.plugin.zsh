@@ -171,7 +171,7 @@ _agkozak_async() {
 precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
 
-  # do not clear RPROMPT, let it persist
+  psvar[3]=''
 
   # Kill running child process if necessary
   if (( AGKOZAK_ASYNC_PROC != 0 )); then
@@ -247,4 +247,4 @@ fi
 # Clean up environment
 unset -f _agkozak_is_ssh _agkozak_has_colors
 
-# vim: tabstop=2 expandtab:
+# vim: ts=2:et:sts=2:sw=2

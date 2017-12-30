@@ -156,7 +156,7 @@ _agkozak_branch_changes() {
 ###########################################################
 _agkozak_async() {
   # Save Git branch status to temporary file
-  _agkozak_branch_status > "/tmp/zsh_prompt_$$"
+  _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
 
   # Signal parent process
   kill -s USR1 $$
@@ -214,7 +214,7 @@ TRAPWINCH() {
 ###########################################################
 TRAPUSR1() {
     # read from temp file
-    psvar[3]="$(cat /tmp/zsh_prompt_$$)"
+    psvar[3]="$(cat /tmp/agkozak_zsh_theme_$$)"
 
     # Reset asynchronous process number
     AGKOZAK_ASYNC_PROC=0

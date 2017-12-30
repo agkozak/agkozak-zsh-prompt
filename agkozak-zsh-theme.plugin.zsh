@@ -152,6 +152,17 @@ _agkozak_branch_changes() {
 }
 
 ###########################################################
+# Asynchronous Git branch status routine
+###########################################################
+_agkozak_async() {
+  # Save Git branch status to temporary file
+  _agkozak_branch_status > "/tmp/zsh_prompt_$$"
+
+  # Signal parent process
+  kill -s USR1 $$
+}
+
+###########################################################
 # Runs right before the prompt is displayed
 #
 # 1) Imitates bash's PROMPT_DIRTRIM behavior
@@ -159,7 +170,17 @@ _agkozak_branch_changes() {
 ###########################################################
 precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
-  psvar[3]=$(_agkozak_branch_status)
+
+  # do not clear RPROMPT, let it persist
+
+  # Kill running child process if necessary
+  if (( AGKOZAK_ASYNC_PROC != 0 )); then
+      kill -s HUP $AGKOZAK_ASYNC_PROC > /dev/null 2>&1 || :
+  fi
+
+  # Start background computation of Git status
+  _agkozak_async &!
+  AGKOZAK_ASYNC_PROC=$!
 }
 
 ###########################################################
@@ -188,6 +209,22 @@ TRAPWINCH() {
   zle && zle -R
 }
 
+###########################################################
+# On signal USR1, redraw prompt
+###########################################################
+TRAPUSR1() {
+    # read from temp file
+    psvar[3]="$(cat /tmp/zsh_prompt_$$)"
+
+    # Reset asynchronous process number
+    AGKOZAK_ASYNC_PROC=0
+
+    # Redraw the prompt
+    zle && zle reset-prompt
+}
+
+AGKOZAK_ASYNC_PROC=0
+
 zle -N zle-keymap-select
 
 # Only display the $HOSTNAME for an ssh connection
@@ -198,13 +235,13 @@ else
 fi
 
 if _agkozak_has_colors; then
-  PS1='%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b%F{yellow}%3v%f $(_agkozak_vi_mode_indicator) '
+  PS1='%(?..%B%F{red}(%?%)%f%b )%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
 
   # The right prompt will show the exit code if it is not zero.
-  RPS1="%(?..%B%F{red}(%?%)%f%b)"
+  RPS1='%F{yellow}%3v%f'
 else
-  PS1='%n%1v %2v%3v $(_agkozak_vi_mode_indicator) '
-  RPS1="%(?..(%?%))"
+  PS1='%(?..(%?%) )%n%1v %2v $(_agkozak_vi_mode_indicator) '
+  RPS1='%3v'
 fi
 
 # Clean up environment

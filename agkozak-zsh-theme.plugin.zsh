@@ -175,7 +175,7 @@ precmd() {
 
   # Kill running child process if necessary
   if (( AGKOZAK_ASYNC_PROC != 0 )); then
-      kill -s HUP $AGKOZAK_ASYNC_PROC > /dev/null 2>&1 || :
+      kill -s HUP $AGKOZAK_ASYNC_PROC &> /dev/null || :
   fi
 
   # Start background computation of Git status

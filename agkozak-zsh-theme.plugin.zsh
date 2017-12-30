@@ -213,14 +213,14 @@ TRAPWINCH() {
 # On signal USR1, redraw prompt
 ###########################################################
 TRAPUSR1() {
-    # read from temp file
-    psvar[3]="$(cat /tmp/agkozak_zsh_theme_$$)"
+  # read from temp file
+  psvar[3]="$(cat /tmp/agkozak_zsh_theme_$$)"
 
-    # Reset asynchronous process number
-    AGKOZAK_ASYNC_PROC=0
+  # Reset asynchronous process number
+  AGKOZAK_ASYNC_PROC=0
 
-    # Redraw the prompt
-    zle && zle reset-prompt
+  # Redraw the prompt
+  zle && zle reset-prompt
 }
 
 AGKOZAK_ASYNC_PROC=0

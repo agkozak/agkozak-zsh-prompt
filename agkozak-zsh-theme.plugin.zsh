@@ -10,7 +10,7 @@
 #
 # MIT License
 #
-# Copyright (c) Alexandros Kozak
+# Copyright (c) 2017 Alexandros Kozak
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal

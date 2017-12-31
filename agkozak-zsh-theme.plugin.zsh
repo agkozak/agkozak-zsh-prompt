@@ -5,12 +5,13 @@
 #  \__,_|\__, |_|\_\___/___\__,_|_|\_\
 #        |___/
 #
-# A dynamic color prompt for zsh with Git, vi mode, and exit status indicators
+# An asynchronous, dynamic color prompt for zsh with Git, vi mode, and exit
+# status indicators
 #
 #
 # MIT License
 #
-# Copyright (c) Alexandros Kozak
+# Copyright (c) 2017-2018 Alexandros Kozak
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -171,16 +172,21 @@ _agkozak_async() {
 precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
 
-  psvar[3]=''
+  if (( AGKOZAK_NO_ASYNC != 1 )); then
 
-  # Kill running child process if necessary
-  if (( AGKOZAK_ASYNC_PROC != 0 )); then
-      kill -s HUP $AGKOZAK_ASYNC_PROC &> /dev/null || :
+    psvar[3]=''
+
+    # Kill running child process if necessary
+    if (( AGKOZAK_ASYNC_PROC != 0 )); then
+        kill -s HUP $AGKOZAK_ASYNC_PROC &> /dev/null || :
+    fi
+
+    # Start background computation of Git status
+    _agkozak_async &!
+    AGKOZAK_ASYNC_PROC=$!
+  else
+    psvar[3]=$(_agkozak_branch_status)
   fi
-
-  # Start background computation of Git status
-  _agkozak_async &!
-  AGKOZAK_ASYNC_PROC=$!
 }
 
 ###########################################################
@@ -234,14 +240,23 @@ else
   psvar[1]=''
 fi
 
-if _agkozak_has_colors; then
-  PS1='%(?..%B%F{red}(%?%)%f%b )%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
-
-  # The right prompt will show the exit code if it is not zero.
-  RPS1='%F{yellow}%3v%f'
+if (( AGKOZAK_NO_ASYNC !=1 )); then
+  if _agkozak_has_colors; then
+    PS1='%(?..%B%F{red}(%?%)%f%b )%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
+    RPS1='%F{yellow}%3v%f'
+  else
+    PS1='%(?..(%?%) )%n%1v %2v $(_agkozak_vi_mode_indicator) '
+    RPS1='%3v'
+  fi
 else
-  PS1='%(?..(%?%) )%n%1v %2v $(_agkozak_vi_mode_indicator) '
-  RPS1='%3v'
+  if _agkozak_has_colors; then
+    PS1='%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b%F{yellow}%3v%f $(_agkozak_vi_mode_indicator) '
+    # The right prompt will show the exit code if it is not zero.
+    RPS1="%(?..%B%F{red}(%?%)%f%b)"
+  else
+    PS1='%n%1v %2v%3v $(_agkozak_vi_mode_indicator) '
+    RPS1="%(?..(%?%))"
+  fi
 fi
 
 # Clean up environment

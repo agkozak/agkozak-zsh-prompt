@@ -247,4 +247,4 @@ fi
 # Clean up environment
 unset -f _agkozak_is_ssh _agkozak_has_colors
 
-# vim: ts=2:et:sts=2:sw=2
+# vim: ts=2:et:sts=2:sw=2:

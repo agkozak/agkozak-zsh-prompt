@@ -214,7 +214,7 @@ TRAPWINCH() {
 ###########################################################
 TRAPUSR1() {
   # read from temp file
-  psvar[3]="$(cat /tmp/agkozak_zsh_theme_$$)"
+  psvar[3]=$(cat /tmp/agkozak_zsh_theme_$$)
 
   # Reset asynchronous process number
   AGKOZAK_ASYNC_PROC=0

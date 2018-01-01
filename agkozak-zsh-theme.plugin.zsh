@@ -192,12 +192,13 @@ precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
 
   if (( AGKOZAK_NO_ASYNC != 1 )); then
+    
+    psvar[3]=''
 
     if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
 
       # zsh-async routine
-      psvar[3]=''
-      async_init
+      
       async_start_worker agkozak_git_status_worker -n
       async_register_callback agkozak_git_status_worker _agkozak_git_status_worker
       async_job agkozak_git_status_worker _agkozak_dummy

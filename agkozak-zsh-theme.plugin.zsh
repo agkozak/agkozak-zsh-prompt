@@ -52,8 +52,9 @@ setopt PROMPT_SUBST
 
 # Load zsh-async except on systems where it is known not to work:
 #
-# 1) MSYS2 (also Cygwin?)
-# 2) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
+# 1) MSYS2 (zpty is dysfunctional)
+# 2) Cygwin: https://github.com/sindresorhus/pure/issues/141
+# 3) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
 case $(uname -a) in
   *Msys|*Cygwin) ;;
   *)
@@ -192,13 +193,13 @@ precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
 
   if (( AGKOZAK_NO_ASYNC != 1 )); then
-    
+
     psvar[3]=''
 
     if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
 
       # zsh-async routine
-      
+
       async_start_worker agkozak_git_status_worker -n
       async_register_callback agkozak_git_status_worker _agkozak_git_status_worker
       async_job agkozak_git_status_worker _agkozak_dummy

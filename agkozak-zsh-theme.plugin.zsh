@@ -55,7 +55,7 @@ setopt PROMPT_SUBST
 # 1) MSYS2
 # 2) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
 case $(uname -a) in
-  *Msys) ;;
+  *Msys|*Cygwin) ;;
   *)
     case $ZSH_VERSION in
       '5.0.2'|'5.0.8') ;;
@@ -299,9 +299,9 @@ else
 fi
 
 if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
-  echo 'Using zsh-async.'
+  echo 'agkozak-zsh-theme using zsh-async.'
 elif [[ $AGKOZAK_NO_ASYNC -ne 1 ]]; then
-  echo 'Using USR1.'
+  echo 'agkozak-zsh-theme using USR1.'
 fi
 
 # Clean up environment

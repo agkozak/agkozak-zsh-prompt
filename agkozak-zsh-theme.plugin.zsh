@@ -52,7 +52,7 @@ setopt PROMPT_SUBST
 
 # Load zsh-async except on systems where it is known not to work:
 #
-# 1) MSYS2
+# 1) MSYS2 (also Cygwin?)
 # 2) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
 case $(uname -a) in
   *Msys|*Cygwin) ;;
@@ -270,7 +270,9 @@ TRAPUSR1() {
   zle && zle reset-prompt
 }
 
-AGKOZAK_ASYNC_PROC=0
+if [[ ! $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]] || [[ ! $AGKOZAK_NO_ASYNC = 1 ]]; then
+  AGKOZAK_ASYNC_PROC=0
+fi
 
 zle -N zle-keymap-select
 

@@ -50,7 +50,7 @@
 
 setopt PROMPT_SUBST
 
-# Load async.zsh except on systems where it is known not to work:
+# Load zsh-async except on systems where it is known not to work:
 #
 # 1) MSYS2
 # 2) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
@@ -60,7 +60,8 @@ case $(uname -a) in
     case $ZSH_VERSION in
       '5.0.2'|'5.0.8') ;;
       *)
-        . ${0:a:h}/async.zsh && async_init && AGKOZAK_ASYNC_DOT_ZSH_LOADED=1
+        # TODO: Only load zsh-async if it has not already been loaded
+        . ${0:a:h}/async.zsh && async_init && AGKOZAK_ZSH_ASYNC_LOADED=1
         ;;
     esac
     ;;
@@ -190,19 +191,41 @@ precmd() {
 
   if (( AGKOZAK_NO_ASYNC != 1 )); then
 
-    psvar[3]=''
+    if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
 
-    # Kill running child process if necessary
-    if (( AGKOZAK_ASYNC_PROC != 0 )); then
-        kill -s HUP $AGKOZAK_ASYNC_PROC &> /dev/null || :
+      # zsh-async routine
+      psvar[3]=''
+      async_init
+      async_start_worker agkozak_git_status_worker -n
+      async_register_callback agkozak_git_status_worker _agkozak_git_status_worker
+      async_job agkozak_git_status_worker _agkozak_dummy
+
+    else
+
+      # Using signal USR1
+      psvar[3]=''
+
+      # Kill running child process if necessary
+      if (( AGKOZAK_ASYNC_PROC != 0 )); then
+          kill -s HUP $AGKOZAK_ASYNC_PROC &> /dev/null || :
+      fi
+
+      # Start background computation of Git status
+      _agkozak_async &!
+      AGKOZAK_ASYNC_PROC=$!
+
     fi
-
-    # Start background computation of Git status
-    _agkozak_async &!
-    AGKOZAK_ASYNC_PROC=$!
   else
     psvar[3]=$(_agkozak_branch_status)
   fi
+}
+
+_agkozak_dummy() {}
+
+_agkozak_git_status_worker() {
+  psvar[3]=$(_agkozak_branch_status)
+  zle && zle reset-prompt
+  async_stop_worker agkozak_git_status_worker -n
 }
 
 ###########################################################
@@ -275,7 +298,14 @@ else
   fi
 fi
 
+if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
+  echo 'Using zsh-async.'
+elif [[ $AGKOZAK_NO_ASYNC -ne 1 ]]; then
+  echo 'Using USR1.'
+fi
+
 # Clean up environment
 unset -f _agkozak_is_ssh _agkozak_has_colors
 
 # vim: ts=2:et:sts=2:sw=2:
+

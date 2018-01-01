@@ -58,7 +58,8 @@ case $(uname -a) in
   *Msys|*Cygwin) ;;
   *)
     case $ZSH_VERSION in
-      '5.0.2'|'5.0.8') ;;
+      '5.0.2') AGKOZAK_NO_ASYNC=1 ;; # Problems with USR1
+      '5.0.8') ;;
       *)
         # TODO: Only load zsh-async if it has not already been loaded
         . ${0:a:h}/async.zsh && async_init && AGKOZAK_ZSH_ASYNC_LOADED=1

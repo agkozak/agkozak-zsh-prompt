@@ -50,6 +50,22 @@
 
 setopt PROMPT_SUBST
 
+# Load async.zsh except on systems where it is known not to work:
+#
+# 1) MSYS2
+# 2) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
+case $(uname -a) in
+  *Msys) ;;
+  *)
+    case $ZSH_VERSION in
+      '5.0.2'|'5.0.8') ;;
+      *)
+        . ${0:a:h}/async.zsh && async_init && AGKOZAK_ASYNC_DOT_ZSH_LOADED=1
+        ;;
+    esac
+    ;;
+esac
+
 ###########################################################
 # Is the user connected via SSH?
 ###########################################################

@@ -58,11 +58,12 @@ case $(uname -a) in
   *Msys|*Cygwin) ;;
   *)
     case $ZSH_VERSION in
-      '5.0.2') AGKOZAK_NO_ASYNC=1 ;; # Problems with USR1
+      '5.0.2') AGKOZAK_NO_ASYNC=1 ;; # Problems with USR1, reported problems with zpty
       '5.0.8') ;;
       *)
-        # TODO: Only load zsh-async if it has not already been loaded
-        . ${0:a:h}/async.zsh && async_init && AGKOZAK_ZSH_ASYNC_LOADED=1
+        if ! whence -w async_init &> /dev/null; then
+          . ${0:a:h}/lib/async.zsh && async_init && AGKOZAK_ZSH_ASYNC_LOADED=1
+        fi
         ;;
     esac
     ;;
@@ -299,10 +300,12 @@ else
   fi
 fi
 
-if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
-  echo 'agkozak-zsh-theme using zsh-async.'
-elif [[ $AGKOZAK_NO_ASYNC -ne 1 ]]; then
-  echo 'agkozak-zsh-theme using USR1.'
+if [[ -n $AGKOZAK_ZSH_THEME_DEBUG ]]; then
+  if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
+    echo 'agkozak-zsh-theme using zsh-async.'
+  elif [[ $AGKOZAK_NO_ASYNC -ne 1 ]]; then
+    echo 'agkozak-zsh-theme using USR1.'
+  fi
 fi
 
 # Clean up environment

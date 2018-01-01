@@ -281,23 +281,12 @@ else
   psvar[1]=''
 fi
 
-if (( AGKOZAK_NO_ASYNC !=1 )); then
-  if _agkozak_has_colors; then
-    PS1='%(?..%B%F{red}(%?%)%f%b )%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
-    RPS1='%F{yellow}%3v%f'
-  else
-    PS1='%(?..(%?%) )%n%1v %2v $(_agkozak_vi_mode_indicator) '
-    RPS1='%3v'
-  fi
+if _agkozak_has_colors; then
+  PS1='%(?..%B%F{red}(%?%)%f%b )%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
+  RPS1='%F{yellow}%3v%f'
 else
-  if _agkozak_has_colors; then
-    PS1='%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b%F{yellow}%3v%f $(_agkozak_vi_mode_indicator) '
-    # The right prompt will show the exit code if it is not zero.
-    RPS1="%(?..%B%F{red}(%?%)%f%b)"
-  else
-    PS1='%n%1v %2v%3v $(_agkozak_vi_mode_indicator) '
-    RPS1="%(?..(%?%))"
-  fi
+  PS1='%(?..(%?%) )%n%1v %2v $(_agkozak_vi_mode_indicator) '
+  RPS1='%3v'
 fi
 
 if [[ -n $AGKOZAK_ZSH_THEME_DEBUG ]]; then

@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 #              _                 _
 #   __ _  __ _| | _____ ______ _| | __
 #  / _` |/ _` | |/ / _ \_  / _` | |/ /
@@ -34,8 +35,6 @@
 #
 # https://github.com/agkozak/agkozak-zsh-theme
 #
-
-# shellcheck disable=SC2034,SC2088,SC2148,SC2154,SC2190
 
 # $psvar[] Usage
 #

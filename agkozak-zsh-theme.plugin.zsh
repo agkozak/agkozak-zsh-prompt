@@ -218,18 +218,24 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS - zsh-async LIBRARY
 #####################################################################
 
-_agkozak_dummy() {}
+_agkozak_dummy() { :; }
 
-_agkozak_git_status_callback() {
-  psvar[3]=$(_agkozak_branch_status)
-  zle && zle reset-prompt
-  async_stop_worker agkozak_git_status_worker -n
-}
-
+###########################################################
+# Create zsh-async worker
+###########################################################
 _agkozak_zsh_async() {
     async_start_worker agkozak_git_status_worker -n
     async_register_callback agkozak_git_status_worker _agkozak_git_status_callback
     async_job agkozak_git_status_worker _agkozak_dummy
+}
+
+###########################################################
+# Set RPROPT and stop worker
+###########################################################
+_agkozak_git_status_callback() {
+  psvar[3]=$(_agkozak_branch_status)
+  zle && zle reset-prompt
+  async_stop_worker agkozak_git_status_worker -n
 }
 
 #####################################################################
@@ -289,7 +295,7 @@ _agkozak_usr1() {
 precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
   psvar[3]=''
-  
+
   if [[ $AGKOZAK_USE_ZSH_ASYNC = 1 ]]; then
     _agkozak_zsh_async
   elif [[ $AGKOZAK_USE_USR1 = 1 ]]; then

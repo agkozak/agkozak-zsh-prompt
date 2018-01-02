@@ -336,8 +336,10 @@ agkozak_zth_theme() {
 agkozak_zth_theme
 
 # Clean up environment
-unset AGKOZAK_THEME_DIR
-unset -f _agkozak_is_ssh _agkozak_has_colors
+[[ $AGKOZAK_ZSH_THEM_DEBUG = 1 ]] && {
+  unset AGKOZAK_THEME_DIR
+  unset -f _agkozak_is_ssh _agkozak_has_colors
+}
 
 [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && setopt NO_WARN_CREATE_GLOBAL   # For debugging purposes
 

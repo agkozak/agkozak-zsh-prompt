@@ -55,6 +55,9 @@ setopt PROMPT_SUBST
 typeset -g AGKOZAK_THEME_DIR
 AGKOZAK_THEME_DIR=${0:a:h}
 
+(( AGKOZAK_FORCE_ZSH_ASYNC + AGKOZAK_FORCE_USR1 + AGKOZAK_FORCE_NO_ASYNC > 1 )) \
+  && echo 'Only set one of the following: $AGKOZAK_FORCE_ZSH_ASYNC $AGKOZAK_FORCE_USR1 $AGKOZAK_FORCE_NO_ASYNC'
+
 typeset -g AGKOZAK_USE_ZSH_ASYNC AGKOZAK_USE_USR1 AGKOZAK_NO_ASYNC
 if [[ $AGKOZAK_FORCE_ZSH_ASYNC = 1 ]]; then
   AGKOZAK_USE_ZSH_ASYNC=1
@@ -242,15 +245,15 @@ _agkozak_git_status_callback() {
 # ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
 #####################################################################
 
-###########################################################
-# Asynchronous Git branch status routine using signal USR1
-###########################################################
-_agkozak_usr1_async() {
-  # Save Git branch status to temporary file
-  _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
+_agkozak_usr1() {
+    # Kill running child process if necessary
+    if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
+        kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
+    fi
 
-  # Signal parent process
-  kill -s USR1 $$
+    # Start background computation of Git status
+    _agkozak_usr1_async &!
+    AGKOZAK_USR1_ASYNC_PROC=$!
 }
 
 if [[ $AGKOZAK_USE_USR1 = 1 ]]; then
@@ -271,15 +274,15 @@ if [[ $AGKOZAK_USE_USR1 = 1 ]]; then
 
 fi
 
-_agkozak_usr1() {
-    # Kill running child process if necessary
-    if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
-        kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
-    fi
+###########################################################
+# Asynchronous Git branch status routine using signal USR1
+###########################################################
+_agkozak_usr1_async() {
+  # Save Git branch status to temporary file
+  _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
 
-    # Start background computation of Git status
-    _agkozak_usr1_async &!
-    AGKOZAK_USR1_ASYNC_PROC=$!
+  # Signal parent process
+  kill -s USR1 $$
 }
 
 #####################################################################
@@ -338,7 +341,7 @@ agkozak_zth_theme() {
       echo 'agkozak-zsh-theme using zsh-async.'
     elif [[ $AGKOZAK_USE_USR1 = 1 ]]; then
       echo 'agkozak-zsh-theme using USR1.'
-    else
+    elif [[ $AGKOZAK_NO_ASYNC = 1 ]]; then
       echo 'agkozak-zsh-theme asynchronous mode deactivated.'
     fi
   fi

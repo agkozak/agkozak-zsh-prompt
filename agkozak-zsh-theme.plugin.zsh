@@ -36,6 +36,8 @@
 # https://github.com/agkozak/agkozak-zsh-theme
 #
 
+# shellcheck disable=SC2034,SC2088,SC2148,SC2154,SC2190
+
 # $psvar[] Usage
 #
 # $psvar Index  Prompt String Equivalent    Usage
@@ -54,35 +56,29 @@ setopt PROMPT_SUBST
 typeset -g AGKOZAK_THEME_DIR
 AGKOZAK_THEME_DIR=${0:a:h}
 
-(( AGKOZAK_FORCE_ZSH_ASYNC + AGKOZAK_FORCE_USR1 + AGKOZAK_FORCE_NO_ASYNC > 1 )) \
-  && echo 'Only set one of the following: $AGKOZAK_FORCE_ZSH_ASYNC $AGKOZAK_FORCE_USR1 $AGKOZAK_FORCE_NO_ASYNC'
-
-typeset -g AGKOZAK_USE_ZSH_ASYNC AGKOZAK_USE_USR1 AGKOZAK_NO_ASYNC
-if [[ $AGKOZAK_FORCE_ZSH_ASYNC = 1 ]]; then
-  AGKOZAK_USE_ZSH_ASYNC=1
-elif [[ $AGKOZAK_FORCE_USR1 = 1 ]]; then
-  AGKOZAK_USE_USR1=1
-elif [[ $AGKOZAK_FORCE_NO_ASYNC = 1 ]]; then
-  AGKOZAK_NO_ASYNC=1
-else
-  # Load zsh-async library except on systems where it is known not to work:
-  #
-  # 1) MSYS2 (zpty is dysfunctional)
-  # 2) Cygwin: https://github.com/sindresorhus/pure/issues/141
-  # 3) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
-  # TODO: This prompt seems to work well in WSL now, but it might not in older
-  # versions.
-  case $(uname -a) in
-    *Msys|*Cygwin) AGKOZAK_USE_USR1=1 ;; # USR1 method works
-    *)
-      case $ZSH_VERSION in
-        '5.0.2') AGKOZAK_NO_ASYNC=1 ;;  # Problems with USR1; reported problems with zpty
-        '5.0.8') AGKOZAK_USE_USR1=1 ;;                     # TODO: test
-        *) AGKOZAK_USE_ZSH_ASYNC=1 ;;
-      esac
-      ;;
-  esac
-fi
+typeset -g AGKOZAK_ASYNC_METHOD
+case $AGKOZAK_FORCE_ASYNC_METHOD in
+  zsh-async|usr1|no-async) AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD ;;
+  *)
+    # Load zsh-async library except on systems where it is known not to work:
+    #
+    # 1) MSYS2 (zpty is dysfunctional)
+    # 2) Cygwin: https://github.com/sindresorhus/pure/issues/141
+    # 3) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
+    # TODO: This prompt seems to work well in WSL now, but it might not in older
+    # versions.
+    case $(uname -a) in
+      *Msys|*Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;; # USR1 method works
+      *)
+        case $ZSH_VERSION in
+          '5.0.2') AGKOZAK_ASYNC_METHOD='no-async' ;;  # Problems with USR1; reported problems with zpty
+          '5.0.8') AGKOZAK_ASYNC_METHOD='usr1' ;;                     # TODO: test
+          *) AGKOZAK_ASYNC_METHOD='zsh-async' ;;
+        esac
+        ;;
+    esac
+    ;;
+esac
 
 #####################################################################
 # BASIC FUNCTIONS
@@ -255,23 +251,23 @@ _agkozak_usr1() {
     AGKOZAK_USR1_ASYNC_PROC=$!
 }
 
-if [[ $AGKOZAK_USE_USR1 = 1 ]]; then
+case $AGKOZAK_ASYNC_METHOD in
+  'usr1')
+    ###########################################################
+    # On signal USR1, redraw prompt
+    ###########################################################
+    TRAPUSR1() {
+      # read from temp file
+      psvar[3]=$(cat /tmp/agkozak_zsh_theme_$$)
 
-  ###########################################################
-  # On signal USR1, redraw prompt
-  ###########################################################
-  TRAPUSR1() {
-    # read from temp file
-    psvar[3]=$(cat /tmp/agkozak_zsh_theme_$$)
+      # Reset asynchronous process number
+      AGKOZAK_USR1_ASYNC_PROC=0
 
-    # Reset asynchronous process number
-    AGKOZAK_USR1_ASYNC_PROC=0
-
-    # Redraw the prompt
-    zle && zle reset-prompt
-  }
-
-fi
+      # Redraw the prompt
+      zle && zle reset-prompt
+    }
+    ;;
+esac
 
 ###########################################################
 # Asynchronous Git branch status routine using signal USR1
@@ -298,25 +294,27 @@ precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
   psvar[3]=''
 
-  if [[ $AGKOZAK_USE_ZSH_ASYNC = 1 ]]; then
-    _agkozak_zsh_async
-  elif [[ $AGKOZAK_USE_USR1 = 1 ]]; then
-    _agkozak_usr1
-  else
-    psvar[3]=$(_agkozak_branch_status)
-  fi
+  case $AGKOZAK_ASYNC_METHOD in
+    'zsh-async') _agkozak_zsh_async ;;
+    'usr1') _agkozak_usr1 ;;
+    *) psvar[3]=$(_agkozak_branch_status) ;;
+  esac
+
 }
 
 agkozak_zth_theme() {
 
-  if [[ $AGKOZAK_USE_ZSH_ASYNC = 1 ]]; then
-    if ! whence -w async_init &> /dev/null; then
-      . ${AGKOZAK_THEME_DIR}/lib/async.zsh && async_init
-    fi
-  elif [[ $AGKOZAK_USE_USR1 = 1 ]]; then
-    typeset -g AGKOZAK_USR1_ASYNC_PROC
-    AGKOZAK_USR1_ASYNC_PROC=0
-  fi
+  case $AGKOZAK_ASYNC_METHOD in
+    'zsh-async')
+      if ! whence -w async_init &> /dev/null; then
+        . ${AGKOZAK_THEME_DIR}/lib/async.zsh && async_init
+      fi
+      ;;
+    'usr1')
+      typeset -g AGKOZAK_USR1_ASYNC_PROC
+      AGKOZAK_USR1_ASYNC_PROC=0
+      ;;
+  esac
 
   zle -N zle-keymap-select
 
@@ -336,20 +334,14 @@ agkozak_zth_theme() {
   fi
 
   if [[ -n $AGKOZAK_ZSH_THEME_DEBUG ]]; then
-    if [[ $AGKOZAK_USE_ZSH_ASYNC = 1 ]]; then
-      echo 'agkozak-zsh-theme using zsh-async.'
-    elif [[ $AGKOZAK_USE_USR1 = 1 ]]; then
-      echo 'agkozak-zsh-theme using USR1.'
-    elif [[ $AGKOZAK_NO_ASYNC = 1 ]]; then
-      echo 'agkozak-zsh-theme asynchronous mode deactivated.'
-    fi
+    echo "agkozak-zsh-theme using async method: $AGKOZAK_ASYNC_METHOD"
   fi
 }
 
 agkozak_zth_theme
 
 # Clean up environment
-[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && {
+[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] || {
   unset AGKOZAK_THEME_DIR
   unset -f _agkozak_is_ssh _agkozak_has_colors
 }

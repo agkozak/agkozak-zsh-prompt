@@ -48,7 +48,7 @@
 # $psvar[3]     %3v                         Current working Git branch, along
 #                                           with indicator of changes made
 
-[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && setopt WARN_CREATE_GLOBAL  # For debugging purposes.
+[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && setopt WARN_CREATE_GLOBAL
 
 setopt PROMPT_SUBST
 
@@ -70,8 +70,9 @@ case $AGKOZAK_FORCE_ASYNC_METHOD in
       *Msys|*Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;; # USR1 method works
       *)
         case $ZSH_VERSION in
-          '5.0.2') AGKOZAK_ASYNC_METHOD='no-async' ;;  # Problems with USR1; reported problems with zpty
-          '5.0.8') AGKOZAK_ASYNC_METHOD='usr1' ;;                     # TODO: test
+          # zsh 5.0.2: problems with USR1; reported problems with zpty
+          '5.0.2') AGKOZAK_ASYNC_METHOD='no-async' ;;
+          '5.0.8') AGKOZAK_ASYNC_METHOD='usr1' ;;
           *) AGKOZAK_ASYNC_METHOD='zsh-async' ;;
         esac
         ;;
@@ -215,15 +216,13 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS - zsh-async LIBRARY
 #####################################################################
 
-_agkozak_dummy() { :; }
-
 ###########################################################
 # Create zsh-async worker
 ###########################################################
 _agkozak_zsh_async() {
     async_start_worker agkozak_git_status_worker -n
     async_register_callback agkozak_git_status_worker _agkozak_git_status_callback
-    async_job agkozak_git_status_worker _agkozak_dummy
+    async_job agkozak_git_status_worker :
 }
 
 ###########################################################
@@ -345,7 +344,7 @@ agkozak_zth_theme
   unset -f _agkozak_is_ssh _agkozak_has_colors
 }
 
-[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && setopt NO_WARN_CREATE_GLOBAL   # For debugging purposes
+[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && setopt NO_WARN_CREATE_GLOBAL
 
 # vim: ts=2:et:sts=2:sw=2:
 

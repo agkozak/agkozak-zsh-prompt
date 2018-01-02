@@ -285,7 +285,7 @@ agkozak_zth_theme() {
     *)
       case $ZSH_VERSION in
         '5.0.2')
-          typset -g AGKOZAK_NO_ASYNC
+          typeset -g AGKOZAK_NO_ASYNC
           AGKOZAK_NO_ASYNC=1 ;;  # Problems with USR1, reported problems with zpty
         '5.0.8') ;;                     # TODO: test
         *)

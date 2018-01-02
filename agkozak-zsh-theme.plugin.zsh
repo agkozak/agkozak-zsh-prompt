@@ -55,6 +55,8 @@ setopt PROMPT_SUBST
 # 1) MSYS2 (zpty is dysfunctional)
 # 2) Cygwin: https://github.com/sindresorhus/pure/issues/141
 # 3) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
+# TODO: This prompt seems to work well in WSL now, but it might not in older
+# versions
 case $(uname -a) in
   *Msys|*Cygwin) ;;
   *)

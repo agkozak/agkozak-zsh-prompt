@@ -212,45 +212,47 @@ TRAPWINCH() {
   zle && zle -R
 }
 
-#####################################################################
-# ASYNCHRONOUS FUNCTIONS - zsh-async LIBRARY
-#####################################################################
-
-###########################################################
-# Create zsh-async worker
-###########################################################
-_agkozak_zsh_async() {
-    async_start_worker agkozak_git_status_worker -n
-    async_register_callback agkozak_git_status_worker _agkozak_git_status_callback
-    async_job agkozak_git_status_worker :
-}
-
-###########################################################
-# Set RPROPT and stop worker
-###########################################################
-_agkozak_git_status_callback() {
-  psvar[3]=$(_agkozak_branch_status)
-  zle && zle reset-prompt
-  async_stop_worker agkozak_git_status_worker -n
-}
-
-#####################################################################
-# ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
-#####################################################################
-
-_agkozak_usr1() {
-    # Kill running child process if necessary
-    if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
-        kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
-    fi
-
-    # Start background computation of Git status
-    _agkozak_usr1_async &!
-    AGKOZAK_USR1_ASYNC_PROC=$!
-}
-
 case $AGKOZAK_ASYNC_METHOD in
-  'usr1')
+  zsh-async)
+  #####################################################################
+  # ASYNCHRONOUS FUNCTIONS - zsh-async LIBRARY
+  #####################################################################
+
+    ###########################################################
+    # Create zsh-async worker
+    ###########################################################
+    _agkozak_zsh_async() {
+        async_start_worker agkozak_git_status_worker -n
+        async_register_callback agkozak_git_status_worker _agkozak_git_status_callback
+        async_job agkozak_git_status_worker :
+    }
+
+    ###########################################################
+    # Set RPROPT and stop worker
+    ###########################################################
+    _agkozak_git_status_callback() {
+      psvar[3]=$(_agkozak_branch_status)
+      zle && zle reset-prompt
+      async_stop_worker agkozak_git_status_worker -n
+    }
+    ;;
+
+  usr1) 
+    #####################################################################
+    # ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
+    #####################################################################
+
+    _agkozak_usr1() {
+        # Kill running child process if necessary
+        if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
+            kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
+        fi
+
+        # Start background computation of Git status
+        _agkozak_usr1_async &!
+        AGKOZAK_USR1_ASYNC_PROC=$!
+    }
+
     ###########################################################
     # On signal USR1, redraw prompt
     ###########################################################
@@ -264,19 +266,19 @@ case $AGKOZAK_ASYNC_METHOD in
       # Redraw the prompt
       zle && zle reset-prompt
     }
+
+    ###########################################################
+    # Asynchronous Git branch status routine using signal USR1
+    ###########################################################
+    _agkozak_usr1_async() {
+      # Save Git branch status to temporary file
+      _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
+
+      # Signal parent process
+      kill -s USR1 $$
+    }
     ;;
 esac
-
-###########################################################
-# Asynchronous Git branch status routine using signal USR1
-###########################################################
-_agkozak_usr1_async() {
-  # Save Git branch status to temporary file
-  _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
-
-  # Signal parent process
-  kill -s USR1 $$
-}
 
 #####################################################################
 # THE PROMPT
@@ -338,13 +340,13 @@ agkozak_zth_theme() {
 
 agkozak_zth_theme
 
-# Clean up environment
-[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] || {
+if [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]]; then
+  setopt NO_WARN_CREATE_GLOBAL
+else
+  # Clean up environment
   unset AGKOZAK_THEME_DIR
   unset -f _agkozak_is_ssh _agkozak_has_colors
-}
-
-[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && setopt NO_WARN_CREATE_GLOBAL
+fi
 
 # vim: ts=2:et:sts=2:sw=2:
 

@@ -299,7 +299,7 @@ agkozak_zth_theme() {
   esac
 
   if [[ ! $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]] || [[ ! $AGKOZAK_NO_ASYNC = 1 ]]; then
-    typeset -g AGKOZAK_USR_1ASYNC_PROC
+    typeset -g AGKOZAK_USR1_ASYNC_PROC
     AGKOZAK_USR1_ASYNC_PROC=0
   fi
 

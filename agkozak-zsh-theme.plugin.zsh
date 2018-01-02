@@ -191,8 +191,6 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS - zsh-async LIBRARY
 #####################################################################
 
-_agkozak_dummy() {}
-
 _agkozak_git_status_worker() {
   psvar[3]=$(_agkozak_branch_status)
   zle && zle reset-prompt
@@ -251,7 +249,7 @@ precmd() {
 
       async_start_worker agkozak_git_status_worker -n
       async_register_callback agkozak_git_status_worker _agkozak_git_status_worker
-      async_job agkozak_git_status_worker _agkozak_dummy
+      async_job agkozak_git_status_worker
 
     else
 

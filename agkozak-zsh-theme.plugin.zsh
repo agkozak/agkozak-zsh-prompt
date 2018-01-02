@@ -48,29 +48,12 @@
 # $psvar[3]     %3v                         Current working Git branch, along
 #                                           with indicator of changes made
 
+[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && setopt WARN_CREATE_GLOBAL  # For debugging purposes.
+
 setopt PROMPT_SUBST
 
-# Load zsh-async library except on systems where it is known not to work:
-#
-# 1) MSYS2 (zpty is dysfunctional)
-# 2) Cygwin: https://github.com/sindresorhus/pure/issues/141
-# 3) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
-# TODO: This prompt seems to work well in WSL now, but it might not in older
-# versions.
-case $(uname -a) in
-  *Msys|*Cygwin) ;; # USR1 method works
-  *)
-    case $ZSH_VERSION in
-      '5.0.2') AGKOZAK_NO_ASYNC=1 ;;  # Problems with USR1, reported problems with zpty
-      '5.0.8') ;;                     # TODO: test
-      *)
-        if ! whence -w async_init &> /dev/null; then
-          . ${0:a:h}/lib/async.zsh && async_init && AGKOZAK_ZSH_ASYNC_LOADED=1
-        fi
-        ;;
-    esac
-    ;;
-esac
+typeset -g AGKOZAK_THEME_DIR
+AGKOZAK_THEME_DIR=${0:a:h}
 
 #####################################################################
 # BASIC FUNCTIONS
@@ -290,39 +273,71 @@ precmd() {
   fi
 }
 
-if [[ ! $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]] || [[ ! $AGKOZAK_NO_ASYNC = 1 ]]; then
-  AGKOZAK_ASYNC_PROC=0
-fi
+agkozak_zth_theme() {
 
-zle -N zle-keymap-select
+  # Load zsh-async library except on systems where it is known not to work:
+  #
+  # 1) MSYS2 (zpty is dysfunctional)
+  # 2) Cygwin: https://github.com/sindresorhus/pure/issues/141
+  # 3) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
+  # TODO: This prompt seems to work well in WSL now, but it might not in older
+  # versions.
+  case $(uname -a) in
+    *Msys|*Cygwin) ;; # USR1 method works
+    *)
+      case $ZSH_VERSION in
+        '5.0.2') AGKOZAK_NO_ASYNC=1 ;;  # Problems with USR1, reported problems with zpty
+        '5.0.8') ;;                     # TODO: test
+        *)
+          if ! whence -w async_init &> /dev/null; then
+            typeset -g AGKOZAK_ZSH_ASYNC_LOADED
+            . ${AGKOZAK_THEME_DIR}/lib/async.zsh && async_init && AGKOZAK_ZSH_ASYNC_LOADED=1
+          fi
+          ;;
+      esac
+      ;;
+  esac
 
-# Only display the $HOSTNAME for an ssh connection
-if _agkozak_is_ssh; then
-  psvar[1]=$(print -Pn "@%m")
-else
-  psvar[1]=''
-fi
-
-if _agkozak_has_colors; then
-  PS1='%(?..%B%F{red}(%?%)%f%b )%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
-  RPS1='%F{yellow}%3v%f'
-else
-  PS1='%(?..(%?%) )%n%1v %2v $(_agkozak_vi_mode_indicator) '
-  RPS1='%3v'
-fi
-
-if [[ -n $AGKOZAK_ZSH_THEME_DEBUG ]]; then
-  if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
-    echo 'agkozak-zsh-theme using zsh-async.'
-  elif [[ $AGKOZAK_NO_ASYNC -ne 1 ]]; then
-    echo 'agkozak-zsh-theme using USR1.'
-  else
-    echo 'agkozak-zsh-theme asynchronous mode deactivated.'
+  if [[ ! $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]] || [[ ! $AGKOZAK_NO_ASYNC = 1 ]]; then
+    typeset -g AGKOZAK_ASYNC_PROC
+    AGKOZAK_ASYNC_PROC=0
   fi
-fi
+
+  zle -N zle-keymap-select
+
+  # Only display the $HOSTNAME for an ssh connection
+  if _agkozak_is_ssh; then
+    psvar[1]=$(print -Pn "@%m")
+  else
+    psvar[1]=''
+  fi
+
+  if _agkozak_has_colors; then
+    PS1='%(?..%B%F{red}(%?%)%f%b )%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
+    RPS1='%F{yellow}%3v%f'
+  else
+    PS1='%(?..(%?%) )%n%1v %2v $(_agkozak_vi_mode_indicator) '
+    RPS1='%3v'
+  fi
+
+  if [[ -n $AGKOZAK_ZSH_THEME_DEBUG ]]; then
+    if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
+      echo 'agkozak-zsh-theme using zsh-async.'
+    elif [[ $AGKOZAK_NO_ASYNC -ne 1 ]]; then
+      echo 'agkozak-zsh-theme using USR1.'
+    else
+      echo 'agkozak-zsh-theme asynchronous mode deactivated.'
+    fi
+  fi
+}
+
+agkozak_zth_theme
 
 # Clean up environment
+unset AGKOZAK_THEME_DIR
 unset -f _agkozak_is_ssh _agkozak_has_colors
+
+[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && setopt NO_WARN_CREATE_GLOBAL   # For debugging purposes
 
 # vim: ts=2:et:sts=2:sw=2:
 

@@ -204,9 +204,9 @@ _agkozak_git_status_worker() {
 #####################################################################
 
 ###########################################################
-# Asynchronous Git branch status routine
+# Asynchronous Git branch status routine using signal USR1
 ###########################################################
-_agkozak_async() {
+_agkozak_usr1_async() {
   # Save Git branch status to temporary file
   _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
 
@@ -222,7 +222,7 @@ TRAPUSR1() {
   psvar[3]=$(cat /tmp/agkozak_zsh_theme_$$)
 
   # Reset asynchronous process number
-  AGKOZAK_ASYNC_PROC=0
+  AGKOZAK_USR1_ASYNC_PROC=0
 
   # Redraw the prompt
   zle && zle reset-prompt
@@ -259,13 +259,13 @@ precmd() {
       psvar[3]=''
 
       # Kill running child process if necessary
-      if (( AGKOZAK_ASYNC_PROC != 0 )); then
-          kill -s HUP $AGKOZAK_ASYNC_PROC &> /dev/null || :
+      if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
+          kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
       fi
 
       # Start background computation of Git status
-      _agkozak_async &!
-      AGKOZAK_ASYNC_PROC=$!
+      _agkozak_usr1_async &!
+      AGKOZAK_USR1_ASYNC_PROC=$!
 
     fi
   else
@@ -299,8 +299,8 @@ agkozak_zth_theme() {
   esac
 
   if [[ ! $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]] || [[ ! $AGKOZAK_NO_ASYNC = 1 ]]; then
-    typeset -g AGKOZAK_ASYNC_PROC
-    AGKOZAK_ASYNC_PROC=0
+    typeset -g AGKOZAK_USR_1ASYNC_PROC
+    AGKOZAK_USR1_ASYNC_PROC=0
   fi
 
   zle -N zle-keymap-select

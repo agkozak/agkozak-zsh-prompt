@@ -214,41 +214,40 @@ TRAPWINCH() {
   zle && zle -R
 }
 
-if [[ $AGKOZAK_USE_ZSH_ASYNC = 1 ]]; then
 #####################################################################
 # ASYNCHRONOUS FUNCTIONS - zsh-async LIBRARY
 #####################################################################
 
-  _agkozak_dummy() {}
+_agkozak_dummy() {}
 
-  _agkozak_git_status_callback() {
-    psvar[3]=$(_agkozak_branch_status)
-    zle && zle reset-prompt
-    async_stop_worker agkozak_git_status_worker -n
-  }
+_agkozak_git_status_callback() {
+  psvar[3]=$(_agkozak_branch_status)
+  zle && zle reset-prompt
+  async_stop_worker agkozak_git_status_worker -n
+}
 
-  _agkozak_zsh_async() {
-      async_start_worker agkozak_git_status_worker -n
-      async_register_callback agkozak_git_status_worker _agkozak_git_status_callback
-      async_job agkozak_git_status_worker _agkozak_dummy
-  }
-fi
+_agkozak_zsh_async() {
+    async_start_worker agkozak_git_status_worker -n
+    async_register_callback agkozak_git_status_worker _agkozak_git_status_callback
+    async_job agkozak_git_status_worker _agkozak_dummy
+}
 
 #####################################################################
 # ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
 #####################################################################
 
-if [[ $AGKOZAK_USE_USR1 = 1 ]]; then
-  ###########################################################
-  # Asynchronous Git branch status routine using signal USR1
-  ###########################################################
-  _agkozak_usr1_async() {
-    # Save Git branch status to temporary file
-    _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
+###########################################################
+# Asynchronous Git branch status routine using signal USR1
+###########################################################
+_agkozak_usr1_async() {
+  # Save Git branch status to temporary file
+  _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
 
-    # Signal parent process
-    kill -s USR1 $$
-  }
+  # Signal parent process
+  kill -s USR1 $$
+}
+
+if [[ $AGKOZAK_USE_USR1 = 1 ]]; then
 
   ###########################################################
   # On signal USR1, redraw prompt
@@ -264,17 +263,18 @@ if [[ $AGKOZAK_USE_USR1 = 1 ]]; then
     zle && zle reset-prompt
   }
 
-  _agkozak_usr1() {
-      # Kill running child process if necessary
-      if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
-          kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
-      fi
-
-      # Start background computation of Git status
-      _agkozak_usr1_async &!
-      AGKOZAK_USR1_ASYNC_PROC=$!
-  }
 fi
+
+_agkozak_usr1() {
+    # Kill running child process if necessary
+    if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
+        kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
+    fi
+
+    # Start background computation of Git status
+    _agkozak_usr1_async &!
+    AGKOZAK_USR1_ASYNC_PROC=$!
+}
 
 #####################################################################
 # THE PROMPT
@@ -288,14 +288,12 @@ fi
 ###########################################################
 precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
-
-  if (( AGKOZAK_NO_ASYNC != 1 )); then
-    psvar[3]=''
-    if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
-      _agkozak_zsh_async
-    else
-      _agkozak_usr1
-    fi
+  psvar[3]=''
+  
+  if [[ $AGKOZAK_USE_ZSH_ASYNC = 1 ]]; then
+    _agkozak_zsh_async
+  elif [[ $AGKOZAK_USE_USR1 = 1 ]]; then
+    _agkozak_usr1
   else
     psvar[3]=$(_agkozak_branch_status)
   fi

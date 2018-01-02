@@ -191,10 +191,18 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS - zsh-async LIBRARY
 #####################################################################
 
+_agkozak_dummy() {}
+
 _agkozak_git_status_callback() {
   psvar[3]=$(_agkozak_branch_status)
   zle && zle reset-prompt
   async_stop_worker agkozak_git_status_worker -n
+}
+
+_agkozak_zsh_async() {
+    async_start_worker agkozak_git_status_worker -n
+    async_register_callback agkozak_git_status_worker _agkozak_git_status_callback
+    async_job agkozak_git_status_worker _agkozak_dummy
 }
 
 #####################################################################
@@ -226,6 +234,17 @@ TRAPUSR1() {
   zle && zle reset-prompt
 }
 
+_agkozak_usr1() {
+    # Kill running child process if necessary
+    if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
+        kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
+    fi
+
+    # Start background computation of Git status
+    _agkozak_usr1_async &!
+    AGKOZAK_USR1_ASYNC_PROC=$!
+}
+
 #####################################################################
 # THE PROMPT
 #####################################################################
@@ -240,31 +259,11 @@ precmd() {
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
 
   if (( AGKOZAK_NO_ASYNC != 1 )); then
-
     psvar[3]=''
-
     if [[ $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]]; then
-
-      # zsh-async routine
-
-      async_start_worker agkozak_git_status_worker -n
-      async_register_callback agkozak_git_status_worker _agkozak_git_status_callback
-      agkozak_dummy() {}
-      async_job agkozak_git_status_worker agkozak_dummy
+      _agkozak_zsh_async
     else
-
-      # Using signal USR1
-      psvar[3]=''
-
-      # Kill running child process if necessary
-      if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
-          kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
-      fi
-
-      # Start background computation of Git status
-      _agkozak_usr1_async &!
-      AGKOZAK_USR1_ASYNC_PROC=$!
-
+      _agkozak_usr1
     fi
   else
     psvar[3]=$(_agkozak_branch_status)

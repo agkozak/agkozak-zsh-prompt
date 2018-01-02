@@ -50,19 +50,19 @@
 
 setopt PROMPT_SUBST
 
-# Load zsh-async except on systems where it is known not to work:
+# Load zsh-async library except on systems where it is known not to work:
 #
 # 1) MSYS2 (zpty is dysfunctional)
 # 2) Cygwin: https://github.com/sindresorhus/pure/issues/141
 # 3) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
 # TODO: This prompt seems to work well in WSL now, but it might not in older
-# versions
+# versions.
 case $(uname -a) in
-  *Msys|*Cygwin) ;;
+  *Msys|*Cygwin) ;; # USR1 method works
   *)
     case $ZSH_VERSION in
-      '5.0.2') AGKOZAK_NO_ASYNC=1 ;; # Problems with USR1, reported problems with zpty
-      '5.0.8') ;;
+      '5.0.2') AGKOZAK_NO_ASYNC=1 ;;  # Problems with USR1, reported problems with zpty
+      '5.0.8') ;;                     # TODO: test
       *)
         if ! whence -w async_init &> /dev/null; then
           . ${0:a:h}/lib/async.zsh && async_init && AGKOZAK_ZSH_ASYNC_LOADED=1
@@ -71,6 +71,10 @@ case $(uname -a) in
     esac
     ;;
 esac
+
+#####################################################################
+# BASIC FUNCTIONS
+#####################################################################
 
 ###########################################################
 # Is the user connected via SSH?
@@ -175,6 +179,48 @@ _agkozak_branch_changes() {
 }
 
 ###########################################################
+# When the user enters vi command mode, the % or # in the
+# prompt changes into a colon
+###########################################################
+_agkozak_vi_mode_indicator() {
+  case $KEYMAP in
+    vicmd) print -n ':' ;;
+    *) print -n '%#' ;;
+  esac
+}
+
+###########################################################
+# Redraw the prompt when the vi mode changes
+###########################################################
+zle-keymap-select() {
+  zle reset-prompt
+  zle -R
+}
+
+###########################################################
+# Redraw prompt when terminal size changes
+###########################################################
+TRAPWINCH() {
+  zle && zle -R
+}
+
+#####################################################################
+# ASYNCHRONOUS FUNCTIONS - zsh-async LIBRARY
+#####################################################################
+
+_agkozak_dummy() {}
+
+_agkozak_git_status_worker() {
+  psvar[3]=$(_agkozak_branch_status)
+  zle && zle reset-prompt
+  async_stop_worker agkozak_git_status_worker -n
+}
+
+#####################################################################
+# ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
+#####################################################################
+
+###########################################################
 # Asynchronous Git branch status routine
 ###########################################################
 _agkozak_async() {
@@ -184,6 +230,24 @@ _agkozak_async() {
   # Signal parent process
   kill -s USR1 $$
 }
+
+###########################################################
+# On signal USR1, redraw prompt
+###########################################################
+TRAPUSR1() {
+  # read from temp file
+  psvar[3]=$(cat /tmp/agkozak_zsh_theme_$$)
+
+  # Reset asynchronous process number
+  AGKOZAK_ASYNC_PROC=0
+
+  # Redraw the prompt
+  zle && zle reset-prompt
+}
+
+#####################################################################
+# THE PROMPT
+#####################################################################
 
 ###########################################################
 # Runs right before the prompt is displayed
@@ -226,54 +290,6 @@ precmd() {
   fi
 }
 
-_agkozak_dummy() {}
-
-_agkozak_git_status_worker() {
-  psvar[3]=$(_agkozak_branch_status)
-  zle && zle reset-prompt
-  async_stop_worker agkozak_git_status_worker -n
-}
-
-###########################################################
-# When the user enters vi command mode, the % or # in the
-# prompt changes into a colon
-###########################################################
-_agkozak_vi_mode_indicator() {
-  case $KEYMAP in
-    vicmd) print -n ':' ;;
-    *) print -n '%#' ;;
-  esac
-}
-
-###########################################################
-# Redraw the prompt when the vi mode changes
-###########################################################
-zle-keymap-select() {
-  zle reset-prompt
-  zle -R
-}
-
-###########################################################
-# Redraw prompt when terminal size changes
-###########################################################
-TRAPWINCH() {
-  zle && zle -R
-}
-
-###########################################################
-# On signal USR1, redraw prompt
-###########################################################
-TRAPUSR1() {
-  # read from temp file
-  psvar[3]=$(cat /tmp/agkozak_zsh_theme_$$)
-
-  # Reset asynchronous process number
-  AGKOZAK_ASYNC_PROC=0
-
-  # Redraw the prompt
-  zle && zle reset-prompt
-}
-
 if [[ ! $AGKOZAK_ZSH_ASYNC_LOADED = 1 ]] || [[ ! $AGKOZAK_NO_ASYNC = 1 ]]; then
   AGKOZAK_ASYNC_PROC=0
 fi
@@ -300,6 +316,8 @@ if [[ -n $AGKOZAK_ZSH_THEME_DEBUG ]]; then
     echo 'agkozak-zsh-theme using zsh-async.'
   elif [[ $AGKOZAK_NO_ASYNC -ne 1 ]]; then
     echo 'agkozak-zsh-theme using USR1.'
+  else
+    echo 'agkozak-zsh-theme asynchronous mode deactivated.'
   fi
 fi
 

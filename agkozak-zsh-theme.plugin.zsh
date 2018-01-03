@@ -309,14 +309,21 @@ case $AGKOZAK_ASYNC_METHOD in
     ########################################################
 
     _agkozak_usr1() {
-        # Kill running child process if necessary
-        if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
-            kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
-        fi
+      case $(which TRAPUSR1) in
+        *agkozak*) ;;
+          # Kill running child process if necessary
+          if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
+              kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
+          fi
 
-        # Start background computation of Git status
-        _agkozak_usr1_async &!
-        AGKOZAK_USR1_ASYNC_PROC=$!
+          # Start background computation of Git status
+          _agkozak_usr1_async &!
+          AGKOZAK_USR1_ASYNC_PROC=$!
+        *)
+          echo 'agkozak-zsh-theme warning: TRAPUSR1() has been redefined. Disabling asynchronous mode.'
+          AGKOZAK_ASYNC_METHOD='no-async'
+          ;;
+      esac
     }
 
     ########################################################

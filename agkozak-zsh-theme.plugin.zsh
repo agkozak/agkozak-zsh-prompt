@@ -55,40 +55,81 @@ setopt PROMPT_SUBST
 typeset -g AGKOZAK_THEME_DIR
 AGKOZAK_THEME_DIR=${0:a:h}
 
-typeset -g AGKOZAK_ASYNC_METHOD
-case $AGKOZAK_FORCE_ASYNC_METHOD in
-  zsh-async|usr1|no-async) AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD ;;
-  *)
-    # Load zsh-async library except on systems where it is known not to work:
-    #
-    # 1) MSYS2 (zpty is dysfunctional)
-    # 2) Cygwin: https://github.com/sindresorhus/pure/issues/141
-    # 3) Certain versions of zsh: https://github.com/mafredri/zsh-async/issues/12
-    # TODO: This prompt seems to work well in WSL now, but it might not in older
-    # versions.
-    case $(uname -a) in
-      *Msys|*Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;;
+###########################################################
+# If zsh-async has not already been loaded, try to load it;
+# the exit code should indicate success or failure
+###########################################################
+_agkozak_load_async_lib() {
+  if ! whence -w async_init &> /dev/null; then            # Don't load it twice
+    local success
+    source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null
+    success=$?
+    [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'Trouble loading zsh-async'
+    return $success
+  fi
+}
+
+###########################################################
+# If signal USR1 is available and not already in use by
+# zsh, use it; otherwise disable asynchronous mode
+###########################################################
+_agkozak_has_usr1() {
+  if whence -w TRAPUSR1 &> /dev/null; then
+    [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'TRAPUSR1() already defined'
+    return false
+  else
+    case $(kill -l) in
+      *USR1) return true ;;
       *)
+        [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'Signal USR1 not available'
+        return false
+        ;;
+    esac
+  fi
+}
+
+# Determine async method
+typeset -g AGKOZAK_ASYNC_METHOD
+
+# Async method can be force by user by exporting $AGKOZAK_FORCE_ASYNC_METHOD
+case $AGKOZAK_FORCE_ASYNC_METHOD in
+  zsh-async)
+    _agkozak_load_async_lib
+    AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
+    ;;
+  usr1|no-async)
+    AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
+    ;;
+  *)
+
+    # Avoid trying to load zsh-async on systems where it is known not to work
+    #
+    # Msys2) it doesn't load successfully
+    # Cygwin) it loads but doesn't work (see https://github.com/sindresorhus/pure/issues/141)
+    # TODO: WSL seems to work perfectly now, but it may not have in the past
+    case $(uname -a) in
+      *Msys) AGKOZAK_ASYNC_METHOD='usr1' ;; # zsh-async won't load
+      *Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;;  # It loads but it doesn't work
+
+      *)
+        # Avoid loading zsh-async on certain versions of zsh
+        # See https://github.com/mafredri/zsh-async/issues/12
         case $ZSH_VERSION in
-          # zsh 5.0.2: problems with USR1; reported problems with zpty
-          '5.0.2') AGKOZAK_ASYNC_METHOD='no-async' ;;
-          '5.0.8') AGKOZAK_ASYNC_METHOD='usr1' ;;
+          '5.0.2'|'5.0.8') AGKOZAK_ASYNC_METHOD='usr1' ;;
           *)
-            if whence -w async_init &> /dev/null; then
-              AGKOZAK_ASYNC_METHOD='zsh-async'  # zsh-async already loaded
-            elif source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null; then
+
+            # Having exhausted known problematic systems, try to load zsh-async;
+            # in case that doesn't work, try the USR1 method if USR1 is
+            # available and TRAPUSR1() hasn't been defined; failing that, switch
+            # off asynchronous mode
+            if _agkozak_load_async_lib; then
               AGKOZAK_ASYNC_METHOD='zsh-async'
             else
-              [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] \
-                && echo 'Trouble loading async.zsh'
-              case $(kill -l) in
-                *USR1*) AGKOZAK_ASYNC_METHOD='usr1' ;;
-                *)
-                  AGKOZAK_ASYNC_METHOD='no-async'
-                  [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] \
-                    && echo 'Signal USR1 not available.'
-                  ;;
-              esac
+              if _agkozak_has_usr1; then
+                AGKOZAK_ASYNC_METHOD='usr1';
+              else
+                AGKOZAK_ASYNC_METHOD='no-async'
+              fi
             fi
             ;;
         esac

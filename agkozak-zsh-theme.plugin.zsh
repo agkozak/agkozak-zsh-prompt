@@ -67,13 +67,30 @@ case $AGKOZAK_FORCE_ASYNC_METHOD in
     # TODO: This prompt seems to work well in WSL now, but it might not in older
     # versions.
     case $(uname -a) in
-      *Msys|*Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;; # USR1 method works
+      *Msys|*Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;;
       *)
         case $ZSH_VERSION in
           # zsh 5.0.2: problems with USR1; reported problems with zpty
           '5.0.2') AGKOZAK_ASYNC_METHOD='no-async' ;;
           '5.0.8') AGKOZAK_ASYNC_METHOD='usr1' ;;
-          *) AGKOZAK_ASYNC_METHOD='zsh-async' ;;
+          *)
+            if whence -w async_init &> /dev/null; then
+              AGKOZAK_ASYNC_METHOD='zsh-async'  # zsh-async already loaded
+            elif source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null; then
+              AGKOZAK_ASYNC_METHOD='zsh-async'
+            else
+              [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] \
+                && echo 'Trouble loading async.zsh'
+              case $(kill -l) in
+                *USR1*) AGKOZAK_ASYNC_METHOD='usr1' ;;
+                *)
+                  AGKOZAK_ASYNC_METHOD='no-async'
+                  [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] \
+                    && echo 'Signal USR1 not available.'
+                  ;;
+              esac
+            fi
+            ;;
         esac
         ;;
     esac
@@ -237,7 +254,7 @@ case $AGKOZAK_ASYNC_METHOD in
     }
     ;;
 
-  usr1) 
+  usr1)
     ########################################################
     # ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
     ########################################################
@@ -308,9 +325,7 @@ agkozak_zth_theme() {
 
   case $AGKOZAK_ASYNC_METHOD in
     'zsh-async')
-      if ! whence -w async_init &> /dev/null; then
-        . ${AGKOZAK_THEME_DIR}/lib/async.zsh && async_init
-      fi
+      async_init
       ;;
     'usr1')
       typeset -g AGKOZAK_USR1_ASYNC_PROC

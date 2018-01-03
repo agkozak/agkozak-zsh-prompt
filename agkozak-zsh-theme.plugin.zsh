@@ -117,7 +117,13 @@ case $AGKOZAK_FORCE_ASYNC_METHOD in
         # Avoid loading zsh-async on certain versions of zsh
         # See https://github.com/mafredri/zsh-async/issues/12
         case $ZSH_VERSION in
-          '5.0.2'|'5.0.8') AGKOZAK_ASYNC_METHOD='usr1' ;;
+          '5.0.2'|'5.0.8')
+            if _agkozak_has_usr1; then
+              AGKOZAK_ASYNC_METHOD='usr1';
+            else
+              AGKOZAK_ASYNC_METHOD='no-async'
+            fi
+            ;;
           *)
 
             # Having exhausted known problematic systems, try to load zsh-async;

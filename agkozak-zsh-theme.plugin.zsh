@@ -307,7 +307,6 @@ case $AGKOZAK_ASYNC_METHOD in
     ########################################################
     # ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
     ########################################################
-
     _agkozak_usr1() {
       case $(which TRAPUSR1) in
         *agkozak*)

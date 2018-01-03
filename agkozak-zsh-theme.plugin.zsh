@@ -406,7 +406,7 @@ agkozak_zth_theme() {
     RPS1='%3v'
   fi
 
-  if [[ -n $AGKOZAK_ZSH_THEME_DEBUG ]]; then
+  if [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]]; then
     echo "agkozak-zsh-theme using async method: $AGKOZAK_ASYNC_METHOD"
   fi
 }
@@ -418,7 +418,8 @@ if [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]]; then
 else
   # Clean up environment
   unset AGKOZAK_THEME_DIR
-  unset -f _agkozak_is_ssh _agkozak_has_colors
+  unset -f _agkozak_load_async_lib _agkozak_has_usr1 \
+    _agkozak_is_ssh _agkozak_has_colors
 fi
 
 # vim: ts=2:et:sts=2:sw=2:

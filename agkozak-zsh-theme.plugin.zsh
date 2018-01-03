@@ -78,13 +78,13 @@ _agkozak_load_async_lib() {
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
     [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'TRAPUSR1() already defined'
-    return false
+    return 1
   else
     case $(kill -l) in
-      *USR1) return true ;;
+      *USR1*) return 0 ;;
       *)
         [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'Signal USR1 not available'
-        return false
+        return 1
         ;;
     esac
   fi

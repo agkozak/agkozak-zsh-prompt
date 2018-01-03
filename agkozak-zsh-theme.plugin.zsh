@@ -64,7 +64,9 @@ _agkozak_load_async_lib() {
     local success
     source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null
     success=$?
-    [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'Trouble loading zsh-async'
+    if [[ $success -ne 0 ]]; then
+      [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'Trouble loading zsh-async'
+    fi
     return $success
   fi
 }

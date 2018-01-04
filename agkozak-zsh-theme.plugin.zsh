@@ -72,7 +72,7 @@ _agkozak_load_async_lib() {
 }
 
 ###########################################################
-# If signal USR1 is available and not already in use by
+# If SIGUSR1 is available and not already in use by
 # zsh, use it; otherwise disable asynchronous mode
 ###########################################################
 _agkozak_has_usr1() {
@@ -83,7 +83,7 @@ _agkozak_has_usr1() {
     case $(kill -l) in
       *USR1*) true ;;
       *)
-        [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'Signal USR1 not available'
+        [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'SIGUSR1 not available'
         false
         ;;
     esac
@@ -185,7 +185,7 @@ _agkozak_init() {
 
     usr1)
       ########################################################
-      # ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
+      # ASYNCHRONOUS FUNCTIONS - SIGUSR1 METHOD
       ########################################################
       _agkozak_usr1() {
         if [[ $(builtin which TRAPUSR1) = $AGKOZAK_TRAPUSR1_FUNCTION ]]; then
@@ -204,7 +204,7 @@ _agkozak_init() {
       }
 
       ########################################################
-      # On signal USR1, redraw prompt
+      # On SIGUSR1, redraw prompt
       ########################################################
       TRAPUSR1() {
         # read from temp file
@@ -221,7 +221,7 @@ _agkozak_init() {
       AGKOZAK_TRAPUSR1_FUNCTION=$(builtin which TRAPUSR1)
 
       ########################################################
-      # Asynchronous Git branch status using signal USR1
+      # Asynchronous Git branch status using SIGUSR1
       ########################################################
       _agkozak_usr1_async() {
         # Save Git branch status to temporary file

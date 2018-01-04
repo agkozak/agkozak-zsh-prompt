@@ -110,7 +110,10 @@ _agkozak_init() {
       # Msys2) it doesn't load successfully
       # Cygwin) it loads but doesn't work (see https://github.com/sindresorhus/pure/issues/141)
       # TODO: WSL seems to work perfectly now with zsh-async, but it may not have in the past
-      case $(uname -a) in
+      local sysinfo
+      sysinfo=$(uname -a)
+
+      case $sysinfo in
         *Msys) AGKOZAK_ASYNC_METHOD='usr1' ;; # zsh-async won't load
         *Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;;  # It loads but it doesn't work
 
@@ -136,6 +139,10 @@ _agkozak_init() {
               else
                 if _agkozak_has_usr1; then
                   AGKOZAK_ASYNC_METHOD='usr1';
+
+                  # nice doesn't work on WSL
+                  # https://github.com/Microsoft/WSL/issues/1887
+                  case $sysinfo in *Microsoft*Linux) unsetopt BG_NICE; esac
                 else
                   AGKOZAK_ASYNC_METHOD='no-async'
                 fi
@@ -177,22 +184,19 @@ _agkozak_init() {
       # ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
       ########################################################
       _agkozak_usr1() {
-        case $(which TRAPUSR1) in
-          *agkozak*)
-            # Kill running child process if necessary
-            if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
-                kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
-            fi
+        if [[ $(builtin which TRAPUSR1) = $AGKOZAK_TRAPUSR1_FUNCTION ]]; then
+          # Kill running child process if necessary
+          if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
+              kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
+          fi
 
-            # Start background computation of Git status
-            _agkozak_usr1_async &!
-            AGKOZAK_USR1_ASYNC_PROC=$!
-            ;;
-          *)
-            echo 'agkozak-zsh-theme warning: TRAPUSR1() has been redefined. Disabling asynchronous mode.'
-            AGKOZAK_ASYNC_METHOD='no-async'
-            ;;
-        esac
+          # Start background computation of Git status
+          _agkozak_usr1_async &!
+          AGKOZAK_USR1_ASYNC_PROC=$!
+        else
+          echo 'agkozak-zsh-theme warning: TRAPUSR1() has been redefined. Disabling asynchronous mode.'
+          AGKOZAK_ASYNC_METHOD='no-async'
+        fi
       }
 
       ########################################################
@@ -208,6 +212,9 @@ _agkozak_init() {
         # Redraw the prompt
         zle && zle reset-prompt
       }
+
+      typeset -g AGKOZAK_TRAPUSR1_FUNCTION
+      AGKOZAK_TRAPUSR1_FUNCTION=$(builtin which TRAPUSR1)
 
       ########################################################
       # Asynchronous Git branch status using signal USR1

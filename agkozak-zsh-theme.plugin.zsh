@@ -48,7 +48,7 @@
 # $psvar[3]     %3v                         Current working Git branch, along
 #                                           with indicator of changes made
 
-[[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && setopt WARN_CREATE_GLOBAL
+[[ $AGKOZAK_THEME_DEBUG = 1 ]] && setopt WARN_CREATE_GLOBAL
 
 setopt PROMPT_SUBST
 
@@ -185,7 +185,7 @@ TRAPWINCH() {
 }
 
 ###########################################################
-# ASYNCHRONOUS FUNCTIONS - zsh-async LIBRARY
+# ASYNCHRONOUS FUNCTIONS
 ###########################################################
 
 typeset -g AGKOZAK_THEME_DIR
@@ -201,7 +201,7 @@ _agkozak_load_async_lib() {
     source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null
     success=$?
     if [[ $success -ne 0 ]]; then
-      [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'Trouble loading zsh-async'
+      [[ $AGKOZAK_THEME_DEBUG = 1 ]] && echo 'Trouble loading zsh-async'
     fi
     return $success
   fi
@@ -213,13 +213,13 @@ _agkozak_load_async_lib() {
 ###########################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
-    [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'TRAPUSR1() already defined'
+    [[ $AGKOZAK_THEME_DEBUG = 1 ]] && echo 'TRAPUSR1() already defined'
     false
   else
     case $(kill -l 2> /dev/null) in
       *USR1*) true ;;
       *)
-        [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'SIGUSR1 not available'
+        [[ $AGKOZAK_THEME_DEBUG = 1 ]] && echo 'SIGUSR1 not available'
         false
         ;;
     esac
@@ -232,7 +232,7 @@ _agkozak_has_usr1() {
 # whether or not zsh-async will load successfully, and whether
 # or not SIGUSR1 is already taken
 ###########################################################
-_agkozak_init() {
+_agkozak_async_init() {
   typeset -g AGKOZAK_ASYNC_METHOD
 
   case $AGKOZAK_FORCE_ASYNC_METHOD in
@@ -240,7 +240,7 @@ _agkozak_init() {
       _agkozak_load_async_lib
       AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
       ;;
-    usr1|no-async)
+    usr1|none)
       AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
       ;;
     *)
@@ -265,7 +265,7 @@ _agkozak_init() {
               if _agkozak_has_usr1; then
                 AGKOZAK_ASYNC_METHOD='usr1';
               else
-                AGKOZAK_ASYNC_METHOD='no-async'
+                AGKOZAK_ASYNC_METHOD='none'
               fi
               ;;
             *)
@@ -284,7 +284,7 @@ _agkozak_init() {
                   # https://github.com/Microsoft/WSL/issues/1887
                   case $sysinfo in *Microsoft*Linux) unsetopt BG_NICE; esac
                 else
-                  AGKOZAK_ASYNC_METHOD='no-async'
+                  AGKOZAK_ASYNC_METHOD='none'
                 fi
               fi
               ;;
@@ -302,14 +302,14 @@ _agkozak_init() {
       ########################################################
       _agkozak_zsh_async() {
           async_start_worker agkozak_git_status_worker -n
-          async_register_callback agkozak_git_status_worker _agkozak_git_status_callback
+          async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
           async_job agkozak_git_status_worker :
       }
 
       ########################################################
       # Set RPROPT and stop worker
       ########################################################
-      _agkozak_git_status_callback() {
+      _agkozak_zsh_async_callback() {
         psvar[3]=$(_agkozak_branch_status)
         zle && zle reset-prompt
         async_stop_worker agkozak_git_status_worker -n
@@ -317,23 +317,39 @@ _agkozak_init() {
       ;;
 
     usr1)
+
       ########################################################
-      # ASYNCHRONOUS FUNCTIONS - SIGUSR1 METHOD
+      # precmd uses this function to launch async workers to
+      # calculate the Git status. It can tell if anything has
+      # redefined the TRAPUSR1() function that actually
+      # displays the status; if so, it will drop the theme
+      # down into non-asynchronous mode.
       ########################################################
-      _agkozak_usr1() {
+      _agkozak_usr1_async() {
         if [[ $(builtin which TRAPUSR1) = $AGKOZAK_TRAPUSR1_FUNCTION ]]; then
           # Kill running child process if necessary
-          if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then
-              kill -s HUP $AGKOZAK_USR1_ASYNC_PROC &> /dev/null || :
+          if (( AGKOZAK_USR1_ASYNC_WORKER != 0 )); then
+              kill -s HUP $AGKOZAK_USR1_ASYNC_WORKER &> /dev/null || :
           fi
 
           # Start background computation of Git status
-          _agkozak_usr1_async &!
-          AGKOZAK_USR1_ASYNC_PROC=$!
+          _agkozak_usr1_async_worker &!
+          AGKOZAK_USR1_ASYNC_WORKER=$!
         else
           echo 'agkozak-zsh-theme warning: TRAPUSR1() has been redefined. Disabling asynchronous mode.'
-          AGKOZAK_ASYNC_METHOD='no-async'
+          AGKOZAK_ASYNC_METHOD='none'
         fi
+      }
+
+      ########################################################
+      # Asynchronous Git branch status using SIGUSR1
+      ########################################################
+      _agkozak_usr1_async_worker() {
+        # Save Git branch status to temporary file
+        _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
+
+        # Signal parent process
+        kill -s USR1 $$
       }
 
       ########################################################
@@ -344,7 +360,7 @@ _agkozak_init() {
         psvar[3]=$(cat /tmp/agkozak_zsh_theme_$$)
 
         # Reset asynchronous process number
-        AGKOZAK_USR1_ASYNC_PROC=0
+        AGKOZAK_USR1_ASYNC_WORKER=0
 
         # Redraw the prompt
         zle && zle reset-prompt
@@ -352,17 +368,6 @@ _agkozak_init() {
 
       typeset -g AGKOZAK_TRAPUSR1_FUNCTION
       AGKOZAK_TRAPUSR1_FUNCTION=$(builtin which TRAPUSR1)
-
-      ########################################################
-      # Asynchronous Git branch status using SIGUSR1
-      ########################################################
-      _agkozak_usr1_async() {
-        # Save Git branch status to temporary file
-        _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
-
-        # Signal parent process
-        kill -s USR1 $$
-      }
       ;;
   esac
 }
@@ -383,7 +388,7 @@ precmd() {
 
   case $AGKOZAK_ASYNC_METHOD in
     'zsh-async') _agkozak_zsh_async ;;
-    'usr1') _agkozak_usr1 ;;
+    'usr1') _agkozak_usr1_async ;;
     *) psvar[3]=$(_agkozak_branch_status) ;;
   esac
 
@@ -394,15 +399,15 @@ precmd() {
 ############################################################
 agkozak_zth_theme() {
 
-  _agkozak_init
+  _agkozak_async_init
 
   case $AGKOZAK_ASYNC_METHOD in
     'zsh-async')
       async_init
       ;;
     'usr1')
-      typeset -g AGKOZAK_USR1_ASYNC_PROC
-      AGKOZAK_USR1_ASYNC_PROC=0
+      typeset -g AGKOZAK_USR1_ASYNC_WORKER
+      AGKOZAK_USR1_ASYNC_WORKER=0
       ;;
   esac
 
@@ -423,14 +428,14 @@ agkozak_zth_theme() {
     RPS1='%3v'
   fi
 
-  if [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]]; then
+  if [[ $AGKOZAK_THEME_DEBUG = 1 ]]; then
     echo "agkozak-zsh-theme using async method: $AGKOZAK_ASYNC_METHOD"
   fi
 }
 
 agkozak_zth_theme
 
-if [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]]; then
+if [[ $AGKOZAK_THEME_DEBUG = 1 ]]; then
   setopt NO_WARN_CREATE_GLOBAL
 else
   # Clean up environment

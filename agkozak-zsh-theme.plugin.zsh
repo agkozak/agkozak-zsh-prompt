@@ -93,7 +93,7 @@ _agkozak_has_usr1() {
 # Determine async method
 typeset -g AGKOZAK_ASYNC_METHOD
 
-# Async method can be force by user by exporting $AGKOZAK_FORCE_ASYNC_METHOD
+# Async method can be forced by user by exporting $AGKOZAK_FORCE_ASYNC_METHOD
 case $AGKOZAK_FORCE_ASYNC_METHOD in
   zsh-async)
     _agkozak_load_async_lib

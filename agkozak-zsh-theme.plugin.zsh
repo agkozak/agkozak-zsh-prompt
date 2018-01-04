@@ -90,11 +90,15 @@ _agkozak_has_usr1() {
   fi
 }
 
+###########################################################
+# Force the async method, if set in $AGKOZAK_FORCE_ASYNC_METHOD.
+# Otherwise, determine the async method from the environment,
+# whether or not zsh-async will load successfully, and whether
+# or not SIGUSR1 is already taken
+###########################################################
 _agkozak_init() {
-  # Determine async method
   typeset -g AGKOZAK_ASYNC_METHOD
 
-  # Async method can be forced by user by exporting $AGKOZAK_FORCE_ASYNC_METHOD
   case $AGKOZAK_FORCE_ASYNC_METHOD in
     zsh-async)
       _agkozak_load_async_lib
@@ -104,19 +108,19 @@ _agkozak_init() {
       AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
       ;;
     *)
-
       # Avoid trying to load zsh-async on systems where it is known not to work
       #
       # Msys2) it doesn't load successfully
-      # Cygwin) it loads but doesn't work (see https://github.com/sindresorhus/pure/issues/141)
-      # TODO: WSL seems to work perfectly now with zsh-async, but it may not have in the past
+      # Cygwin) it loads but doesn't work (see
+      #   https://github.com/sindresorhus/pure/issues/141)
+      # TODO: WSL seems to work perfectly now with zsh-async, but it may not
+      #   have in the past
       local sysinfo
       sysinfo=$(uname -a)
 
       case $sysinfo in
         *Msys) AGKOZAK_ASYNC_METHOD='usr1' ;; # zsh-async won't load
         *Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;;  # It loads but it doesn't work
-
         *)
           # Avoid loading zsh-async on certain versions of zsh
           # See https://github.com/mafredri/zsh-async/issues/12
@@ -130,10 +134,10 @@ _agkozak_init() {
               ;;
             *)
 
-              # Having exhausted known problematic systems, try to load zsh-async;
-              # in case that doesn't work, try the USR1 method if USR1 is
-              # available and TRAPUSR1() hasn't been defined; failing that, switch
-              # off asynchronous mode
+              # Having exhausted known problematic systems, try to load
+              # zsh-async; in case that doesn't work, try the SIGUSR1 method if
+              # SIGUSR1 is available and TRAPUSR1() hasn't been defined; failing
+              # that, switch off asynchronous mode
               if _agkozak_load_async_lib; then
                 AGKOZAK_ASYNC_METHOD='zsh-async'
               else

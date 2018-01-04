@@ -177,7 +177,7 @@ _agkozak_init() {
       # ASYNCHRONOUS FUNCTIONS - SIGNAL USR1 METHOD
       ########################################################
       _agkozak_usr1() {
-        case $(which TRAPUSR1) in
+        case $(builtin which TRAPUSR1) in
           *agkozak*)
             # Kill running child process if necessary
             if (( AGKOZAK_USR1_ASYNC_PROC != 0 )); then

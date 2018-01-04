@@ -80,7 +80,7 @@ _agkozak_has_usr1() {
     [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'TRAPUSR1() already defined'
     false
   else
-    case $(kill -l) in
+    case $(kill -l 2> /dev/null) in
       *USR1*) true ;;
       *)
         [[ $AGKOZAK_ZSH_THEME_DEBUG = 1 ]] && echo 'SIGUSR1 not available'

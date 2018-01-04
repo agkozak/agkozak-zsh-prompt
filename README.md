@@ -6,7 +6,7 @@
 ![zsh version 4.3.11 and higher](https://img.shields.io/badge/zsh-4.3.11%2B-red.svg)
 [![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-theme.svg)](https://github.com/agkozak/agkozak-zsh-theme/stargazers)
 
-**agkozak-zsh-theme** is a dynamic color Git prompt for `zsh` that uses basic ASCII symbols to show:
+**agkozak-zsh-theme** is an asynchronous, dynamic color Git prompt for `zsh` that uses basic ASCII symbols to show:
 
 * the username
 * whether a session is local or remote over SSH
@@ -91,3 +91,13 @@ agkozak-zsh-theme does not enable `vi` editing mode for you. To do so, add
     bindkey -v
 
 to your `.zshrc`.
+
+# Asynchronous Modes
+
+agkozak-zsh-theme achieves has two different ways for keeping the checking and display of the Git status asynchronous and the overall performance of the theme fast: using the [`zsh-async`](https://github.com/mafredri/zsh-async) library when possible, and otherwise using a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/).
+
+`zsh-async` uses the `zsh/zpty` library to spin off pseudo-terminal workers to run tasks without blocking the main process. Unfortunately, `zsh/zpty` does not work well or at all on many systems, not only not on Cygwin and Msys2 but even on some versions of `zsh`, BSD, and Linux. agkozak-zsh-theme detects problematic systems and avoids using `zsh-async` in those cases, instead using a second asynchronous method.
+
+The second method involves having the prompt create and disown child processes that calculate the Git status and then kill themselves off, triggering SIGUSR1 in the process. The `zsh` `TRAPUSR1` function will then display the Git status in the right prompt. The problem with this method is that other `zsh` scripts might choose to use `TRAPUSR1`, so agkozak-zsh-theme takes the precaution of checking to see if that function has been defined already -- if it has, the theme switches off asynchronous mode entirely. It also routinely checks to see if some other script or the user has redefined `TRAPUSR1` and switches off asynchronous mode out of precaution.
+
+If you think you know better than agkozak-zsh-theme, try forcing its asynchronous mode with `export AGKOZAK_FORCE_ASYNC_METHOD=zsh-async`, `usr1`, or `none` before running it. If you want more insight into how the theme is working in you shell, `export AGKOZAK_THEME_DEBUG` in your `.zshrc`.

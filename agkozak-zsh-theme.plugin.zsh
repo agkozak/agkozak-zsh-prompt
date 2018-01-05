@@ -397,7 +397,7 @@ precmd() {
 ############################################################
 # Theme setup
 ############################################################
-agkozak_zth_theme() {
+agkozak_zsh_theme() {
 
   _agkozak_async_init
 
@@ -433,7 +433,7 @@ agkozak_zth_theme() {
   fi
 }
 
-agkozak_zth_theme
+agkozak_zsh_theme
 
 if [[ $AGKOZAK_THEME_DEBUG = 1 ]]; then
   setopt NO_WARN_CREATE_GLOBAL

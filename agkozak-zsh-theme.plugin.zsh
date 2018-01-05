@@ -352,7 +352,11 @@ _agkozak_async_init() {
         _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
 
         # Signal parent process
-        kill -s USR1 $$
+        if (( AGKOZAK_THEME_DEBUG )); then
+          kill -s USR1 $$
+        else
+          kill -s USR1 $$ &> /dev/null
+        fi
       }
 
       ########################################################

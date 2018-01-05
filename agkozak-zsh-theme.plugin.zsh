@@ -199,13 +199,14 @@ AGKOZAK_THEME_DIR=${0:a:h}
 # the exit code should indicate success or failure
 ###########################################################
 _agkozak_load_async_lib() {
-  if ! whence -w async_init &> /dev/null; then            # Don't load it twice
+  if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
     local success
-    source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null
-    success=$?
-    if [[ $success -ne 0 ]]; then
-      (( AGKOZAK_THEME_DEBUG )) && echo 'Trouble loading zsh-async'
+    if (( AGKOZAK_THEME_DEBUG ));then
+      source ${AGKOZAK_THEME_DIR}/lib/async.zsh
+    else
+      source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null
     fi
+    success=$?
     return $success
   fi
 }

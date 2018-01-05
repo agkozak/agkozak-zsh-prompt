@@ -53,7 +53,7 @@ typeset AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
 
 (( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL
 
-setopt PROMPT_SUBST
+setopt PROMPT_SUBST NO_PROMPT_BANG
 
 ############################################################
 # BASIC FUNCTIONS

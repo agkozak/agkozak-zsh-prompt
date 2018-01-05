@@ -220,7 +220,7 @@ _agkozak_has_usr1() {
     (( AGKOZAK_THEME_DEBUG )) && echo 'TRAPUSR1() already defined'
     false
   else
-    case $(kill -l 2> /dev/null) in
+    case $signals in    # Array containing names of available signals
       *USR1*) true ;;
       *)
         (( AGKOZAK_THEME_DEBUG )) && echo 'SIGUSR1 not available'

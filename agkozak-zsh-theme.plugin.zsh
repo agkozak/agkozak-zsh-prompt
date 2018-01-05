@@ -48,7 +48,10 @@
 # $psvar[3]     %3v                         Current working Git branch, along
 #                                           with indicator of changes made
 
-[[ $AGKOZAK_THEME_DEBUG = 1 ]] && setopt WARN_CREATE_GLOBAL
+# Set $AGKOZAK_THEME_DEBUG to 1 to see debugging information
+typeset AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
+
+(( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL
 
 setopt PROMPT_SUBST
 
@@ -201,7 +204,7 @@ _agkozak_load_async_lib() {
     source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null
     success=$?
     if [[ $success -ne 0 ]]; then
-      [[ $AGKOZAK_THEME_DEBUG = 1 ]] && echo 'Trouble loading zsh-async'
+      (( AGKOZAK_THEME_DEBUG )) && echo 'Trouble loading zsh-async'
     fi
     return $success
   fi
@@ -213,13 +216,13 @@ _agkozak_load_async_lib() {
 ###########################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
-    [[ $AGKOZAK_THEME_DEBUG = 1 ]] && echo 'TRAPUSR1() already defined'
+    (( AGKOZAK_THEME_DEBUG )) && echo 'TRAPUSR1() already defined'
     false
   else
     case $(kill -l 2> /dev/null) in
       *USR1*) true ;;
       *)
-        [[ $AGKOZAK_THEME_DEBUG = 1 ]] && echo 'SIGUSR1 not available'
+        (( AGKOZAK_THEME_DEBUG )) && echo 'SIGUSR1 not available'
         false
         ;;
     esac
@@ -428,14 +431,14 @@ agkozak_zsh_theme() {
     RPS1='%3v'
   fi
 
-  if [[ $AGKOZAK_THEME_DEBUG = 1 ]]; then
+  if (( AGKOZAK_THEME_DEBUG )); then
     echo "agkozak-zsh-theme using async method: $AGKOZAK_ASYNC_METHOD"
   fi
 }
 
 agkozak_zsh_theme
 
-if [[ $AGKOZAK_THEME_DEBUG = 1 ]]; then
+if (( AGKOZAK_THEME_DEBUG )); then
   setopt NO_WARN_CREATE_GLOBAL
 else
   # Clean up environment

@@ -392,7 +392,7 @@ _agkozak_async_init() {
 # 1) Imitates bash's PROMPT_DIRTRIM behavior
 # 2) Calculates working branch and working copy status
 ############################################################
-precmd() {
+_agkozak_precmd() {
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
   psvar[3]=''
 
@@ -422,6 +422,8 @@ agkozak_zsh_theme() {
   esac
 
   zle -N zle-keymap-select
+
+  precmd_functions+=(_agkozak_precmd)
 
   # Only display the $HOSTNAME for an ssh connection
   if _agkozak_is_ssh; then

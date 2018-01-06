@@ -286,7 +286,8 @@ _agkozak_async_init() {
                       AGKOZAK_ASYNC_METHOD='usr1'
                       ;;
                     # TODO: the SIGUSR1 method doesn't work on Solaris 11 yet
-                    SunOS*) AGKOZAK_ASYNC_METHOD='none' ;;
+                    # but it does work on OpenIndiana
+                    *solaris*) AGKOZAK_ASYNC_METHOD='none' ;;
                     *) AGKOZAK_ASYNC_METHOD='usr1' ;;
                   esac
                 else

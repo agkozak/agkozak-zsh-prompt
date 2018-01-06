@@ -49,7 +49,7 @@
 #                                           with indicator of changes made
 
 # Set $AGKOZAK_THEME_DEBUG to 1 to see debugging information
-typeset AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
+typeset -g AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
 
 (( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL
 
@@ -193,6 +193,7 @@ TRAPWINCH() {
 
 typeset -g AGKOZAK_THEME_DIR
 AGKOZAK_THEME_DIR=${0:a:h}
+readonly AGKOZAK_THEME_DIR
 
 ###########################################################
 # If zsh-async has not already been loaded, try to load it;
@@ -200,13 +201,12 @@ AGKOZAK_THEME_DIR=${0:a:h}
 ###########################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
-    local success
     if (( AGKOZAK_THEME_DEBUG ));then
       source ${AGKOZAK_THEME_DIR}/lib/async.zsh
     else
       source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null
     fi
-    success=$?
+    local success=$?
     return $success
   fi
 }
@@ -255,12 +255,11 @@ _agkozak_async_init() {
       #   https://github.com/sindresorhus/pure/issues/141)
       # TODO: WSL seems to work perfectly now with zsh-async, but it may not
       #   have in the past
-      local sysinfo
-      sysinfo=$(uname -a)
+      local sysinfo=$(uname -a)
 
       case $sysinfo in
-        *Msys) AGKOZAK_ASYNC_METHOD='usr1' ;; # zsh-async won't load
-        *Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;;  # It loads but it doesn't work
+        # On Msys2, zsh-async won't load; on Cygwin, it loads but does not work.
+        *Msys|*Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;;
         *)
           # Avoid loading zsh-async on certain versions of zsh
           # See https://github.com/mafredri/zsh-async/issues/12
@@ -306,7 +305,8 @@ _agkozak_async_init() {
       ########################################################
       _agkozak_zsh_async() {
           async_start_worker agkozak_git_status_worker -n
-          async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
+          async_register_callback agkozak_git_status_worker
+            \ _agkozak_zsh_async_callback
           async_job agkozak_git_status_worker :
       }
 
@@ -376,6 +376,7 @@ _agkozak_async_init() {
 
       typeset -g AGKOZAK_TRAPUSR1_FUNCTION
       AGKOZAK_TRAPUSR1_FUNCTION=$(builtin which TRAPUSR1)
+      readonly AGKOZAK_TRAPUSR1_FUNCTION
       ;;
   esac
 }

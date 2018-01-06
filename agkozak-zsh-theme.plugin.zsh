@@ -280,11 +280,15 @@ _agkozak_async_init() {
                 AGKOZAK_ASYNC_METHOD='zsh-async'
               else
                 if _agkozak_has_usr1; then
-                  AGKOZAK_ASYNC_METHOD='usr1';
-
-                  # nice doesn't work on WSL
-                  # https://github.com/Microsoft/WSL/issues/1887
-                  case $sysinfo in *Microsoft*Linux) unsetopt BG_NICE; esac
+                  case $sysinfo in
+                    *Microsoft*Linux)
+                      unsetopt BG_NICE                # nice doesn't work on WSL
+                      AGKOZAK_ASYNC_METHOD='usr1'
+                      ;;
+                    # TODO: the SIGUSR1 method doesn't work on Solaris 11 yet
+                    SunOS*) AGKOZAK_ASYNC_METHOD='none' ;;
+                    *) AGKOZAK_ASYNC_METHOD='usr1' ;;
+                  esac
                 else
                   AGKOZAK_ASYNC_METHOD='none'
                 fi

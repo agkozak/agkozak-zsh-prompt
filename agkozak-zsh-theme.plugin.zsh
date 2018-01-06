@@ -68,7 +68,7 @@ _agkozak_is_ssh() {
   else
     case $EUID in
       0)
-        case $(ps -o comm= -p $PPID) in
+        case $(ps -o comm= -p $PPID &> /dev/null) in
           sshd|*/sshd) true ;;
           *) false ;;
         esac
@@ -107,10 +107,10 @@ _agkozak_prompt_dirtrim() {
   case $PWD in
     $HOME) print -n '~' ;;  # For TrueOS
     $HOME*)
-      abbreviated_path=$(print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)")
+      abbreviated_path="$(print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)")"
       ;;
     *)
-      abbreviated_path=$(print -Pn "%($(($1 + 1))~|.../%${1}~|%~)")
+      abbreviated_path="$(print -Pn "%($(($1 + 1))~|.../%${1}~|%~)")"
       ;;
   esac
   print -n "$abbreviated_path"
@@ -122,14 +122,14 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 _agkozak_branch_status() {
   local ref branch
-  ref=$(git symbolic-ref --quiet HEAD 2> /dev/null)
+  ref="$(git symbolic-ref --quiet HEAD 2> /dev/null)"
   case $? in        # See what the exit code is.
     0) ;;           # $ref contains the name of a checked-out branch.
     128) return ;;  # No Git repository here.
     # Otherwise, see if HEAD is in detached state.
-    *) ref=$(git rev-parse --short HEAD 2> /dev/null) || return ;;
+    *) ref="$(git rev-parse --short HEAD 2> /dev/null)" || return ;;
   esac
-  branch=${ref#refs/heads/}
+  branch="${ref#refs/heads/}"
   printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
 }
 
@@ -139,7 +139,7 @@ _agkozak_branch_status() {
 _agkozak_branch_changes() {
   local git_status symbols k
 
-  git_status=$(LC_ALL=C command git status 2>&1)
+  git_status="$(LC_ALL=C command git status 2>&1)"
 
   declare -A messages
 
@@ -254,7 +254,7 @@ _agkozak_async_init() {
       #   https://github.com/sindresorhus/pure/issues/141)
       # TODO: WSL seems to work perfectly now with zsh-async, but it may not
       #   have in the past
-      local sysinfo=$(uname -a)
+      local sysinfo="$(uname -a)"
 
       case $sysinfo in
         # On Msys2, zsh-async won't load; on Cygwin, it loads but does not work.
@@ -312,7 +312,7 @@ _agkozak_async_init() {
       # Set RPROPT and stop worker
       ########################################################
       _agkozak_zsh_async_callback() {
-        psvar[3]=$(_agkozak_branch_status)
+        psvar[3]="$(_agkozak_branch_status)"
         zle && zle reset-prompt
         async_stop_worker agkozak_git_status_worker -n
       }
@@ -328,7 +328,7 @@ _agkozak_async_init() {
       # down into non-asynchronous mode.
       ########################################################
       _agkozak_usr1_async() {
-        if [[ $(builtin which TRAPUSR1) = $AGKOZAK_TRAPUSR1_FUNCTION ]]; then
+        if [[ "$(builtin which TRAPUSR1)" = $AGKOZAK_TRAPUSR1_FUNCTION ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
               kill -s HUP $AGKOZAK_USR1_ASYNC_WORKER &> /dev/null || :
@@ -363,7 +363,7 @@ _agkozak_async_init() {
       ########################################################
       TRAPUSR1() {
         # read from temp file
-        psvar[3]=$(cat /tmp/agkozak_zsh_theme_$$)
+        psvar[3]="$(cat /tmp/agkozak_zsh_theme_$$)"
 
         # Reset asynchronous process number
         AGKOZAK_USR1_ASYNC_WORKER=0
@@ -373,7 +373,7 @@ _agkozak_async_init() {
       }
 
       typeset -g AGKOZAK_TRAPUSR1_FUNCTION
-      AGKOZAK_TRAPUSR1_FUNCTION=$(builtin which TRAPUSR1)
+      AGKOZAK_TRAPUSR1_FUNCTION="$(builtin which TRAPUSR1)"
       ;;
   esac
 }
@@ -389,13 +389,13 @@ _agkozak_async_init() {
 # 2) Calculates working branch and working copy status
 ############################################################
 precmd() {
-  psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
+  psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
   psvar[3]=''
 
   case $AGKOZAK_ASYNC_METHOD in
     'zsh-async') _agkozak_zsh_async ;;
     'usr1') _agkozak_usr1_async ;;
-    *) psvar[3]=$(_agkozak_branch_status) ;;
+    *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
 }
@@ -421,7 +421,7 @@ agkozak_zsh_theme() {
 
   # Only display the $HOSTNAME for an ssh connection
   if _agkozak_is_ssh; then
-    psvar[1]=$(print -Pn "@%m")
+    psvar[1]="$(print -Pn "@%m")"
   else
     psvar[1]=''
   fi

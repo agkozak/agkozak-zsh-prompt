@@ -374,7 +374,6 @@ _agkozak_async_init() {
 
       typeset -g AGKOZAK_TRAPUSR1_FUNCTION
       AGKOZAK_TRAPUSR1_FUNCTION=$(builtin which TRAPUSR1)
-      readonly AGKOZAK_TRAPUSR1_FUNCTION
       ;;
   esac
 }

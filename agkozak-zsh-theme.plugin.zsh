@@ -330,7 +330,7 @@ _agkozak_async_init() {
       _agkozak_usr1_async() {
         if [[ $(builtin which TRAPUSR1) = $AGKOZAK_TRAPUSR1_FUNCTION ]]; then
           # Kill running child process if necessary
-          if (( AGKOZAK_USR1_ASYNC_WORKER != 0 )); then
+          if (( AGKOZAK_USR1_ASYNC_WORKER )); then
               kill -s HUP $AGKOZAK_USR1_ASYNC_WORKER &> /dev/null || :
           fi
 
@@ -374,7 +374,6 @@ _agkozak_async_init() {
 
       typeset -g AGKOZAK_TRAPUSR1_FUNCTION
       AGKOZAK_TRAPUSR1_FUNCTION=$(builtin which TRAPUSR1)
-      readonly AGKOZAK_TRAPUSR1_FUNCTION
       ;;
   esac
 }
@@ -452,4 +451,3 @@ else
 fi
 
 # vim: ts=2:et:sts=2:sw=2:
-

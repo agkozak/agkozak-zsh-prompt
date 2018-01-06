@@ -448,11 +448,11 @@ agkozak_zsh_theme() {
 agkozak_zsh_theme
 
 if (( AGKOZAK_THEME_DEBUG )); then
-  setopt NO_WARN_CREATE_GLOBAL
+  unsetopt WARN_CREATE_GLOBAL
 else
   # Clean up environment
   unset AGKOZAK_THEME_DIR
-  unset -f _agkozak_load_async_lib _agkozak_has_usr1 \
+  unfunction _agkozak_load_async_lib _agkozak_has_usr1 \
     _agkozak_is_ssh _agkozak_has_colors
 fi
 

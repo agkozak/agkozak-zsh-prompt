@@ -193,7 +193,6 @@ TRAPWINCH() {
 
 typeset -g AGKOZAK_THEME_DIR
 AGKOZAK_THEME_DIR=${0:a:h}
-readonly AGKOZAK_THEME_DIR
 
 ###########################################################
 # If zsh-async has not already been loaded, try to load it;
@@ -305,8 +304,7 @@ _agkozak_async_init() {
       ########################################################
       _agkozak_zsh_async() {
           async_start_worker agkozak_git_status_worker -n
-          async_register_callback agkozak_git_status_worker
-            \ _agkozak_zsh_async_callback
+          async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
           async_job agkozak_git_status_worker :
       }
 

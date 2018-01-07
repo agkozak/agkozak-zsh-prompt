@@ -2,11 +2,19 @@
   <img src="img/logo.png" alt="agkozak-zsh-theme Logo">
 </p>
 
-# agkozak-zsh-theme
-
 [![License](https://img.shields.io/github/license/agkozak/agkozak-zsh-theme.svg)](https://opensource.org/licenses/MIT)
 ![zsh version 4.3.11 and higher](https://img.shields.io/badge/zsh-4.3.11%2B-red.svg)
 [![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-theme.svg)](https://github.com/agkozak/agkozak-zsh-theme/stargazers)
+
+- [agkozak-zsh-theme](#agkozak-zsh-theme)
+- [Local and Remote Sessions](#local-and-remote-sessions)
+- [Abbreviated Paths](#abbreviated-paths)
+- [Git Branch and Status](#git-branch-and-status)
+- [Exit Status](#exit-status)
+- [vi Editing Mode](#vi-editing-mode)
+- [Asynchronous Methods](#asynchronous-methods)
+
+# agkozak-zsh-theme
 
 **agkozak-zsh-theme** is an asynchronous, dynamic color Git prompt for `zsh` that uses basic ASCII symbols to show:
 

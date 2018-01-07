@@ -1,4 +1,6 @@
-![agkozak-zsh-theme Logo](img/logo.png)
+<p align="center">
+  <img src="img/logo.png" alt="agkozak-zsh-theme Logo">
+</p>
 
 # agkozak-zsh-theme
 

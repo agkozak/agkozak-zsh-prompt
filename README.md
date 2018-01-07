@@ -92,7 +92,7 @@ agkozak-zsh-theme does not enable `vi` editing mode for you. To do so, add
 
 to your `.zshrc`.
 
-# Asynchronous Modes
+# Asynchronous Methods
 
 agkozak-zsh-theme has two different ways of displaying its Git status asynchronously and thereby of keeping the prompt swift: it uses the [`zsh-async`](https://github.com/mafredri/zsh-async) library when possible, falling back when necessary on a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/).
 

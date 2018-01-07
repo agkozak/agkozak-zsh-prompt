@@ -57,8 +57,6 @@ If you would like to display a different number of directory elements, set the e
 
     AGKOZAK_PROMPT_DIRTRIM=4     # Or whatever number you like
 
-![AGKOZAK_PROMPT_DIRTRIM=4](img/abbreviated_paths_3.png)
-
 ## Git Branch and Status
 
 If the current directory contains a Git repository, agkozak-zsh-theme displays the name of the working branch, along with some symbols to show changes to its status:
@@ -101,3 +99,5 @@ The `zsh-async`-based method uses the `zsh/zpty` library to spin off pseudo-term
 The second method is quite similar to the first; it involves creating and disowning child processes that calculate the Git status and then kill themselves off, triggering SIGUSR1 in the process. The `zsh` `TRAPUSR1` function then displays the Git status in the right prompt.  The problem with this method is that other `zsh` scripts might choose to use `TRAPUSR1`, so agkozak-zsh-theme takes the precaution of checking to see if that function has been defined already -- if it has, the theme switches off asynchronous mode entirely. It also routinely checks to see if some other script or the user has redefined `TRAPUSR1` and switches off asynchronous mode out of precaution.
 
 If you want to force agkozak-zsh-theme to use a specific asynchronous mode (or none at all), execute `export AGKOZAK_FORCE_ASYNC_METHOD=zsh-async`, `usr1`, or `none` before running it. If you want more insight into how the theme is working in your shell, `export AGKOZAK_THEME_DEBUG=1` in your `.zshrc`.
+
+[![asciicast](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)

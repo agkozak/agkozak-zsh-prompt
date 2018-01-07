@@ -36,8 +36,6 @@ It can also be used in coordination with a `zsh` framework. I use [zplugin](http
 
     zplugin load agkozak/agkozak-zsh-theme
 
-*Note: agkozak-zsh-theme is a subset of my [Polyglot Prompt](https://github.com/agkozak/polyglot), which also works in `bash`, `ksh93`, `mksh`, `pdksh`, `dash`, and `busybox sh`.*
-
 ## Local and Remote Sessions
 
 When a session is local, only the username is shown; when it is remote over SSH (or `mosh`), the hostname is also shown:
@@ -91,7 +89,7 @@ If the exit status of the most recently executed command is other than zero (zer
 
 ![Exit status](img/exit-status.png)
 
-# `vi` Editing Mode
+## `vi` Editing Mode
 
 agkozak-zsh-theme indicates when the user has switched from `vi` insert mode to command mode by turning the `%` or `#` of the prompt into a colon:
 
@@ -103,7 +101,7 @@ agkozak-zsh-theme does not enable `vi` editing mode for you. To do so, add
 
 to your `.zshrc`.
 
-# Asynchronous Methods
+## Asynchronous Methods
 
 agkozak-zsh-theme has two different ways of displaying its Git status asynchronously and thereby of keeping the prompt swift: it uses the [`zsh-async`](https://github.com/mafredri/zsh-async) library when possible, falling back when necessary on a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/).
 
@@ -113,6 +111,6 @@ The second method is quite similar to the first; it involves creating and disown
 
 If you want to force agkozak-zsh-theme to use a specific asynchronous mode (or none at all), execute `export AGKOZAK_FORCE_ASYNC_METHOD=zsh-async`, `usr1`, or `none` before running it. If you want more insight into how the theme is working in your shell, `export AGKOZAK_THEME_DEBUG=1` in your `.zshrc`.
 
-# Preview
+## Preview
 
 [![asciicast Preview](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)

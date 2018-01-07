@@ -425,6 +425,7 @@ agkozak_zsh_theme() {
 
   zle -N zle-keymap-select
 
+  typeset -ga precmd_functions
   precmd_functions+=(_agkozak_precmd)
 
   # Only display the $HOSTNAME for an ssh connection

@@ -83,7 +83,7 @@ Renamed | >
 
 ## Exit Status
 
-If the exit status of the most recently executed command is other than zero (zero indicating success), the exit status will be displayed in the right prompt:
+If the exit status of the most recently executed command is other than zero (zero indicating success), the exit status will be displayed at the beginning of the left prompt:
 
 ![Exit status](img/exit-status.png)
 

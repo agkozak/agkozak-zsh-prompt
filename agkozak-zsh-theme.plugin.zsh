@@ -260,10 +260,11 @@ _agkozak_async_init() {
         # On Msys2, zsh-async won't load; on Cygwin, it loads but does not work.
         *Msys|*Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;;
         *)
-          # Avoid loading zsh-async on certain versions of zsh
+          # Avoid loading zsh-async on zsh v5.0.2
           # See https://github.com/mafredri/zsh-async/issues/12
+          # The theme appears to work properly now with zsh-async and zsh v5.0.8
           case $ZSH_VERSION in
-            '5.0.2'|'5.0.8')
+            '5.0.2')
               if _agkozak_has_usr1; then
                 AGKOZAK_ASYNC_METHOD='usr1';
               else

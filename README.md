@@ -7,6 +7,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-theme.svg)](https://github.com/agkozak/agkozak-zsh-theme/stargazers)
 
 - [agkozak-zsh-theme](#agkozak-zsh-theme)
+- [Installation](#installation)
 - [Local and Remote Sessions](#local-and-remote-sessions)
 - [Abbreviated Paths](#abbreviated-paths)
 - [Git Branch and Status](#git-branch-and-status)
@@ -28,13 +29,59 @@
 
 ![agkozak-zsh-theme](img/agkozak-zsh-theme.png)
 
-agkozak-zsh-theme can be simply sourced from your `.zshrc` file:
+## Installation
+
+### For users without a framework
+
+agkozak-zsh-theme requires no framework and can be simply sourced from your `.zshrc` file. Clone the git repo:
+
+    git clone https://github.com/agkozak/agkozak-zsh-theme
+
+And add the following to your `.zshrc` file:
 
     source /path/to/agkozak-zsh-theme.plugin.zsh
 
-It can also be used in coordination with a `zsh` framework. I use [zplugin](https://github.com/zdharma/zplugin), so my `.zshrc` has the line
+### For [antigen](https://github.com/zsh-users/antigen) users
+
+Add the line
+
+    antigen bundle agkozak/agkozak-zsh-theme
+
+to your `.zshrc`, somewhere before the line that says `antigen apply`.
+
+### For [oh-my-zsh](http://ohmyz.sh) users
+
+Execute the following commands:
+
+    [[ ! -d $ZSH_CUSTOM/themes ]] && mkdir $ZSH_CUSTOM/themes
+    git clone https://github.com/agkozak/agkozak-zsh-theme $ZSH_CUSTOM/themes/agkozak
+    ln -s $ZSH_CUSTOM/themes/agkozak/agkozak-zsh-theme.plugin.zsh $ZSH_CUSTOM/themes/agkozak.zsh-theme
+
+And set `ZSH_THEME=agkozak` in your `.zshrc` file.
+
+### For [zgen](https://github.com/tarjoilija/zgen) users
+
+Add the line
+
+    zgen load agkozak/agkozak-zsh-theme
+
+to your `.zshrc` somewhere before the line that says `zgen save`.
+
+### For [zplug](https://github.com/zplug/zplug) users
+
+Add the line
+
+    zplug "agkozak/agkozak-zsh-theme"
+
+to your `.zshrc` somewhere before the line that says `zplug load`.
+
+### For [zplugin](https://github.com/zdharma/zplugin) users
+
+Run the command 
 
     zplugin load agkozak/agkozak-zsh-theme
+
+to try out the prompt; add the same command to your `.zshrc` to load it automatically.
 
 ## Local and Remote Sessions
 

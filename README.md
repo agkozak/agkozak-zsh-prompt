@@ -27,7 +27,7 @@
 * the exit status of the last command, if it was not zero
 * if `vi` line editing is enabled, whether insert or command mode is active
 
-![agkozak-zsh-theme](img/agkozak-zsh-theme.png)
+![agkozak-zsh-theme](img/demo.gif)
 
 ## Installation
 

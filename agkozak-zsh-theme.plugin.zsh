@@ -236,7 +236,7 @@ _agkozak_has_usr1() {
 # or not SIGUSR1 is already taken
 ###########################################################
 _agkozak_async_init() {
-  typeset -g AGKOZAK_ASYNC_METHOD
+  typeset -g AGKOZAK_ASYNC_METHOD RPS1
 
   case $AGKOZAK_FORCE_ASYNC_METHOD in
     zsh-async)

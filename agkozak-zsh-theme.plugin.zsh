@@ -200,7 +200,7 @@ AGKOZAK_THEME_DIR=${0:a:h}
 ###########################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
-    if (( AGKOZAK_THEME_DEBUG ));then
+    if (( AGKOZAK_THEME_DEBUG )); then
       source ${AGKOZAK_THEME_DIR}/lib/async.zsh
     else
       source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null

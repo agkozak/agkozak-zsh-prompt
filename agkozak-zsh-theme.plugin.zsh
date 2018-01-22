@@ -68,9 +68,15 @@ _agkozak_is_ssh() {
   else
     case $EUID in
       0)
-        case $(ps -o comm= -p $PPID &> /dev/null) in
+        case $(ps -o comm= -p $PPID 2> /dev/null) in
           sshd|*/sshd) true ;;
-          *) false ;;
+          *)
+            case $(LANG=c who am i) in
+              *'(:'*) true ;;
+              # TODO: Still baffled by tmux when root
+              *) false ;;
+            esac
+            ;;
         esac
         ;;
       *) false ;;

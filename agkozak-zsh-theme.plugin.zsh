@@ -72,7 +72,7 @@ _agkozak_is_ssh() {
           sshd|*/sshd) true ;;
           *)
             case $(LANG=c who am i) in
-              *'(:'*) true ;;
+              *'('*')'*|*'(:'*) true ;;
               # TODO: Still baffled by tmux when root
               *) false ;;
             esac

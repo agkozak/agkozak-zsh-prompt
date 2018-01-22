@@ -67,10 +67,15 @@ _agkozak_is_ssh() {
     true
   else
     case $EUID in
-      0)
+      0)  # Superuser
         case $(ps -o comm= -p $PPID &> /dev/null) in
           sshd|*/sshd) true ;;
-          *) false ;;
+          # Note: it can be exceedingly difficult to detect an SSH connection
+          # when the user is running as a superuser, especially when using
+          # screen or tmux. In these instances, when SSH or its absence cannot
+          # be detected, I have opted always to display the hostname in the
+          # interest of providing more information.
+          *) true ;;
         esac
         ;;
       *) false ;;

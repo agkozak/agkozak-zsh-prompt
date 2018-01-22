@@ -85,6 +85,8 @@ When a session is local, only the username is shown; when it is remote over SSH 
 
 ![Local and remote sessions](img/local-and-remote-sessions.png)
 
+*Note: When the user is running as a superuser, it can be exceedingly difficult to detect an SSH connection, especially when he or she is running screen or tmux. In these instance, when SSH or its absence cannot be detected, I have opted always to display the hostname in the interest of providing extra information.*
+
 ## Abbreviated Paths
 
 By default agkozak-zsh-theme emulates the behavior that `bash` uses when `PROMPT_DIRTRIM` is set to `2`: a tilde (`~`) is prepended if the working directory is under the user's home directory, and then if more than two directory elements need to be shown, only the last two are displayed, along with an ellipsis, so that

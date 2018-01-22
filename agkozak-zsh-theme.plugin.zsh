@@ -74,7 +74,8 @@ _agkozak_is_ssh() {
           # when the user is running as a superuser, especially when using
           # screen or tmux. In these instances, when SSH or its absence cannot
           # be detected, I have opted always to display the hostname in the
-          # interest of providing more information.
+          # interest of providing more information. Superusers'
+          # usernames and hostnames will be displayed in reverse video.
           *) true ;;
         esac
         ;;
@@ -441,11 +442,13 @@ agkozak_zsh_theme() {
     psvar[1]=''
   fi
 
+  # When the user is a superuser, the username and hostname are
+  # displayed in reverse video
   if _agkozak_has_colors; then
-    PS1='%(?..%B%F{red}(%?%)%f%b )%B%F{green}%n%1v%f%b %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
+    PS1='%(?..%B%F{red}(%?%)%f%b )%(!.%B%K{green}.%B%F{green})%n%1v%(!.%k%b.%f%b) %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
     RPS1='%F{yellow}%3v%f'
   else
-    PS1='%(?..(%?%) )%n%1v %2v $(_agkozak_vi_mode_indicator) '
+    PS1='%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v $(_agkozak_vi_mode_indicator) '
     RPS1='%3v'
   fi
 

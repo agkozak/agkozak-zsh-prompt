@@ -95,8 +95,8 @@ _agkozak_has_colors() {
 # Emulation of bash's PROMPT_DIRTRIM for zsh
 #
 # In $PWD, substitute $HOME with ~; if the remainder of the
-# $PWD has more than two directory elements to display,
-# abbreviate it with '...', e.g.
+# $PWD has more than a certain number of directory elements
+# to display (default: 2), abbreviate it with '...', e.g.
 #
 #   $HOME/dotfiles/polyglot/img
 #

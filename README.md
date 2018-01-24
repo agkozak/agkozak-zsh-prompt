@@ -85,7 +85,7 @@ When a session is local, only the username is shown; when it is remote over SSH 
 
 ![Local and remote sessions](img/local-and-remote-sessions.png)
 
-*Note: When the user is running as a superuser, it can be exceedingly difficult to detect an SSH connection, especially when he or she is running screen or tmux. In these instance, when SSH or its absence cannot be detected, I have opted always to display the hostname in the interest of providing extra information. Superusers' usernames and hostnames will be displayed in reverse video.*
+*Note: When the user is running as a superuser, it can be exceedingly difficult to detect an SSH connection, especially when he or she is running screen or tmux. I have opted always to display the hostname of superusers in the interest of providing the most reliable information information. Superusers' usernames and hostnames will be displayed in reverse video.*
 
 ## Abbreviated Paths
 

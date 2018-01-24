@@ -61,27 +61,14 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 
 ############################################################
 # Is the user connected via SSH?
+#
+# This function works perfectly for regular users. It is
+# nearly impossible to detect with accuracy how a superuser
+# is connected, so this prompt opts simply to display his or
+# her username and hostname in inverse video.
 ############################################################
 _agkozak_is_ssh() {
-  if [[ -n $SSH_CONNECTION ]] || [[ -n $SSH_CLIENT ]] || [[ -n $SSH_TTY ]]; then
-    true
-  else
-    case $EUID in
-      0)  # Superuser
-        case $(ps -o comm= -p $PPID &> /dev/null) in
-          sshd|*/sshd) true ;;
-          # Note: it can be exceedingly difficult to detect an SSH connection
-          # when the user is running as a superuser, especially when using
-          # screen or tmux. In these instances, when SSH or its absence cannot
-          # be detected, I have opted always to display the hostname in the
-          # interest of providing more information. Superusers'
-          # usernames and hostnames will be displayed in reverse video.
-          *) true ;;
-        esac
-        ;;
-      *) false ;;
-    esac
-  fi
+  [[ -n "${SSH_CONNECTION-}${SSH_CLIENT}${SSH_TTY}" ]]
 }
 
 ############################################################
@@ -435,8 +422,8 @@ agkozak_zsh_theme() {
   typeset -ga precmd_functions
   precmd_functions+=(_agkozak_precmd)
 
-  # Only display the $HOSTNAME for an ssh connection
-  if _agkozak_is_ssh; then
+  # Only display the $HOSTNAME for an ssh connection or for a superuser
+  if _agkozak_is_ssh || [[ $EUID -eq 0 ]]; then
     psvar[1]="$(print -Pn "@%m")"
   else
     psvar[1]=''
@@ -445,7 +432,7 @@ agkozak_zsh_theme() {
   # When the user is a superuser, the username and hostname are
   # displayed in reverse video
   if _agkozak_has_colors; then
-    PS1='%(?..%B%F{red}(%?%)%f%b )%(!.%B%K{green}.%B%F{green})%n%1v%(!.%k%b.%f%b) %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
+    PS1='%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
     RPS1='%F{yellow}%3v%f'
   else
     PS1='%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v $(_agkozak_vi_mode_indicator) '

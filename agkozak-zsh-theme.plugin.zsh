@@ -419,8 +419,8 @@ agkozak_zsh_theme() {
 
   zle -N zle-keymap-select
 
-  typeset -ga precmd_functions
-  precmd_functions+=(_agkozak_precmd)
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd _agkozak_precmd
 
   # Only display the $HOSTNAME for an ssh connection or for a superuser
   if _agkozak_is_ssh || [[ $EUID -eq 0 ]]; then

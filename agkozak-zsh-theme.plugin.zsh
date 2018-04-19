@@ -68,7 +68,7 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 # her username and hostname in inverse video.
 ############################################################
 _agkozak_is_ssh() {
-  [[ -n "${SSH_CONNECTION-}${SSH_CLIENT}${SSH_TTY}" ]]
+  [[ -n "${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-}" ]]
 }
 
 ############################################################

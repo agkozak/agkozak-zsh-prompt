@@ -397,6 +397,7 @@ _agkozak_precmd() {
     'usr1') _agkozak_usr1_async ;;
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
+
 }
 
 ############################################################
@@ -432,11 +433,7 @@ agkozak_zsh_theme() {
   # displayed in reverse video
   if _agkozak_has_colors; then
     PS1='%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
-    case $ZSH_VERSION in
-      # Color in the right prompt causes wrapping problems in zsh 5.5 & 5.5.1
-      5.5*) RPS1='%3v' ;;
-      *) RPS1='%F{yellow}%3v%f' ;;
-    esac
+    RPS1='%F{yellow}%3v%f'
   else
     PS1='%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v $(_agkozak_vi_mode_indicator) '
     RPS1='%3v'

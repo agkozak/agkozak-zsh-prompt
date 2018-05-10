@@ -433,7 +433,7 @@ agkozak_zsh_theme() {
   # displayed in reverse video
   if _agkozak_has_colors; then
     PS1='%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
-    RPS1='%F{yellow}%3v%f'
+    RPS1='%(3V.%F{yellow}%3v%f.)'
   else
     PS1='%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v $(_agkozak_vi_mode_indicator) '
     RPS1='%3v'

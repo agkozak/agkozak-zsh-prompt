@@ -159,6 +159,11 @@ _agkozak_branch_changes() {
 # prompt changes into a colon
 ############################################################
 _agkozak_vi_mode_indicator() {
+
+  case $ZSH_VERSION in
+    5.5*) printf "\n" ;;
+  esac
+
   case $KEYMAP in
     vicmd) print -n ':' ;;
     *) print -n '%#' ;;
@@ -396,6 +401,10 @@ _agkozak_precmd() {
     'zsh-async') _agkozak_zsh_async ;;
     'usr1') _agkozak_usr1_async ;;
     *) psvar[3]="$(_agkozak_branch_status)" ;;
+  esac
+
+  case $ZSH_VERSION in
+    5.5*) printf "\n" ;;
   esac
 
 }

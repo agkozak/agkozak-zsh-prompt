@@ -160,9 +160,9 @@ _agkozak_branch_changes() {
 ############################################################
 _agkozak_vi_mode_indicator() {
 
-  case $ZSH_VERSION in
-    5.5*) printf "\n" ;;
-  esac
+  if (( AGKOZAK_MULTILINE )); then
+    printf "\n"
+  fi
 
   case $KEYMAP in
     vicmd) print -n ':' ;;
@@ -403,10 +403,10 @@ _agkozak_precmd() {
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
-  case $ZSH_VERSION in
-    5.5*) printf "\n" ;;
-  esac
-
+  if (( AGKOZAK_MULTILINE )); then
+    (( AGKOZAK_MULTILINE_FIRST_LINE_PRINTED )) && printf "\n"
+    export AGKOZAK_MULTILINE_FIRST_LINE_PRINTED=1
+  fi
 }
 
 ############################################################

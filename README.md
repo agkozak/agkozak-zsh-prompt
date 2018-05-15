@@ -22,7 +22,8 @@
 - [Abbreviated Paths](#abbreviated-paths)
 - [Git Branch and Status](#git-branch-and-status)
 - [Exit Status](#exit-status)
-- [vi Editing Mode](#vi-editing-mode)
+- [`vi` Editing Mode](#vi-editing-mode)
+- [Blank Lines Between Prompts](#blank-lines-between-prompts)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## Installation
@@ -107,9 +108,11 @@ is displayed as
 
 that is, without a tilde.
 
-If you would like to display a different number of directory elements, set the environment variable `$AGKOZAK_PROMPT_DIRTRIM` in your `.zshrc` file thus (as in the example above):
+If you would like to display a different number of directory elements, set the environment variable `$AGKOZAK_PROMPT_DIRTRIM` in your `.zshrc` file thus (as in the example below):
 
     AGKOZAK_PROMPT_DIRTRIM=4     # Or whatever number you like
+
+![AGKOZAK_PROMPT_DIRTRIM](img/AGKOZAK_PROMPT_DIRTRIM.png)
 
 ## Git Branch and Status
 
@@ -143,6 +146,12 @@ agkozak-zsh-theme does not enable `vi` editing mode for you. To do so, add
     bindkey -v
 
 to your `.zshrc`.
+
+## Blank Lines Between Prompts
+
+If you prefer to have a little space between instances of the prompt, put `AGKOZAK_BLANK_LINES=1` in your `.zshrc`:
+
+![AGKOZAK_BLANK_LINES](img/blank_lines.png)
 
 ## Asynchronous Methods
 

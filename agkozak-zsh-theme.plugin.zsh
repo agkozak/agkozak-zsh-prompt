@@ -159,11 +159,6 @@ _agkozak_branch_changes() {
 # prompt changes into a colon
 ############################################################
 _agkozak_vi_mode_indicator() {
-
-  if (( AGKOZAK_MULTILINE )); then
-    printf "\n"
-  fi
-
   case $KEYMAP in
     vicmd) print -n ':' ;;
     *) print -n '%#' ;;
@@ -392,6 +387,7 @@ _agkozak_async_init() {
 #
 # 1) Imitates bash's PROMPT_DIRTRIM behavior
 # 2) Calculates working branch and working copy status
+# 3) If AGKOZAK_BLANK_LINE=1, prints blank line between prompts
 ############################################################
 _agkozak_precmd() {
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
@@ -403,9 +399,11 @@ _agkozak_precmd() {
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
-  if (( AGKOZAK_MULTILINE )); then
-    (( AGKOZAK_MULTILINE_FIRST_LINE_PRINTED )) && printf "\n"
-    export AGKOZAK_MULTILINE_FIRST_LINE_PRINTED=1
+  if (( AGKOZAK_BLANK_LINE )); then
+    if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
+      printf "\n"
+    fi
+    AGKOZAK_FIRST_PROMPT_PRINTED=1
   fi
 }
 
@@ -441,7 +439,7 @@ agkozak_zsh_theme() {
   # When the user is a superuser, the username and hostname are
   # displayed in reverse video
   if _agkozak_has_colors; then
-    PS1='%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b $(_agkozak_vi_mode_indicator) '
+    PS1=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b\n$(_agkozak_vi_mode_indicator) '
     RPS1='%F{yellow}%3v%f'
   else
     PS1='%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v $(_agkozak_vi_mode_indicator) '

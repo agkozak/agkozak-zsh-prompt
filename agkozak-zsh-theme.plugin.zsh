@@ -442,7 +442,7 @@ agkozak_zsh_theme() {
     PS1=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b\n$(_agkozak_vi_mode_indicator) '
     RPS1='%F{yellow}%3v%f'
   else
-    PS1='%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v $(_agkozak_vi_mode_indicator) '
+    PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v\n$(_agkozak_vi_mode_indicator) '
     RPS1='%3v'
   fi
 

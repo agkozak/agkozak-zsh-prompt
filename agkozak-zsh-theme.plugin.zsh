@@ -387,7 +387,7 @@ _agkozak_async_init() {
 #
 # 1) Imitates bash's PROMPT_DIRTRIM behavior
 # 2) Calculates working branch and working copy status
-# 3) If AGKOZAK_BLANK_LINE=1, prints blank line between prompts
+# 3) If AGKOZAK_BLANK_LINES=1, prints blank line between prompts
 ############################################################
 _agkozak_precmd() {
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
@@ -399,7 +399,7 @@ _agkozak_precmd() {
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
-  if (( AGKOZAK_BLANK_LINE )); then
+  if (( AGKOZAK_BLANK_LINES )); then
     if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
       printf "\n"
     fi

@@ -24,6 +24,7 @@
 - [Exit Status](#exit-status)
 - [`vi` Editing Mode](#vi-editing-mode)
 - [Blank Lines Between Prompts](#blank-lines-between-prompts)
+- [Optional Single-Line Prompt](#optional-single-line-prompt)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## Installation
@@ -152,6 +153,14 @@ to your `.zshrc`.
 If you prefer to have a little space between instances of the prompt, put `AGKOZAK_BLANK_LINES=1` in your `.zshrc`:
 
 ![AGKOZAK_BLANK_LINES](img/blank_lines.png)
+
+## Optional Single-Line Prompt
+
+Older versions of agkozak-zsh-theme provided a single-line prompt. [Because of changes made in ZSH 5.5](https://github.com/agkozak/agkozak-zsh-theme/issues/6) that affect the calculation of cursor position when the prompt wraps, it has become difficult to ensure that in that situation the cursor will land where it is supposed to, i.e. two positions after the `%` or `#` and not on top of the left prompt or after the right prompt. I have made the default prompt two-line, which fixes the problem entirely, but if you prefer a single-line prompt and are willing to put up with the occasional glitch, put
+
+    AGKOZAK_MULTILINE=0
+
+in your `.zshrc` before you source agkozak-zsh-theme.
 
 ## Asynchronous Methods
 

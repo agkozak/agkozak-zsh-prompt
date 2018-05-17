@@ -436,13 +436,22 @@ agkozak_zsh_theme() {
     psvar[1]=''
   fi
 
+  # Set $AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
+  AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
+
+  if (( AGKOZAK_MULTILINE )); then
+    AGKOZAK_PROMPT_WHITESPACE=$'\n'
+  else
+    AGKOZAK_PROMPT_WHITESPACE=' '
+  fi
+
   # When the user is a superuser, the username and hostname are
   # displayed in reverse video
   if _agkozak_has_colors; then
-    PS1=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b\n$(_agkozak_vi_mode_indicator) '
+    PS1=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
     RPS1='%F{yellow}%3v%f'
   else
-    PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v\n$(_agkozak_vi_mode_indicator) '
+    PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
     RPS1='%3v'
   fi
 

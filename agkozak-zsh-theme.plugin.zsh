@@ -231,7 +231,12 @@ _agkozak_has_usr1() {
 # or not SIGUSR1 is already taken
 ###########################################################
 _agkozak_async_init() {
-  
+
+  # Avoid problems with Emacs shell and exec-path-from-shell
+  if [[ -n $INSIDE_EMACS ]] || [[ $TERM='dumb' ]]; then
+    typeset -g AGKOZAK_FORCE_ASYNC_METHOD='none'
+  fi
+
   case $AGKOZAK_FORCE_ASYNC_METHOD in
     zsh-async)
       _agkozak_load_async_lib
@@ -443,12 +448,18 @@ agkozak_zsh_theme() {
 
   # When the user is a superuser, the username and hostname are
   # displayed in reverse video
-  if _agkozak_has_colors; then
-    PS1=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
-    RPS1='%F{yellow}%3v%f'
-  else
-    PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
-    RPS1='%3v'
+
+  # The Emacs shell has only limited support for many zsh features
+  if [[ -n $INSIDE_EMACS ]]; then
+    PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v %3v %# '
+  else  
+    if _agkozak_has_colors; then
+      PS1=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
+      RPS1='%F{yellow}%3v%f'
+    else
+      PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
+      RPS1='%3v'
+    fi
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

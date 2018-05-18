@@ -51,6 +51,10 @@
 # Set $AGKOZAK_THEME_DEBUG to 1 to see debugging information
 typeset -g AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
 
+
+# Set $AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
+AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
+
 (( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
@@ -399,6 +403,12 @@ _agkozak_precmd() {
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
+  if (( AGKOZAK_MULTILINE == 0 )); then
+    AGKOZAK_PROMPT_WHITESPACE=' '
+  else
+    AGKOZAK_PROMPT_WHITESPACE=$'\n'
+  fi
+
   if (( AGKOZAK_BLANK_LINES )); then
     if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
       printf "\n"
@@ -434,15 +444,6 @@ agkozak_zsh_theme() {
     psvar[1]="$(print -Pn "@%m")"
   else
     psvar[1]=''
-  fi
-
-  # Set $AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
-  AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
-
-  if (( AGKOZAK_MULTILINE )); then
-    AGKOZAK_PROMPT_WHITESPACE=$'\n'
-  else
-    AGKOZAK_PROMPT_WHITESPACE=' '
   fi
 
   # When the user is a superuser, the username and hostname are

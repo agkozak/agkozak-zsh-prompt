@@ -49,13 +49,12 @@
 #                                           with indicator of changes made
 
 # Set $AGKOZAK_THEME_DEBUG to 1 to see debugging information
-typeset -g AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
+AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
 
+(( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL WARN_NESTED_VAR
 
 # Set $AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
-AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
-
-(( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL
+typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -188,8 +187,7 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS
 ###########################################################
 
-typeset -g AGKOZAK_THEME_DIR
-AGKOZAK_THEME_DIR=${0:a:h}
+typeset -g AGKOZAK_THEME_DIR=${0:a:h}
 
 ###########################################################
 # If zsh-async has not already been loaded, try to load it;
@@ -233,15 +231,14 @@ _agkozak_has_usr1() {
 # or not SIGUSR1 is already taken
 ###########################################################
 _agkozak_async_init() {
-  typeset -g AGKOZAK_ASYNC_METHOD RPS1
-
+  
   case $AGKOZAK_FORCE_ASYNC_METHOD in
     zsh-async)
       _agkozak_load_async_lib
-      AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
+      typeset -g AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
       ;;
     usr1|none)
-      AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
+      typeset -g AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
       ;;
     *)
       # Avoid trying to load zsh-async on systems where it is known not to work
@@ -255,7 +252,7 @@ _agkozak_async_init() {
 
       case $sysinfo in
         # On Msys2, zsh-async won't load; on Cygwin, it loads but does not work.
-        *Msys|*Cygwin) AGKOZAK_ASYNC_METHOD='usr1' ;;
+        *Msys|*Cygwin) typeset -g AGKOZAK_ASYNC_METHOD='usr1' ;;
         *)
           # Avoid loading zsh-async on zsh v5.0.2
           # See https://github.com/mafredri/zsh-async/issues/12
@@ -263,9 +260,9 @@ _agkozak_async_init() {
           case $ZSH_VERSION in
             '5.0.2')
               if _agkozak_has_usr1; then
-                AGKOZAK_ASYNC_METHOD='usr1';
+                typeset -g AGKOZAK_ASYNC_METHOD='usr1';
               else
-                AGKOZAK_ASYNC_METHOD='none'
+                typeset -g AGKOZAK_ASYNC_METHOD='none'
               fi
               ;;
             *)
@@ -275,22 +272,22 @@ _agkozak_async_init() {
               # SIGUSR1 is available and TRAPUSR1() hasn't been defined; failing
               # that, switch off asynchronous mode
               if _agkozak_load_async_lib; then
-                AGKOZAK_ASYNC_METHOD='zsh-async'
+                typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
               else
                 if _agkozak_has_usr1; then
                   case $sysinfo in
                     *Microsoft*Linux)
                       unsetopt BG_NICE                # nice doesn't work on WSL
-                      AGKOZAK_ASYNC_METHOD='usr1'
+                      typeset -g AGKOZAK_ASYNC_METHOD='usr1'
                       ;;
                     # TODO: the SIGUSR1 method doesn't work on Solaris 11 yet
                     # but it does work on OpenIndiana
                     # SIGUSR2 works on Solaris 11
-                    *solaris*) AGKOZAK_ASYNC_METHOD='none' ;;
-                    *) AGKOZAK_ASYNC_METHOD='usr1' ;;
+                    *solaris*) typeset -g AGKOZAK_ASYNC_METHOD='none' ;;
+                    *) typeset -g AGKOZAK_ASYNC_METHOD='usr1' ;;
                   esac
                 else
-                  AGKOZAK_ASYNC_METHOD='none'
+                  typeset -g AGKOZAK_ASYNC_METHOD='none'
                 fi
               fi
               ;;
@@ -343,7 +340,7 @@ _agkozak_async_init() {
           AGKOZAK_USR1_ASYNC_WORKER=$!
         else
           echo 'agkozak-zsh-theme warning: TRAPUSR1() has been redefined. Disabling asynchronous mode.'
-          AGKOZAK_ASYNC_METHOD='none'
+          typeset -g AGKOZAK_ASYNC_METHOD='none'
         fi
       }
 
@@ -404,16 +401,16 @@ _agkozak_precmd() {
   esac
 
   if (( AGKOZAK_MULTILINE == 0 )); then
-    AGKOZAK_PROMPT_WHITESPACE=' '
+    typeset -g AGKOZAK_PROMPT_WHITESPACE=' '
   else
-    AGKOZAK_PROMPT_WHITESPACE=$'\n'
+    typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
   fi
 
   if (( AGKOZAK_BLANK_LINES )); then
     if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
       printf "\n"
     fi
-    AGKOZAK_FIRST_PROMPT_PRINTED=1
+    typeset -g AGKOZAK_FIRST_PROMPT_PRINTED=1
   fi
 }
 
@@ -463,13 +460,9 @@ agkozak_zsh_theme() {
 
 agkozak_zsh_theme
 
-if (( AGKOZAK_THEME_DEBUG )); then
-  unsetopt WARN_CREATE_GLOBAL
-else
-  # Clean up environment
-  unset AGKOZAK_THEME_DIR
-  unfunction _agkozak_load_async_lib _agkozak_has_usr1 \
-    _agkozak_is_ssh _agkozak_has_colors
-fi
+# Clean up environment
+unset AGKOZAK_THEME_DIR
+unfunction _agkozak_load_async_lib _agkozak_has_usr1 \
+  _agkozak_is_ssh _agkozak_has_colors
 
 # vim: ts=2:et:sts=2:sw=2:

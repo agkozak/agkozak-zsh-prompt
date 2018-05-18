@@ -337,7 +337,7 @@ _agkozak_async_init() {
 
           # Start background computation of Git status
           _agkozak_usr1_async_worker &!
-          AGKOZAK_USR1_ASYNC_WORKER=$!
+          typeset -g AGKOZAK_USR1_ASYNC_WORKER=$!
         else
           echo 'agkozak-zsh-theme warning: TRAPUSR1() has been redefined. Disabling asynchronous mode.'
           typeset -g AGKOZAK_ASYNC_METHOD='none'
@@ -367,14 +367,13 @@ _agkozak_async_init() {
         psvar[3]="$(cat /tmp/agkozak_zsh_theme_$$)"
 
         # Reset asynchronous process number
-        AGKOZAK_USR1_ASYNC_WORKER=0
+        typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
 
         # Redraw the prompt
         zle && zle reset-prompt
       }
 
-      typeset -g AGKOZAK_TRAPUSR1_FUNCTION
-      AGKOZAK_TRAPUSR1_FUNCTION="$(builtin which TRAPUSR1)"
+      typeset -g AGKOZAK_TRAPUSR1_FUNCTION="$(builtin which TRAPUSR1)"
       ;;
   esac
 }
@@ -426,8 +425,7 @@ agkozak_zsh_theme() {
       async_init
       ;;
     'usr1')
-      typeset -g AGKOZAK_USR1_ASYNC_WORKER
-      AGKOZAK_USR1_ASYNC_WORKER=0
+      typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
       ;;
   esac
 

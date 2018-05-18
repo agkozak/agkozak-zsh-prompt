@@ -162,6 +162,10 @@ Older versions of agkozak-zsh-theme provided a single-line prompt. [Because of c
 
 in your `.zshrc` before you source agkozak-zsh-theme.
 
+Demo:
+
+[![agkozak-zsh-theme (Singe-Line)](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)
+
 ## Asynchronous Methods
 
 agkozak-zsh-theme has two different ways of displaying its Git status asynchronously and thereby of keeping the prompt swift: it uses the [`zsh-async`](https://github.com/mafredri/zsh-async) library when possible, falling back when necessary on a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/).

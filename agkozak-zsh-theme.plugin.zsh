@@ -450,9 +450,10 @@ agkozak_zsh_theme() {
   # displayed in reverse video
 
   # The Emacs shell has only limited support for many zsh features
-  if [[ -n $INSIDE_EMACS ]]; then
+  if [[ -n $INSIDE_EMACS ]] || [[ TERM = 'dumb' ]]; then
     PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v %3v %# '
-  else  
+    add-zsh-hook -d precmd _agkozak_precmd
+  else
     if _agkozak_has_colors; then
       PS1=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
       RPS1='%F{yellow}%3v%f'

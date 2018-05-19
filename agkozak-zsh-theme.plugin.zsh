@@ -211,13 +211,13 @@ _agkozak_load_async_lib() {
 ###########################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
-    (( AGKOZAK_THEME_DEBUG )) && echo 'TRAPUSR1() already defined'
+    (( AGKOZAK_THEME_DEBUG )) && echo 'agkozak-zsh-theme: TRAPUSR1() already defined.'
     false
   else
     case $signals in    # Array containing names of available signals
       *USR1*) true ;;
       *)
-        (( AGKOZAK_THEME_DEBUG )) && echo 'SIGUSR1 not available'
+        (( AGKOZAK_THEME_DEBUG )) && echo 'agkozak-zsh-theme: SIGUSR1 not available.'
         false
         ;;
     esac
@@ -464,7 +464,7 @@ agkozak_zsh_theme() {
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then
-    echo "agkozak-zsh-theme using async method: $AGKOZAK_ASYNC_METHOD"
+    echo "agkozak-zsh-theme: using async method: $AGKOZAK_ASYNC_METHOD"
   fi
 }
 

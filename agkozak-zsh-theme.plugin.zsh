@@ -69,11 +69,6 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 # nearly impossible to detect with accuracy how a superuser
 # is connected, so this prompt opts simply to display his or
 # her username and hostname in inverse video.
-#
-# Globals:
-#   SSH_CONNECTION
-#   SSH_CLIENT
-#   SSH_TTY
 ############################################################
 _agkozak_is_ssh() {
   [[ -n "${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-}" ]]
@@ -99,9 +94,6 @@ _agkozak_has_colors() {
 #
 #   ~/.../polyglot/img
 # 
-# Globals:
-#   PWD
-#   HOME
 # Arguments:
 #   $1 Number of directory elements to display
 ############################################################
@@ -168,9 +160,6 @@ _agkozak_branch_changes() {
 ############################################################
 # When the user enters vi command mode, the % or # in the
 # prompt changes into a colon
-#
-# Globals:
-#   KEYMAP
 ############################################################
 _agkozak_vi_mode_indicator() {
   case $KEYMAP in
@@ -251,7 +240,6 @@ _agkozak_has_usr1() {
 # Globals:
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_FORCE_ASYNC_METHOD
-#   ZSH_VERSION
 #   AGKOZAK_TRAPUSR1_FUNCTION
 ###########################################################
 _agkozak_async_init() {
@@ -467,9 +455,6 @@ _agkozak_precmd() {
 # Globals:
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_USR1_ASYNC_WORKER
-#   EUID
-#   INSIDE_EMACS
-#   TERM
 #   AGKOZAK_THEME_DEBUG
 #   AGKOZAK_THEME_DIR
 ############################################################

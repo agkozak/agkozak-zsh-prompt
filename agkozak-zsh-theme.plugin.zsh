@@ -244,11 +244,6 @@ _agkozak_has_usr1() {
 ###########################################################
 _agkozak_async_init() {
 
-  # Avoid problems with Emacs shell and exec-path-from-shell
-  if [[ -n $INSIDE_EMACS ]] || [[ $TERM='dumb' ]]; then
-    typeset -g AGKOZAK_ASYNC_METHOD='none'
-  fi
-
   case $AGKOZAK_FORCE_ASYNC_METHOD in
     zsh-async)
       _agkozak_load_async_lib
@@ -284,11 +279,15 @@ _agkozak_async_init() {
               ;;
             *)
 
+              # Avoid problems with Emacs exec-path-from-shell-printf
+              if [[ $TERM = 'dumb' ]]; then
+                AGKOZAK_ASYNC_METHOD='none'
+
               # Having exhausted known problematic systems, try to load
               # zsh-async; in case that doesn't work, try the SIGUSR1 method if
               # SIGUSR1 is available and TRAPUSR1() hasn't been defined; failing
               # that, switch off asynchronous mode
-              if _agkozak_load_async_lib; then
+              elif _agkozak_load_async_lib; then
                 typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
               else
                 if _agkozak_has_usr1; then
@@ -486,8 +485,8 @@ agkozak_zsh_theme() {
   # When the user is a superuser, the username and hostname are
   # displayed in reverse video
 
-  # The Emacs shell has only limited support for many zsh features
-  if [[ -n $INSIDE_EMACS ]] || [[ TERM = 'dumb' ]]; then
+  # The Emacs shell has only limited support for some zsh features
+  if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
     PS1=$'%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
     add-zsh-hook -d precmd _agkozak_precmd
     unset zle_bracketed_paste

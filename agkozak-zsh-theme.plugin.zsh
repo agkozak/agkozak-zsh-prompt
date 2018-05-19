@@ -490,6 +490,7 @@ agkozak_zsh_theme() {
   if [[ -n $INSIDE_EMACS ]] || [[ TERM = 'dumb' ]]; then
     PS1=$'%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
     add-zsh-hook -d precmd _agkozak_precmd
+    unset zle_bracketed_paste
   else
     if _agkozak_has_colors; then
       PS1=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '

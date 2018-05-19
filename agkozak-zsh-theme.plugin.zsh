@@ -69,6 +69,11 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 # nearly impossible to detect with accuracy how a superuser
 # is connected, so this prompt opts simply to display his or
 # her username and hostname in inverse video.
+#
+# Globals:
+#   SSH_CONNECTION
+#   SSH_CLIENT
+#   SSH_TTY
 ############################################################
 _agkozak_is_ssh() {
   [[ -n "${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-}" ]]
@@ -93,9 +98,12 @@ _agkozak_has_colors() {
 # will be displayed as
 #
 #   ~/.../polyglot/img
-#
-# Arguments
-#  $1 Number of directory elements to display
+# 
+# Globals:
+#   PWD
+#   HOME
+# Arguments:
+#   $1 Number of directory elements to display
 ############################################################
 _agkozak_prompt_dirtrim() {
   [[ $1 -ge 1 ]] || set 2
@@ -160,6 +168,9 @@ _agkozak_branch_changes() {
 ############################################################
 # When the user enters vi command mode, the % or # in the
 # prompt changes into a colon
+#
+# Globals:
+#   KEYMAP
 ############################################################
 _agkozak_vi_mode_indicator() {
   case $KEYMAP in
@@ -192,6 +203,10 @@ typeset -g AGKOZAK_THEME_DIR=${0:a:h}
 ###########################################################
 # If zsh-async has not already been loaded, try to load it;
 # the exit code should indicate success or failure
+#
+# Globals:
+#   AGKOZAK_THEME_DEBUG
+#   AGKOZAK_THEME_DIR
 ###########################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
@@ -208,6 +223,9 @@ _agkozak_load_async_lib() {
 ###########################################################
 # If SIGUSR1 is available and not already in use by
 # zsh, use it; otherwise disable asynchronous mode
+#
+# Globals:
+#   AGKOZAK_THEME_DEBUG
 ###########################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
@@ -229,6 +247,12 @@ _agkozak_has_usr1() {
 # Otherwise, determine the async method from the environment,
 # whether or not zsh-async will load successfully, and whether
 # or not SIGUSR1 is already taken
+#
+# Globals:
+#   AGKOZAK_ASYNC_METHOD
+#   AGKOZAK_FORCE_ASYNC_METHOD
+#   ZSH_VERSION
+#   AGKOZAK_TRAPUSR1_FUNCTION
 ###########################################################
 _agkozak_async_init() {
 
@@ -332,9 +356,14 @@ _agkozak_async_init() {
       # redefined the TRAPUSR1() function that actually
       # displays the status; if so, it will drop the theme
       # down into non-asynchronous mode.
+      #
+      # Globals:
+      #   AGKOZAK_TRAPUSR1_FUNCTION
+      #   AGKOZAK_USR1_ASYNC_WORKER
+      #   AGKOZAK_ASYNC_METHOD
       ########################################################
       _agkozak_usr1_async() {
-        if [[ "$(builtin which TRAPUSR1)" = $AGKOZAK_TRAPUSR1_FUNCTION ]]; then
+        if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
               kill -s HUP $AGKOZAK_USR1_ASYNC_WORKER &> /dev/null || :
@@ -351,6 +380,9 @@ _agkozak_async_init() {
 
       ########################################################
       # Asynchronous Git branch status using SIGUSR1
+      #
+      # Globals:
+      #   AGKOZAK_THEME_DEBUG
       ########################################################
       _agkozak_usr1_async_worker() {
         # Save Git branch status to temporary file
@@ -366,6 +398,9 @@ _agkozak_async_init() {
 
       ########################################################
       # On SIGUSR1, redraw prompt
+      #
+      # Globals:
+      #   AGKOZAK_USR1_ASYNC_WORKER
       ########################################################
       TRAPUSR1() {
         # read from temp file
@@ -393,6 +428,14 @@ _agkozak_async_init() {
 # 1) Imitates bash's PROMPT_DIRTRIM behavior
 # 2) Calculates working branch and working copy status
 # 3) If AGKOZAK_BLANK_LINES=1, prints blank line between prompts
+#
+# Globals:
+#   AGKOZAK_PROMPT_DIRTRIM
+#   AGKOZAK_ASYNC_METHOD
+#   AGKOZAK_MULTILINE
+#   AGKOZAK_PROMPT_WHITESPACE
+#   AGKOZAK_BLANK_LINES
+#   AGKOZAK_FIRST_PROMPT_PRINTED
 ############################################################
 _agkozak_precmd() {
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
@@ -420,6 +463,15 @@ _agkozak_precmd() {
 
 ############################################################
 # Theme setup
+#
+# Globals:
+#   AGKOZAK_ASYNC_METHOD
+#   AGKOZAK_USR1_ASYNC_WORKER
+#   EUID
+#   INSIDE_EMACS
+#   TERM
+#   AGKOZAK_THEME_DEBUG
+#   AGKOZAK_THEME_DIR
 ############################################################
 agkozak_zsh_theme() {
 

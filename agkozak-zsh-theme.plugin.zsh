@@ -488,7 +488,7 @@ agkozak_zsh_theme() {
 
   # The Emacs shell has only limited support for many zsh features
   if [[ -n $INSIDE_EMACS ]] || [[ TERM = 'dumb' ]]; then
-    PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
+    PS1=$'%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
     add-zsh-hook -d precmd _agkozak_precmd
   else
     if _agkozak_has_colors; then

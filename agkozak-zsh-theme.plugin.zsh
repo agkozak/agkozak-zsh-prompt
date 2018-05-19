@@ -234,7 +234,7 @@ _agkozak_async_init() {
 
   # Avoid problems with Emacs shell and exec-path-from-shell
   if [[ -n $INSIDE_EMACS ]] || [[ $TERM='dumb' ]]; then
-    typeset -g AGKOZAK_FORCE_ASYNC_METHOD='none'
+    typeset -g AGKOZAK_ASYNC_METHOD='none'
   fi
 
   case $AGKOZAK_FORCE_ASYNC_METHOD in

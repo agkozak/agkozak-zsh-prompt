@@ -476,7 +476,7 @@ agkozak_zsh_theme() {
   add-zsh-hook precmd _agkozak_precmd
 
   # Only display the $HOSTNAME for an ssh connection or for a superuser
-  if _agkozak_is_ssh || [[ $EUID -eq 0 ]]; then
+  if _agkozak_is_ssh || (( EUID == 0 )); then
     psvar[1]="$(print -Pn "@%m")"
   else
     psvar[1]=''

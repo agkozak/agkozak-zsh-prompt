@@ -126,7 +126,7 @@ _agkozak_branch_status() {
     *) ref="$(git rev-parse --short HEAD 2> /dev/null)" || return ;;
   esac
   branch="${ref#refs/heads/}"
-  printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
+  [[ -n $branch ]] && printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
 }
 
 ############################################################

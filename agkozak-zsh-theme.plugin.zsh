@@ -442,7 +442,7 @@ _agkozak_precmd() {
 
   if (( AGKOZAK_BLANK_LINES )); then
     if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
-      printf "\n"
+      echo
     fi
     typeset -g AGKOZAK_FIRST_PROMPT_PRINTED=1
   fi

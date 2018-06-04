@@ -25,6 +25,7 @@
 - [`vi` Editing Mode](#vi-editing-mode)
 - [Blank Lines Between Prompts](#blank-lines-between-prompts)
 - [Optional Single-Line Prompt](#optional-single-line-prompt)
+- [Custom Colors](#custom-colors)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## Installation
@@ -167,7 +168,7 @@ Demo:
 [![agkozak-zsh-theme (Singe-Line)](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)
 
 ## Custom Colors
-If you'd like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
+If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
 
     AGKOZAK_COLORS_EXIT_STATUS=red
     AGKOZAK_COLORS_USER_HOST=green

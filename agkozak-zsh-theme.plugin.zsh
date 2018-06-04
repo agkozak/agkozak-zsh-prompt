@@ -56,6 +56,16 @@ AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
 # Set $AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
 typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
 
+# Set $AGKOZAK_COLORS_* variables to any valid color
+#   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color     (default: red)
+#   AGKOZAK_COLORS_USER_HOST changes the username/hostname color (default: green)
+#   AGKOZAK_COLORS_PATH changes the path color                   (default: blue)
+#   AGKOZAK_COLORS_BRANCH_STATUS changes the branch status color (default: yellow)
+typeset -g AGKOZAK_COLORS_EXIT_STATUS=${AGKOZAK_COLORS_EXIT_STATUS:-red}
+typeset -g AGKOZAK_COLORS_USER_HOST=${AGKOZAK_COLORS_USER_HOST:-green}
+typeset -g AGKOZAK_COLORS_PATH=${AGKOZAK_COLORS_PATH:-blue}
+typeset -g AGKOZAK_COLORS_BRANCH_STATUS=${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}
+
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
 ############################################################
@@ -492,8 +502,8 @@ agkozak_zsh_theme() {
     unset zle_bracketed_paste
   else
     if _agkozak_has_colors; then
-      PS1=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
-      RPS1='%F{yellow}%3v%f'
+      PS1=$'%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) %B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
+      RPS1='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
     else
       PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
       RPS1='%3v'

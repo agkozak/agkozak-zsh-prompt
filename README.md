@@ -166,6 +166,14 @@ Demo:
 
 [![agkozak-zsh-theme (Singe-Line)](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)
 
+## Custom Colors
+If you'd like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
+
+    AGKOZAK_COLORS_EXIT_STATUS=red
+    AGKOZAK_COLORS_USER_HOST=green
+    AGKOZAK_COLORS_PATH=blue
+    AGKOZAK_COLORS_BRANCH_STATUS=yellow
+
 ## Asynchronous Methods
 
 agkozak-zsh-theme has two different ways of displaying its Git status asynchronously and thereby of keeping the prompt swift: it uses the [`zsh-async`](https://github.com/mafredri/zsh-async) library when possible, falling back when necessary on a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/).

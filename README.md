@@ -48,6 +48,8 @@ Add the line
 
 to your `.zshrc`, somewhere before the line that says `antigen apply`.
 
+*Note: use `antigen bundle`, not `antigen theme`; the latter can result in a broken prompt when `.zshrc` is sourced a second time or whenever `antigen theme` is run again. [This problem is expected to be fixed in antigen version 2.2.3.](https://github.com/zsh-users/antigen/issues/652)*
+
 ### For [oh-my-zsh](http://ohmyz.sh) users
 
 Execute the following commands:

@@ -197,7 +197,7 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS
 ###########################################################
 
-typeset -g AGKOZAK_THEME_DIR=${0:a:h}
+typeset -g AGKOZAK_THEME_DIR=${0:A:h}
 
 ###########################################################
 # If zsh-async has not already been loaded, try to load it;

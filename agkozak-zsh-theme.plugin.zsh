@@ -3,11 +3,12 @@
 # - Git info in left prompt
 # - Removed user name
 # - Added blank line before prompt
+# - $ as the symbol
 # 
 # It looks like this:
 #
 #     .../dev/project (master)
-#     % 
+#     $ 
 #
 
 #              _                 _
@@ -186,7 +187,7 @@ _agkozak_branch_changes() {
 _agkozak_vi_mode_indicator() {
   case $KEYMAP in
     vicmd) print -n ':' ;;
-    *) print -n '%#' ;;
+    *) print -n '%(!.#.$)' ;;
   esac
 }
 

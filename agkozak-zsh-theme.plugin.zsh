@@ -1,3 +1,15 @@
+# Fork of https://github.com/agkozak/agkozak-zsh-theme with these modifications:
+# 
+# - Git info in left prompt
+# - Removed user name
+# - Added blank line before prompt
+# 
+# It looks like this:
+#
+#     .../dev/project (master)
+#     % 
+#
+
 #              _                 _
 #   __ _  __ _| | _____ ______ _| | __
 #  / _` |/ _` | |/ / _ \_  / _` | |/ /
@@ -502,8 +514,7 @@ agkozak_zsh_theme() {
     unset zle_bracketed_paste
   else
     if _agkozak_has_colors; then
-      PS1=$'%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) %B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
-      RPS1='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
+      PS1=$'${AGKOZAK_PROMPT_WHITESPACE}%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
     else
       PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
       RPS1='%3v'

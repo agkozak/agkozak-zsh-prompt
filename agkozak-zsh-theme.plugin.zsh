@@ -2,7 +2,6 @@
 # 
 # - Git info in left prompt
 # - Removed user name
-# - Added blank line before prompt
 # - $ as the symbol
 # 
 # It looks like this:
@@ -515,7 +514,7 @@ agkozak_zsh_theme() {
     unset zle_bracketed_paste
   else
     if _agkozak_has_colors; then
-      PS1=$'${AGKOZAK_PROMPT_WHITESPACE}%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
+      PS1=$'%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
     else
       PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
       RPS1='%3v'

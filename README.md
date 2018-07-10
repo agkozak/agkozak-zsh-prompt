@@ -13,6 +13,8 @@
 * the exit status of the last command, if it was not zero
 * if `vi` line editing is enabled, whether insert or command mode is active
 
+This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris 11. It also has full asynchronous functionality on Windows environments such as MSys2, Cygwin, and WSL.
+
 ![agkozak-zsh-theme](img/demo.gif)
 
 ## Table of Contents

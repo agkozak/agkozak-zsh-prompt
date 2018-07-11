@@ -103,7 +103,7 @@ _agkozak_has_colors() {
 # will be displayed as
 #
 #   ~/.../polyglot/img
-# 
+#
 # Arguments:
 #   $1 Number of directory elements to display
 ############################################################
@@ -265,7 +265,7 @@ _agkozak_async_init() {
     *)
       # Avoid trying to load zsh-async on systems where it is known not to work
       #
-      # Msys2) it doesn't load successfully
+      # MSYS2) it doesn't load successfully
       # Cygwin) it loads but doesn't work (see
       #   https://github.com/sindresorhus/pure/issues/141)
       # TODO: WSL seems to work perfectly now with zsh-async, but it may not
@@ -273,7 +273,7 @@ _agkozak_async_init() {
       local sysinfo="$(uname -a)"
 
       case $sysinfo in
-        # On Msys2, zsh-async won't load; on Cygwin, it loads but does not work.
+        # On MSYS2, zsh-async won't load; on Cygwin, it loads but does not work.
         *Msys|*Cygwin) typeset -g AGKOZAK_ASYNC_METHOD='usr1' ;;
         *)
           # Avoid loading zsh-async on zsh v5.0.2

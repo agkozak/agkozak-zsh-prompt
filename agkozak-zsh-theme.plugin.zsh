@@ -482,8 +482,11 @@ agkozak_zsh_theme() {
 
   zle -N zle-keymap-select
 
-  autoload -Uz add-zsh-hook
-  add-zsh-hook precmd _agkozak_precmd
+  # Don't use ZSH hooks in Emacs classic shell
+  if [[ -z $INSIDE_EMACS ]] && [[ $TERM != dumb ]]; then
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd _agkozak_precmd
+  fi
 
   # Only display the $HOSTNAME for an ssh connection or for a superuser
   if _agkozak_is_ssh || (( EUID == 0 )); then
@@ -502,22 +505,30 @@ agkozak_zsh_theme() {
     PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
     PROMPT+='$(_agkozak_branch_status) '
     PROMPT+='%# '
-    add-zsh-hook -d precmd _agkozak_precmd
+
+    # TODO: This really belongs in the user's .zshrc; it is unrelated to
+    # this theme
     unset zle_bracketed_paste
   else
     if _agkozak_has_colors; then
+
+      # The color left prompt
       PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
       PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
       PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
       PROMPT+='$(_agkozak_vi_mode_indicator) '
 
+      # The color right prompt
       RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
     else
+
+      # The monochrome left prompt
       PROMPT='%(?..(%?%) )'
       PROMPT+='%(!.%S.)%n%1v%(!.%s.) '
       PROMPT+=$'%2v${AGKOZAK_PROMPT_WHITESPACE}'
       PROMPT+='$(_agkozak_vi_mode_indicator) '
 
+      # The monochrome right prompt
       RPROMPT='%3v'
     fi
   fi

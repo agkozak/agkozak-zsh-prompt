@@ -497,16 +497,28 @@ agkozak_zsh_theme() {
 
   # The Emacs shell has only limited support for some zsh features
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
-    PS1=$'%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
+    PROMPT='%(?..(%?%) )'
+    PROMPT+='%n%1v '
+    PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
+    PROMPT+='$(_agkozak_branch_status) '
+    PROMPT+='%# '
     add-zsh-hook -d precmd _agkozak_precmd
     unset zle_bracketed_paste
   else
     if _agkozak_has_colors; then
-      PS1=$'%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) %B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
-      RPS1='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
+      PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+      PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+      PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
+      PROMPT+='$(_agkozak_vi_mode_indicator) '
+
+      RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
     else
-      PS1=$'%(?..(%?%) )%(!.%S.)%n%1v%(!.%s.) %2v${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
-      RPS1='%3v'
+      PROMPT='%(?..(%?%) )'
+      PROMPT+='%(!.%S.)%n%1v%(!.%s.) '
+      PROMPT+=$'%2v${AGKOZAK_PROMPT_WHITESPACE}'
+      PROMPT+='$(_agkozak_vi_mode_indicator) '
+
+      RPROMPT='%3v'
     fi
   fi
 

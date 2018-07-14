@@ -53,6 +53,9 @@ AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
 
 (( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL WARN_NESTED_VAR
 
+# Decide if the prompt should be displayed in color
+(( $(tput colors) >= 8 )) && typeset -g AGKOZAK_HAS_COLORS=1
+
 # Set $AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
 typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
 
@@ -82,13 +85,6 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 ############################################################
 _agkozak_is_ssh() {
   [[ -n "${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-}" ]]
-}
-
-############################################################
-# Does the terminal support enough colors?
-############################################################
-_agkozak_has_colors() {
-  (( $(tput colors) >= 8 ))
 }
 
 ############################################################
@@ -510,7 +506,7 @@ agkozak_zsh_theme() {
     # this theme
     unset zle_bracketed_paste
   else
-    if _agkozak_has_colors; then
+    if (( AGKOZAK_HAS_COLORS )); then
 
       # The color left prompt
       PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
@@ -541,8 +537,8 @@ agkozak_zsh_theme() {
 agkozak_zsh_theme
 
 # Clean up environment
-unset AGKOZAK_THEME_DIR
+unset AGKOZAK_THEME_DIR AGKOZAK_HAS_COLORS
 unfunction _agkozak_load_async_lib _agkozak_has_usr1 \
-  _agkozak_is_ssh _agkozak_has_colors
+  _agkozak_is_ssh
 
 # vim: ts=2:et:sts=2:sw=2:

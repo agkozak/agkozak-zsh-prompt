@@ -574,7 +574,7 @@ _agkozak_construct_prompt() {
         newline) echo -n $'\n' ;;
         zshcode*) echo -n "${i#zshcode}" ;;
         *)
-          [[ ${AGKOZAK_ZPML_MACROS[$i]} ]] && echo -n ${AGKOZAK_ZPML_MACROS[$i]}
+          [[ -n ${AGKOZAK_ZPML_MACROS[$i]} ]] && echo -n ${AGKOZAK_ZPML_MACROS[$i]}
           ;;
       esac
     fi

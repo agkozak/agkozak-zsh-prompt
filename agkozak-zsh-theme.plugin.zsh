@@ -468,8 +468,6 @@ AGKOZAK_ZPML_MACROS=(
   git_branch_status '%3v'
 )
 
-
-
 ############################################################
 # For printing parser errors
 #
@@ -670,7 +668,7 @@ agkozak_zsh_theme() {
 
   # Dogfooding: We'll construct the prompt from ZPML
   else
-    [[ -z $AGKOZAK_ZPML_PROMPT ]] && {
+    [[ -z "${AGKOZAK_ZPML_PROMPT}${AGKOZAK_ZPML_RPROMPT}" ]] && {
 
       # Left prompt
       typeset -ga AGKOZAK_ZPML_PROMPT
@@ -701,10 +699,6 @@ agkozak_zsh_theme() {
         vi_mode_indicator space
       )
 
-    }
-    
-    [[ -z $AGKOZAK_ZPML_RPROMPT ]] && {
-
       # Right prompt
       typeset -ga AGKOZAK_ZPML_RPROMPT
       AGKOZAK_ZPML_RPROMPT=(
@@ -713,8 +707,8 @@ agkozak_zsh_theme() {
 
     }
 
-   PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
-   RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)"
+    PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
+    RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)"
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

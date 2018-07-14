@@ -702,8 +702,8 @@ agkozak_zsh_theme() {
       )
 
     }
-
-    [[ -z AGKOZAK_ZPML_RPROMPT ]] && {
+    
+    [[ -z $AGKOZAK_ZPML_RPROMPT ]] && {
 
       # Right prompt
       typeset -ga AGKOZAK_ZPML_RPROMPT
@@ -714,7 +714,7 @@ agkozak_zsh_theme() {
     }
 
    PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
-   RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
+   RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)"
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

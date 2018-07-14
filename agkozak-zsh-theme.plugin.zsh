@@ -455,6 +455,139 @@ _agkozak_precmd() {
 }
 
 ############################################################
+# The agkozak-zsh-theme ZSH Prompt Macro Language
+############################################################
+
+# An extensible associative array containing macros
+typeset -gA AGKOZAK_ZPML_MACROS
+AGKOZAK_ZPML_MACROS=(
+  exit_status       '(%?%)'
+  user_host         '%n%1v'
+  pwd               '%2v'
+  vi_mode_indicator '$(_agkozak_vi_mode_indicator)'
+  git_branch_status '%3v'
+)
+
+
+
+############################################################
+# For printing parser errors
+#
+# Globals:
+#   AGKOZAK_HAS_COLORS
+#
+# Arguments:
+#   $1 Error text
+############################################################
+_agkozak_parser_error() {
+  (( AGKOZAK_HAS_COLORS )) && print -Pn "%F{red}" >&2
+  print -n "agkozak-zsh-theme: $1" >&2
+  (( AGKOZAK_HAS_COLORS )) && print -P "%f" >&2
+}
+
+############################################################
+# Parse an array and output a prompt
+#
+# Globals:
+#   AGKOZAK_HAS_COLORS
+#   AGKOZAK_ZPML_MACROS
+#
+# Arguments:
+#   $1 Name of prompt to be constructe
+############################################################
+_agkozak_construct_prompt() {
+  local ternary_stack
+
+  for i in $(eval echo -n "\$$1"); do
+    if [[ $ternary_stack == 'if' ]]; then
+      case $i in
+        exit_*)
+          if [[ ${i#exit_} == '0' ]]; then
+            echo -n '?'
+          else
+            echo -n "${i#exit_}?"
+          fi
+          ;;
+        superuser)
+          echo -n '!'
+          ;;
+        *) _agkozak_parser_error 'Unsupported condition.'
+          ;;
+      esac
+      ternary_stack+='cond'
+    else
+      case $i in
+        if)
+          echo -n '%('
+          ternary_stack+='if'
+          ;;
+        then|else)
+          echo -n '.'
+          ternary_stack+="$i"
+          ;;
+        fi)
+          if [[ $ternary_stack == 'ifcondthenelse' ]]; then
+            echo -n ')'
+          else                      # When `else' is implicit
+            echo -n '.)'
+          fi
+          ternary_stack=''
+          ;;
+        bold)
+          (( AGKOZAK_HAS_COLORS )) && {
+            echo -n '%B'
+          }
+          ;;
+        unbold)
+          (( AGKOZAK_HAS_COLORS )) && {
+            echo -n '%b'
+          }
+          ;;
+
+        fg_*)
+          (( AGKOZAK_HAS_COLORS )) && {
+            echo -n "%F{${i#fg_}}"
+          }
+          ;;
+        unfg)
+          (( AGKOZAK_HAS_COLORS )) && {
+            echo -n "%f"
+          }
+          ;;
+
+        bg_*)
+          (( AGKOZAK_HAS_COLORS )) && {
+            echo -n "%K{${i#bg_}}"
+          }
+          ;;
+        unbg)
+         (( AGKOZAK_HAS_COLORS )) && {
+            echo -n "%k"
+          }
+          ;;
+
+        reverse)
+          echo -n '%S'
+          ;;
+        unreverse)
+          echo -n '%s'
+          ;;
+        space) echo -n ' ' ;;
+        newline) echo -n $'\n' ;;
+        zshcode*) echo -n "${i#zshcode}" ;;
+        *)
+          [[ ${AGKOZAK_ZPML_MACROS[$i]} ]] && echo -n ${AGKOZAK_ZPML_MACROS[$i]}
+          ;;
+      esac
+    fi
+  done
+
+  if [[ $ternary_stack != '' ]]; then
+    _agkozak_parser_error "Invalid condition in $1."
+  fi
+}
+
+############################################################
 # Theme setup
 #
 # Globals:
@@ -505,7 +638,14 @@ agkozak_zsh_theme() {
     # TODO: This really belongs in the user's .zshrc; it is unrelated to
     # this theme
     unset zle_bracketed_paste
-  else
+
+  # If any of the original custom variables have been set, generate the prompts
+  # using the following code
+  elif (( AGKOZAK_MULTILINE != 1 )) \
+    || [[ ${AGKOZAK_COLORS_EXIT_STATUS} != 'red' ]] \
+    || [[ ${AGKOZAK_COLORS_USER_HOST} != 'green' ]] \
+    || [[ ${AGKOZAK_COLORS_PATH} != 'blue' ]] \
+    || [[ ${AGKOZAK_COLORS_BRANCH_STATUS} != 'yellow' ]]; then
     if (( AGKOZAK_HAS_COLORS )); then
 
       # The color left prompt
@@ -527,6 +667,54 @@ agkozak_zsh_theme() {
       # The monochrome right prompt
       RPROMPT='%3v'
     fi
+
+  # Dogfooding: We'll construct the prompt from ZPML
+  else
+    [[ -z $AGKOZAK_ZPML_PROMPT ]] && {
+
+      # Left prompt
+      typeset -ga AGKOZAK_ZPML_PROMPT
+      AGKOZAK_ZPML_PROMPT=(
+        if exit_0 then
+        else
+          bold fg_red exit_status unfg unbold space
+        fi
+
+        if superuser then
+          reverse bold
+        else
+          bold fg_green
+        fi
+
+        user_host
+
+        if superuser then
+          unbold unreverse
+        else
+          unfg unbold
+        fi
+
+        space
+
+        bold fg_blue pwd unfg unbold newline
+
+        vi_mode_indicator space
+      )
+
+    }
+
+    [[ -z AGKOZAK_ZPML_RPROMPT ]] && {
+
+      # Right prompt
+      typeset -ga AGKOZAK_ZPML_RPROMPT
+      AGKOZAK_ZPML_RPROMPT=(
+        fg_yellow git_branch_status unfg
+      )
+
+    }
+
+   PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
+   RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

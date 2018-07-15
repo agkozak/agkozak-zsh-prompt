@@ -466,8 +466,21 @@ AGKOZAK_ZPML_MACROS=(
   pwd               '%2v'
   vi_mode_indicator '$(_agkozak_vi_mode_indicator)'
   git_branch_status '%3v'
-  emacs_pwd         '$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
 )
+
+############################################################
+# Add a macro
+#
+# Globals:
+#   AGKOZAK_ZPML_MACROS
+#
+# Arguments:
+#   $1 Macro name
+#   $2 Macro (preferably quoted)
+############################################################
+add_macro() {
+  AGKOZAK_ZPML_MACROS+=( "$1" "$2" )
+}
 
 ############################################################
 # For printing parser errors
@@ -492,7 +505,7 @@ _agkozak_parser_error() {
 #   AGKOZAK_ZPML_MACROS
 #
 # Arguments:
-#   $1 Name of prompt to be constructe
+#   $1 Name of prompt to be constructed
 ############################################################
 _agkozak_construct_prompt() {
   local ternary_stack
@@ -542,7 +555,6 @@ _agkozak_construct_prompt() {
             echo -n '%b'
           }
           ;;
-
         fg_*)
           (( AGKOZAK_HAS_COLORS )) && {
             echo -n "%F{${i#fg_}}"
@@ -573,7 +585,6 @@ _agkozak_construct_prompt() {
           ;;
         space) echo -n ' ' ;;
         newline) echo -n $'\n' ;;
-        zshcode*) echo -n "${i#zshcode}" ;;
         *)
           [[ -n ${AGKOZAK_ZPML_MACROS[$i]} ]] && echo -n ${AGKOZAK_ZPML_MACROS[$i]}
           ;;
@@ -625,6 +636,10 @@ agkozak_zsh_theme() {
 
   # The Emacs shell has only limited support for some zsh features
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
+    add_macro emacs_pwd '$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
+    add_macro sync_git_branch_status '$(_agkozak_branch_status)'
+    add_macro prompt_char '%#'
+
     AGKOZAK_ZPML_PROMPT=(
       if is_exit_0 then
       else
@@ -634,8 +649,8 @@ agkozak_zsh_theme() {
       user_host space
 
       emacs_pwd
-      zshcode'$(_agkozak_branch_status)' space
-      zshcode'%#' space
+      sync_git_branch_status space
+      prompt_char space
     )
 
     PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
@@ -657,10 +672,12 @@ agkozak_zsh_theme() {
     [[ -z "${AGKOZAK_ZPML_PROMPT}${AGKOZAK_ZPML_RPROMPT}" ]] && {
 
       # Left prompt
+      add_macro custom_whitespace '${AGKOZAK_PROMPT_WHITESPACE}'
+
       typeset -ga AGKOZAK_ZPML_PROMPT
       AGKOZAK_ZPML_PROMPT=(
         if is_exit_0 then
-        else                                                # Default: red
+        else                                                 # Default: red
           bold fg_${AGKOZAK_COLORS_EXIT_STATUS} exit_status unfg unbold space
         fi
 
@@ -670,7 +687,7 @@ agkozak_zsh_theme() {
         if is_superuser then
           reverse bold
         else
-          bold fg_${AGKOZAK_COLORS_USER_HOST}               # Default: green
+          bold fg_${AGKOZAK_COLORS_USER_HOST}                # Default: green
         fi
 
         user_host
@@ -682,8 +699,8 @@ agkozak_zsh_theme() {
         fi
 
         space
-        bold fg_${AGKOZAK_COLORS_PATH} pwd unfg unbold      # Default: blue
-        zshcode'${AGKOZAK_PROMPT_WHITESPACE}'               # Default: newline
+        bold fg_${AGKOZAK_COLORS_PATH} pwd unfg unbold       # Default: blue
+        custom_whitespace                                    # Default: newline
 
         vi_mode_indicator space
       )

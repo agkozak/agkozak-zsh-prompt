@@ -466,6 +466,7 @@ AGKOZAK_ZPML_MACROS=(
   pwd               '%2v'
   vi_mode_indicator '$(_agkozak_vi_mode_indicator)'
   git_branch_status '%3v'
+  emacs_pwd         '$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
 )
 
 ############################################################
@@ -624,11 +625,28 @@ agkozak_zsh_theme() {
 
   # The Emacs shell has only limited support for some zsh features
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
-    PROMPT='%(?..(%?%) )'
-    PROMPT+='%n%1v '
-    PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
-    PROMPT+='$(_agkozak_branch_status) '
-    PROMPT+='%# '
+    AGKOZAK_ZPML_PROMPT=(
+      if is_exit_0 then
+      else
+        exit_status space
+      fi
+
+      user_host space
+
+      emacs_pwd
+      zshcode'$(_agkozak_branch_status)' space
+      zshcode'%#' space
+    )
+
+    PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
+
+    # The prompt produced is:
+    #
+    # PROMPT='%(?..(%?%) )'
+    # PROMPT+='%n%1v '
+    # PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
+    # PROMPT+='$(_agkozak_branch_status) '
+    # PROMPT+='%# '
 
     # TODO: This really belongs in the user's .zshrc; it is unrelated to
     # this theme
@@ -680,7 +698,7 @@ agkozak_zsh_theme() {
 
     PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
     RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)"
-    
+
     # The color prompts produced are:
     #
     # PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'

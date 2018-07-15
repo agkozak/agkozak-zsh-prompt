@@ -28,6 +28,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - [Blank Lines Between Prompts](#blank-lines-between-prompts)
 - [Optional Single-Line Prompt](#optional-single-line-prompt)
 - [Custom Colors](#custom-colors)
+- [ZPML: ZSH Prompt Macro Language](#zpml-zsh-prompt-macro-language)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## Installation
@@ -178,6 +179,44 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
     AGKOZAK_COLORS_USER_HOST=green
     AGKOZAK_COLORS_PATH=blue
     AGKOZAK_COLORS_BRANCH_STATUS=yellow
+
+## ZPML: ZSH Prompt Macro Language
+
+*July 14, 2018: By request, I have just introduced the alpha version of a simple macro language that simplifies the task of customizing prompts. [agkozak-zsh-theme is now written in it!](https://en.wikipedia.org/wiki/Eating_your_own_dog_food) Please help me to experiment with it. There will doubtless be small but possibly breaking changes to the syntax early on in its development, and the goal is to make it moderately extensible (expect documentation soon).*
+
+The default prompts (left and right) can be produced with the following code:
+
+```
+AGKOZAK_ZPML_PROMPT=(
+  if is_exit_0 then
+  else
+    bold fg_red exit_status unfg unbold space
+  fi
+
+  if is_superuser then
+    reverse bold
+  else
+    bold fg_green
+  fi
+
+  user_host
+
+  if is_superuser then
+    unbold unreverse
+  else
+    unfg unbold
+  fi
+
+  space
+  bold fg_blue pwd unfg unbold newline
+
+  vi_mode_indicator space
+)
+
+AGKOZAK_ZPML_RPROMPT=(
+  fg_yellow git_branch_status unfg
+)
+```
 
 ## Asynchronous Methods
 

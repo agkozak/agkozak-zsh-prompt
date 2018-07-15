@@ -224,7 +224,7 @@ PROMPT=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{
 RPROMPT='%F{yellow}%3v%f'
 ```
 
-For an example of using ZPML to customize the prompt, consider the case of [@borekb](https://github.com/user/borekb): he doesn't need to see user and hostname, likes his git status to be in the left prompt (and in color 243), and prefers the `bash`-style prompt character `$` over ZSH's native `%`. He can achieve all that by putting the following into his `.zshrc` before loading agkozak-zsh-theme:
+If a user prefers not to see the username and hostname, likes the git status to be in the left prompt (and in color 243), and prefers the `bash`-style prompt character `$` over ZSH's native `%`, that can all be accomplished by putting the following into `.zshrc` before agkozak-zsh-theme is loaded:
 
 ```
 AGKOZAK_ZPML_PROMPT=(

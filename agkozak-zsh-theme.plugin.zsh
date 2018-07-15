@@ -674,14 +674,14 @@ agkozak_zsh_theme() {
       typeset -ga AGKOZAK_ZPML_PROMPT
       AGKOZAK_ZPML_PROMPT=(
         if is_exit_0 then
-        else
-          bold fg_red exit_status unfg unbold space
+        else                                                # Default: red
+          bold fg_${AGKOZAK_COLORS_EXIT_STATUS} exit_status unfg unbold space
         fi
 
         if is_superuser then
           reverse bold
         else
-          bold fg_green
+          bold fg_${AGKOZAK_COLORS_USER_HOST}               # Default: green
         fi
 
         user_host
@@ -693,16 +693,16 @@ agkozak_zsh_theme() {
         fi
 
         space
-
-        bold fg_blue pwd unfg unbold newline
+                                                            # Default: blue
+        bold fg_${AGKOZAK_COLORS_PATH} pwd unfg unbold newline
 
         vi_mode_indicator space
       )
 
       # Right prompt
       typeset -ga AGKOZAK_ZPML_RPROMPT
-      AGKOZAK_ZPML_RPROMPT=(
-        fg_yellow git_branch_status unfg
+      AGKOZAK_ZPML_RPROMPT=(                                # Default: yellow
+      fg_${AGKOZAK_COLORS_BRANCH_STATUS} git_branch_status unfg
       )
 
     }

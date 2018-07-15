@@ -637,7 +637,6 @@ agkozak_zsh_theme() {
     # this theme
     unset zle_bracketed_paste
 
-  # If any of the original custom variables have been set, generate the prompts
   # using the following code
   elif (( AGKOZAK_MULTILINE != 1 )) \
     || [[ ${AGKOZAK_COLORS_EXIT_STATUS} != 'red' ]] \
@@ -693,8 +692,8 @@ agkozak_zsh_theme() {
         fi
 
         space
-                                                            # Default: blue
-        bold fg_${AGKOZAK_COLORS_PATH} pwd unfg unbold newline
+        bold fg_${AGKOZAK_COLORS_PATH} pwd unfg unbold      # Default: blue
+        zshcode'${AGKOZAK_PROMPT_WHITESPACE}'               # Default: newline
 
         vi_mode_indicator space
       )
@@ -709,6 +708,17 @@ agkozak_zsh_theme() {
 
     PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
     RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)"
+    
+    # The color prompts produced are:
+    #
+    # PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+    # PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+    # PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
+    # PROMPT+='$(_agkozak_vi_mode_indicator) '
+
+    # The color right prompt
+    # RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
+
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

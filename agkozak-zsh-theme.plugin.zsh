@@ -499,14 +499,14 @@ _agkozak_construct_prompt() {
   for i in $(eval echo -n "\$$1"); do
     if [[ $ternary_stack == 'if' ]]; then
       case $i in
-        exit_*)
-          if [[ ${i#exit_} == '0' ]]; then
+        is_exit_*)
+          if [[ ${i#is_exit_} == '0' ]]; then
             echo -n '?'
           else
-            echo -n "${i#exit_}?"
+            echo -n "${i#is_exit_}?"
           fi
           ;;
-        superuser)
+        is_superuser)
           echo -n '!'
           ;;
         *) _agkozak_parser_error 'Unsupported condition.'
@@ -673,12 +673,12 @@ agkozak_zsh_theme() {
       # Left prompt
       typeset -ga AGKOZAK_ZPML_PROMPT
       AGKOZAK_ZPML_PROMPT=(
-        if exit_0 then
+        if is_exit_0 then
         else
           bold fg_red exit_status unfg unbold space
         fi
 
-        if superuser then
+        if is_superuser then
           reverse bold
         else
           bold fg_green
@@ -686,7 +686,7 @@ agkozak_zsh_theme() {
 
         user_host
 
-        if superuser then
+        if is_superuser then
           unbold unreverse
         else
           unfg unbold

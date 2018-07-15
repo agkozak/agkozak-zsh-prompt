@@ -622,9 +622,6 @@ agkozak_zsh_theme() {
     psvar[1]=''
   fi
 
-  # When the user is a superuser, the username and hostname are
-  # displayed in reverse video
-
   # The Emacs shell has only limited support for some zsh features
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
@@ -637,34 +634,6 @@ agkozak_zsh_theme() {
     # this theme
     unset zle_bracketed_paste
 
-  # using the following code
-  elif (( AGKOZAK_MULTILINE != 1 )) \
-    || [[ ${AGKOZAK_COLORS_EXIT_STATUS} != 'red' ]] \
-    || [[ ${AGKOZAK_COLORS_USER_HOST} != 'green' ]] \
-    || [[ ${AGKOZAK_COLORS_PATH} != 'blue' ]] \
-    || [[ ${AGKOZAK_COLORS_BRANCH_STATUS} != 'yellow' ]]; then
-    if (( AGKOZAK_HAS_COLORS )); then
-
-      # The color left prompt
-      PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-      PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
-      PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
-      PROMPT+='$(_agkozak_vi_mode_indicator) '
-
-      # The color right prompt
-      RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
-    else
-
-      # The monochrome left prompt
-      PROMPT='%(?..(%?%) )'
-      PROMPT+='%(!.%S.)%n%1v%(!.%s.) '
-      PROMPT+=$'%2v${AGKOZAK_PROMPT_WHITESPACE}'
-      PROMPT+='$(_agkozak_vi_mode_indicator) '
-
-      # The monochrome right prompt
-      RPROMPT='%3v'
-    fi
-
   # Dogfooding: We'll construct the prompt from ZPML
   else
     [[ -z "${AGKOZAK_ZPML_PROMPT}${AGKOZAK_ZPML_RPROMPT}" ]] && {
@@ -676,6 +645,9 @@ agkozak_zsh_theme() {
         else                                                # Default: red
           bold fg_${AGKOZAK_COLORS_EXIT_STATUS} exit_status unfg unbold space
         fi
+
+        # When the user is a superuser, the username and hostname are
+        # displayed in reverse video
 
         if is_superuser then
           reverse bold
@@ -701,7 +673,7 @@ agkozak_zsh_theme() {
       # Right prompt
       typeset -ga AGKOZAK_ZPML_RPROMPT
       AGKOZAK_ZPML_RPROMPT=(                                # Default: yellow
-      fg_${AGKOZAK_COLORS_BRANCH_STATUS} git_branch_status unfg
+        fg_${AGKOZAK_COLORS_BRANCH_STATUS} git_branch_status unfg
       )
 
     }

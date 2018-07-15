@@ -218,6 +218,36 @@ AGKOZAK_ZPML_RPROMPT=(
 )
 ```
 
+The ZSH code generated (when colors are available) is
+```
+PROMPT=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b\n$(_agkozak_vi_mode_indicator) '
+RPROMPT='%F{yellow}%3v%f'
+```
+
+For an example of using ZPML to customize the prompt, consider the case of @borekb: he doesn't need to see user and hostname, likes his git status to be in the left prompt (and in color 243), and prefers the `bash`-style prompt character `$` over ZSH's native `%`. He can achieve all that by putting the following into his `.zshrc` before loading agkozak-zsh-theme:
+
+```
+AGKOZAK_ZPML_PROMPT=(
+  if is_exit_0 then
+  else
+    bold fg_red exit_status unfg unbold space
+  fi
+
+  bold fg_blue pwd unfg unbold
+
+  fg_243 git_branch_status unfg newline
+  
+  if is_superuser then
+    zshcode'#'
+  else
+    zshcode'$'
+  fi
+  space
+)
+
+AGKOZAK_ZPML_RPROMPT=()
+```
+
 ## Asynchronous Methods
 
 agkozak-zsh-theme has two different ways of displaying its Git status asynchronously and thereby of keeping the prompt swift: it uses the [`zsh-async`](https://github.com/mafredri/zsh-async) library when possible, falling back when necessary on a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/).

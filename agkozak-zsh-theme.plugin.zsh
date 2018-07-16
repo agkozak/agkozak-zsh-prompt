@@ -493,6 +493,7 @@ add_macro() {
 ############################################################
 _agkozak_parser_error() {
   (( AGKOZAK_HAS_COLORS )) && print -Pn "%F{red}" >&2
+  print
   print -n "agkozak-zsh-theme: $1" >&2
   (( AGKOZAK_HAS_COLORS )) && print -P "%f" >&2
 }
@@ -526,7 +527,7 @@ _agkozak_construct_prompt() {
         is_superuser)
           echo -n '!'
           ;;
-        *) _agkozak_parser_error 'Unsupported condition.'
+        *) _agkozak_parser_error 'Unsupported condition.' && return
           ;;
       esac
       ternary_stack+='cond'
@@ -536,7 +537,7 @@ _agkozak_construct_prompt() {
       case $i in
         if)
           if [[ $ternary_stack != '' ]]; then
-            _agkozak_parser_error $'Missing \'fi\'.'
+            _agkozak_parser_error $'Missing \'fi\'.' && return
           else
             echo -n '%('
             ternary_stack+='if'
@@ -544,7 +545,7 @@ _agkozak_construct_prompt() {
           ;;
         then)
           if [[ $ternary_stack != 'ifcond' ]]; then
-            _agkozak_parser_error $'Missing \`if\' or condition.'
+            _agkozak_parser_error $'Missing \`if\' or condition.' && return
           else
             echo -n '.'           # TODO: a period may be incorrect, depending on
             ternary_stack+="$i"   # what the ternary is supposed to print.
@@ -552,7 +553,8 @@ _agkozak_construct_prompt() {
           ;;
         else)
           if [[ $ternary_stack != 'ifcondthen' ]]; then
-            _agkozak_parser_error $'Missing \`if\', condition, or \`then\'.'
+            _agkozak_parser_error $'Missing \`if\', condition, or \`then\'.' \
+              && return
           else
             echo -n '.'           # TODO: ditto.
             ternary_stack+="$i"
@@ -565,7 +567,8 @@ _agkozak_construct_prompt() {
           elif [[ $ternary_stack == 'ifcondthen' ]]; then
             echo -n '.)'          # TODO: see above.
           else
-            _agkozak_parser_error $'Missing \`if\', condition, or \`then\'.'
+            _agkozak_parser_error $'Missing \`if\', condition, or \`then\'.' \
+              && return
           fi
           ternary_stack=''
           ;;
@@ -600,7 +603,6 @@ _agkozak_construct_prompt() {
             echo -n "%k"
           }
           ;;
-
         reverse)
           echo -n '%S'
           ;;

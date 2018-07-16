@@ -236,11 +236,25 @@ FOO=( is_superuser then literal '#' else literal '!' )
 
 BAR=( if then literal '#' else literal '!' )
 
-if _agkozak_construct_prompt FOO &> /dev/null \
-  && _agkozak_construct_prompt BAR &> /dev/null; then
+if _agkozak_construct_prompt FOO 1> /dev/null \
+  && _agkozak_construct_prompt BAR 1> /dev/null; then
   results "Missing \'if\' or condition" pass
 else
   results "Missing \'if\' or condition" fail
 fi
 
 unset FOO BAR
+
+# 8. Missing `then'
+
+source ../agkozak-zsh-theme.plugin.zsh
+
+FOO=( if _is_superuser literal '#' else literal '!' )
+
+if _agkozak_construct_prompt FOO 1> /dev/null; then
+  results "Missing \'then\'" pass
+else
+  results "Missing \'then\'" fail
+fi
+
+unset FOO

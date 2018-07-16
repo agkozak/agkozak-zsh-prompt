@@ -535,8 +535,12 @@ _agkozak_construct_prompt() {
     else
       case $i in
         if)
-          echo -n '%('
-          ternary_stack+='if'
+          if [[ $ternary_stack != '' ]]; then
+            _agkozak_parser_error $'Missing \'fi\'.'
+          else
+            echo -n '%('
+            ternary_stack+='if'
+          fi
           ;;
         then)
           if [[ $ternary_stack != 'ifcond' ]]; then
@@ -547,14 +551,21 @@ _agkozak_construct_prompt() {
           fi
           ;;
         else)
-          echo -n '.'           # TODO: ditto.
-          ternary_stack+="$i"
+          if [[ $ternary_stack != 'ifcondthen' ]]; then
+            _agkozak_parser_error $'Missing \`if\', condition, or \`then\'.'
+          else
+            echo -n '.'           # TODO: ditto.
+            ternary_stack+="$i"
+          fi
           ;;
         fi)
           if [[ $ternary_stack == 'ifcondthenelse' ]]; then
             echo -n ')'
-          else                      # When `else' is implicit
-            echo -n '.)'
+          # When `else' is implicit
+          elif [[ $ternary_stack == 'ifcondthen' ]]; then
+            echo -n '.)'          # TODO: see above.
+          else
+            _agkozak_parser_error $'Missing \`if\', condition, or \`then\'.'
           fi
           ternary_stack=''
           ;;

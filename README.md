@@ -218,7 +218,7 @@ AGKOZAK_ZPML_RPROMPT=(
 )
 ```
 
-The ZSH code generated (when colors are available) is
+The ZSH code generated (when color is available) is
 ```
 PROMPT=$'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b\n$(_agkozak_vi_mode_indicator) '
 RPROMPT='%F{yellow}%3v%f'
@@ -238,9 +238,9 @@ AGKOZAK_ZPML_PROMPT=(
   fg_243 git_branch_status unfg newline
   
   if is_superuser then
-    zshcode'#'
+    literal '#'
   else
-    zshcode'$'
+    literal '$'
   fi
   space
 )

@@ -508,10 +508,13 @@ _agkozak_parser_error() {
 #   $1 Name of prompt to be constructed
 ############################################################
 _agkozak_construct_prompt() {
-  local ternary_stack
+  local ternary_stack literal
 
   for i in $(eval echo -n "\$$1"); do
-    if [[ $ternary_stack == 'if' ]]; then
+    if (( literal )); then
+      echo -n "$i"
+      literal=0
+    elif [[ $ternary_stack == 'if' ]]; then
       case $i in
         is_exit_*)
           if [[ ${i#is_exit_} == '0' ]]; then
@@ -527,6 +530,8 @@ _agkozak_construct_prompt() {
           ;;
       esac
       ternary_stack+='cond'
+    elif [[ $i == 'literal' ]]; then
+      literal=1
     else
       case $i in
         if)

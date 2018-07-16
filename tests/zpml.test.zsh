@@ -265,7 +265,7 @@ source ../agkozak-zsh-theme.plugin.zsh
 
 FOO=( if is_superuser then literal '#' else literal '!' )
 
-  if _agkozak_construct_prompt FOO 1> /dev/null; then
+if _agkozak_construct_prompt FOO 1> /dev/null; then
   results "missing \'fi\'" pass
 else
   results "missing \'fi\'" fail

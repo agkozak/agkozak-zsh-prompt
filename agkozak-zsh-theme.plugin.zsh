@@ -509,7 +509,7 @@ _agkozak_parser_error() {
 #   $1 Name of prompt to be constructed
 ############################################################
 _agkozak_construct_prompt() {
-  local ternary_stack literal
+  local ternary_stack literal color_stack
 
   for i in $(eval echo -n "\$$1"); do
     if (( literal )); then
@@ -575,39 +575,46 @@ _agkozak_construct_prompt() {
         bold)
           (( AGKOZAK_HAS_COLORS )) && {
             echo -n '%B'
+            color_stack+='bold'
           }
           ;;
         unbold)
           (( AGKOZAK_HAS_COLORS )) && {
             echo -n '%b'
+          color_stack="${color_stack/bold}"
           }
           ;;
         fg_*)
           (( AGKOZAK_HAS_COLORS )) && {
             echo -n "%F{${i#fg_}}"
+            color_stack+="fg"
           }
           ;;
         unfg)
           (( AGKOZAK_HAS_COLORS )) && {
             echo -n "%f"
+            color_stack="${color_stack/fg}"
           }
           ;;
-
         bg_*)
           (( AGKOZAK_HAS_COLORS )) && {
             echo -n "%K{${i#bg_}}"
+            color_stack+="bg"
           }
           ;;
         unbg)
          (( AGKOZAK_HAS_COLORS )) && {
             echo -n "%k"
+            color_stack="${color_stack/bg}"
           }
           ;;
         reverse)
           echo -n '%S'
+          color_stack+="reverse"
           ;;
         unreverse)
           echo -n '%s'
+          color_stack="${color_stack/reverse}"
           ;;
         space) echo -n ' ' ;;
         newline) echo -n $'\n' ;;
@@ -620,6 +627,11 @@ _agkozak_construct_prompt() {
 
   if [[ $ternary_stack != '' ]]; then
     _agkozak_parser_error "Invalid condition in $1."
+  fi
+
+  if [[ $color_stack != '' ]]; then
+    echo $color_stack
+    _agkozak_parser_error "You probably forgot to 'unbold', 'un_fg', 'un_bg' or 'unreverse' something in $1."
   fi
 }
 

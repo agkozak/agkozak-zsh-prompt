@@ -511,6 +511,16 @@ _agkozak_parser_error() {
 _agkozak_construct_prompt() {
   local ternary_stack literal color_stack
 
+  local -A styles
+  styles=(
+    bold      '%B'
+    unbold    '%b'
+    reverse   '%S'
+    unreverse '%s'
+    unfg      '%f'
+    unbg      '%b' 
+  )
+
   for i in $(eval echo -n "\$$1"); do
     if (( literal )); then
       echo -n "$i"
@@ -573,15 +583,9 @@ _agkozak_construct_prompt() {
           ternary_stack=''
           ;;
         bold)
-          (( AGKOZAK_HAS_COLORS )) && {
-            echo -n '%B'
-            color_stack+='bold'
-          }
-          ;;
-        unbold)
-          (( AGKOZAK_HAS_COLORS )) && {
-            echo -n '%b'
-          color_stack="${color_stack/bold}"
+          (( AGKOZAK_HAS_COLORS )) && { # TODO: Should non-color terminals
+            echo -n $styles[$i]         # display bold?
+            color_stack+="$i"
           }
           ;;
         fg_*)
@@ -590,31 +594,25 @@ _agkozak_construct_prompt() {
             color_stack+="fg"
           }
           ;;
-        unfg)
-          (( AGKOZAK_HAS_COLORS )) && {
-            echo -n "%f"
-            color_stack="${color_stack/fg}"
-          }
-          ;;
         bg_*)
           (( AGKOZAK_HAS_COLORS )) && {
             echo -n "%K{${i#bg_}}"
             color_stack+="bg"
           }
           ;;
-        unbg)
-         (( AGKOZAK_HAS_COLORS )) && {
-            echo -n "%k"
-            color_stack="${color_stack/bg}"
+        reverse)      # TODO: assumes that non-color terminals can
+          echo -n $styles[$i]   # handle standout text. 
+          color_stack="${color_stack/$i}"
+          ;;
+        unbold|unfg|unbg)
+          (( AGKOZAK_HAS_COLORS )) && {
+            echo -n $styles[$i]
+            color_stack="${color_stack/${i#un}}"
           }
           ;;
-        reverse)
-          echo -n '%S'
-          color_stack+="reverse"
-          ;;
-        unreverse)
-          echo -n '%s'
-          color_stack="${color_stack/reverse}"
+        unreverse)    # TODO: ditto.
+          echo -n $styles[$i]
+          color_stack="${color_stack/${i#un}}"
           ;;
         space) echo -n ' ' ;;
         newline) echo -n $'\n' ;;

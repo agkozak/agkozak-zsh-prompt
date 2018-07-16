@@ -525,6 +525,8 @@ _agkozak_construct_prompt() {
     if (( literal )); then
       echo -n "$i"
       literal=0
+    elif [[ $i == 'literal' ]]; then
+      literal=1
     elif [[ $ternary_stack == 'if' ]]; then
       case $i in
         is_exit_*)
@@ -541,8 +543,6 @@ _agkozak_construct_prompt() {
           ;;
       esac
       ternary_stack+='cond'
-    elif [[ $i == 'literal' ]]; then
-      literal=1
     else
       case $i in
         if)
@@ -600,9 +600,9 @@ _agkozak_construct_prompt() {
             color_stack+="bg"
           }
           ;;
-        reverse)      # TODO: assumes that non-color terminals can
+        reverse)                # TODO: assumes that non-color terminals can
           echo -n $styles[$i]   # handle standout text. 
-          color_stack="${color_stack/$i}"
+          color_stack="$i"
           ;;
         unbold|unfg|unbg)
           (( AGKOZAK_HAS_COLORS )) && {
@@ -610,7 +610,7 @@ _agkozak_construct_prompt() {
             color_stack="${color_stack/${i#un}}"
           }
           ;;
-        unreverse)    # TODO: ditto.
+        unreverse)              # TODO: ditto.
           echo -n $styles[$i]
           color_stack="${color_stack/${i#un}}"
           ;;

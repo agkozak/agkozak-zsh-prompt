@@ -249,12 +249,26 @@ unset FOO BAR
 
 source ../agkozak-zsh-theme.plugin.zsh
 
-FOO=( if _is_superuser literal '#' else literal '!' )
+FOO=( if is_superuser literal '#' else literal '!' )
 
 if _agkozak_construct_prompt FOO 1> /dev/null; then
-  results "Missing \'then\'" pass
+  results "missing \'then\'" pass
 else
-  results "Missing \'then\'" fail
+  results "missing \'then\'" fail
+fi
+
+unset FOO
+
+# 9. Missing `fi'
+
+source ../agkozak-zsh-theme.plugin.zsh
+
+FOO=( if is_superuser then literal '#' else literal '!' )
+
+  if _agkozak_construct_prompt FOO 1> /dev/null; then
+  results "missing \'fi\'" pass
+else
+  results "missing \'fi\'" fail
 fi
 
 unset FOO

@@ -582,11 +582,9 @@ _agkozak_construct_prompt() {
           fi
           ternary_stack=''
           ;;
-        bold)
-          (( AGKOZAK_HAS_COLORS )) && { # TODO: Should non-color terminals
-            echo -n $styles[$i]         # display bold?
-            color_stack+="$i"
-          }
+        bold|reverse)
+          echo -n $styles[$i]
+          color_stack+="$i"
           ;;
         fg_*)
           (( AGKOZAK_HAS_COLORS )) && {
@@ -600,17 +598,13 @@ _agkozak_construct_prompt() {
             color_stack+="bg"
           }
           ;;
-        reverse)                # TODO: assumes that non-color terminals can
-          echo -n $styles[$i]   # handle standout text. 
-          color_stack="$i"
-          ;;
-        unbold|unfg|unbg)
+        unfg|unbg)
           (( AGKOZAK_HAS_COLORS )) && {
             echo -n $styles[$i]
             color_stack="${color_stack/${i#un}}"
           }
           ;;
-        unreverse)              # TODO: ditto.
+        unbold|unreverse)
           echo -n $styles[$i]
           color_stack="${color_stack/${i#un}}"
           ;;

@@ -741,8 +741,7 @@ agkozak_zsh_theme() {
 agkozak_zsh_theme
 
 # Clean up environment
-unset AGKOZAK_THEME_DIR AGKOZAK_HAS_COLORS
-unfunction _agkozak_load_async_lib _agkozak_has_usr1 \
-  _agkozak_is_ssh
+unset AGKOZAK_THEME_DIR
+unfunction _agkozak_load_async_lib _agkozak_has_usr1
 
 # vim: ts=2:et:sts=2:sw=2:

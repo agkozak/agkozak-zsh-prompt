@@ -538,8 +538,16 @@ _agkozak_construct_prompt() {
           echo -n '%('
           ternary_stack+='if'
           ;;
-        then|else)
-          echo -n '.'
+        then)
+          if [[ $ternary_stack != 'ifcond' ]]; then
+            _agkozak_parser_error $'Missing \`if\' or condition.'
+          else
+            echo -n '.'           # TODO: a period may be incorrect, depending on
+            ternary_stack+="$i"   # what the ternary is supposed to print.
+          fi
+          ;;
+        else)
+          echo -n '.'           # TODO: ditto.
           ternary_stack+="$i"
           ;;
         fi)

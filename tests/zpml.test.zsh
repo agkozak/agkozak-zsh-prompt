@@ -173,3 +173,74 @@ else
 fi
 
 unset AGKOZAK_ZPML_PROMPT
+
+# 5. borekb B&@
+
+source ../agkozak-zsh-theme.plugin.zsh
+AGKOZAK_HAS_COLORS=0
+
+AGKOZAK_ZPML_PROMPT=(
+  if is_exit_0 then
+  else
+    bold fg_red exit_status unfg unbold space
+  fi
+
+  bold fg_blue pwd unfg unbold
+
+  fg_243 git_branch_status unfg newline
+
+  if is_superuser then
+    literal '#'
+  else
+    literal '$'
+  fi
+  space
+)
+
+PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
+
+if [[ $PROMPT == $'%(?..(%?%) )%2v%3v\n%(!.#.$) ' ]]; then
+  results 'borekb B&W' pass
+else
+  results 'borekb B&W' fail
+fi
+
+unset AGKOZAK_ZPML_PROMPT
+
+# 6. Empty condition
+
+source ../agkozak-zsh-theme.plugin.zsh
+
+FOO=(
+  if is_superuser
+  then
+  else
+  fi
+)
+
+BAR="$(_agkozak_construct_prompt FOO)"
+
+if [[ $BAR == '%(!..)' ]]; then
+  results 'Empty condition' pass
+else
+  results 'Empty condition' fail
+fi
+
+unset FOO BAR
+
+#  7. Missing `if' or condition
+
+source ../agkozak-zsh-theme.plugin.zsh
+
+FOO=( is_superuser then literal '#' else literal '!' )
+
+BAR=( if then literal '#' else literal '!' )
+
+if _agkozak_construct_prompt FOO &> /dev/null \
+  && _agkozak_construct_prompt BAR &> /dev/null; then
+  results "Missing \'if\' or condition" pass
+else
+  results "Missing \'if\' or condition" fail
+fi
+
+unset FOO BAR

@@ -18,7 +18,7 @@ results() {
 source ../agkozak-zsh-theme.plugin.zsh
 AGKOZAK_HAS_COLORS=1
 
-add_macro custom_whitespace '${AGKOZAK_PROMPT_WHITESPACE}'
+set_macro custom_whitespace '${AGKOZAK_PROMPT_WHITESPACE}'
 
 AGKOZAK_ZPML_PROMPT=(
   if is_exit_0 then
@@ -114,9 +114,9 @@ unset AGKOZAK_ZPML_PROMPT AGKOZAK_ZPML_RPROMPT
 
 source ../agkozak-zsh-theme.plugin.zsh
 
-add_macro emacs_pwd '$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
-add_macro sync_git_branch_status '$(_agkozak_branch_status)'
-add_macro prompt_char '%#'
+set_macro emacs_pwd '$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
+set_macro sync_git_branch_status '$(_agkozak_branch_status)'
+set_macro prompt_char '%#'
 
 AGKOZAK_ZPML_PROMPT=(
   if is_exit_0 then
@@ -199,7 +199,7 @@ AGKOZAK_ZPML_PROMPT=(
 
 PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
 
-if [[ $PROMPT == $'%(?..(%?%) )%2v%3v\n%(!.#.$) ' ]]; then
+if [[ $PROMPT == $'%(?..%B(%?%)%b )%B%2v%b%3v\n%(!.#.$) ' ]]; then
   results 'borekb B&W' pass
 else
   results 'borekb B&W' fail

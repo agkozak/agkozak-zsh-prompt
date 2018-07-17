@@ -1,12 +1,18 @@
 Goals for agkozak-zsh-theme v3.0.0
 ==================================
 
+# Macros
 - Come up with names for ternary conditions and work into parser
 - Rewrite how parser errors are generated
-- Provide global associative array for Git branch status symbols
 - Simplify the output of built-in functions and "macroize" them so that people can see how to customize them
+- Examples of how to write themes with macros and perhaps even custom functions
+
+# Other customizations
+- Provide global associative array for Git branch status symbols
 - Allow two global strings to override the default prompts entirely
 - Add a function to precmd to check for changes to customizations and themes and switch on the fly
 - Add a few default themes (perhaps an agkozak2 without right prompt and "impure")
-- Examples of how to write themes with macros and perhaps even custom functions
+- See GitHub pull request for other customization ideas
+
+# Marketing
 - Refer to the project as a prompt, not a theme, throughout. Consider changing the repo name, etc.

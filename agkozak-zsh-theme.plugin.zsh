@@ -538,7 +538,7 @@ _agkozak_construct_prompt() {
         is_superuser)
           echo -n '!'
           ;;
-        *) _agkozak_parser_error "Unsupported condition: $i" && return
+        *) _agkozak_parser_error "Unsupported condition: $i" && return 1
           ;;
       esac
       ternary_stack+='cond'
@@ -546,7 +546,7 @@ _agkozak_construct_prompt() {
       case $i in
         if)
           if [[ $ternary_stack != '' ]]; then
-            _agkozak_parser_error $'Missing \'fi\'.' && return
+            _agkozak_parser_error $'Missing \'fi\'.' && return 1
           else
             echo -n '%('
             ternary_stack+='if'
@@ -554,7 +554,7 @@ _agkozak_construct_prompt() {
           ;;
         then)
           if [[ $ternary_stack != 'ifcond' ]]; then
-            _agkozak_parser_error $'Missing \`if\' or condition.' && return
+            _agkozak_parser_error $'Missing \`if\' or condition.' && return 1
           else
             echo -n '.'           # TODO: a period may be incorrect, depending on
             ternary_stack+="$i"   # what the ternary is supposed to print.
@@ -577,7 +577,7 @@ _agkozak_construct_prompt() {
             echo -n '.)'          # TODO: see above.
           else
             _agkozak_parser_error $'Missing \`if\', condition, or \`then\'.' \
-              && return
+              && return 1
           fi
           ternary_stack=''
           ;;

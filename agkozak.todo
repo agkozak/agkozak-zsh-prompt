@@ -11,7 +11,7 @@ Goals for agkozak-zsh-theme v3.0.0
 - Provide global associative array for Git branch status symbols
 - Allow two global strings to override the default prompts entirely
 - Add a function to precmd to check for changes to customizations and themes and switch on the fly
-- Add a few default themes (perhaps an agkozak2 without right prompt and "impure")
+- Add a few default themes (perhaps an agkozak2 without right prompt and "impure") with a command to switch between theme
 - See GitHub pull request for other customization ideas
 
 # Marketing

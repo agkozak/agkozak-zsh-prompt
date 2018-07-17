@@ -492,7 +492,6 @@ set_macro() {
 ############################################################
 _agkozak_parser_error() {
   (( AGKOZAK_HAS_COLORS )) && print -Pn "%F{red}" >&2
-  print
   print -n "agkozak-zsh-theme: $1" >&2
   (( AGKOZAK_HAS_COLORS )) && print -P "%f" >&2
 }
@@ -517,7 +516,7 @@ _agkozak_construct_prompt() {
     reverse   '%S'
     unreverse '%s'
     unfg      '%f'
-    unbg      '%b' 
+    unbg      '%b'
   )
 
   for i in $(eval echo -n "\$$1"); do
@@ -554,7 +553,7 @@ _agkozak_construct_prompt() {
           ;;
         then)
           if [[ $ternary_stack != 'ifcond' ]]; then
-            _agkozak_parser_error "Missing 'if' or condition." && return 1
+            _agkozak_parser_error "Missing 'if' or conditional statement." && return 1
           else
             output+='.'           # TODO: a period may be incorrect, depending on
             ternary_stack+="$i"   # what the ternary is supposed to print.

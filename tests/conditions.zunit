@@ -10,24 +10,3 @@
 
 	assert "$(_agkozak_construct_prompt FOO)" same_as '%(!..)'
 }
-
-# @test "Missing if in condition" {
-# 	load ../agkozak-zsh-theme.plugin.zsh
-
-# 	FOO=( is_superuser then literal '#' else literal '!' )
-
-# 	_agkozak_construct_prompt FOO &> /dev/null
-
-# 	assert $state equals 1
-
-# }
-
-# @test 'Missing conditional statement' {
-# 	load ../agkozak-zsh-theme.plugin.zsh
-
-# 	BAR=( literal '#' else literal '!' )
-
-# 	_agkozak_construct_prompt BAR &> /dev/null
-
-# 	assert $state equals 1
-# }

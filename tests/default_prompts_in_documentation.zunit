@@ -1,0 +1,44 @@
+#!/usr/bin/env zunit
+
+@test 'Testing default ZPML prompts in documentation' {
+
+	load ../agkozak-zsh-theme.plugin.zsh
+
+	AGKOZAK_HAS_COLORS=1
+
+	AGKOZAK_ZPML_PROMPT=(
+	  if is_exit_0 then
+	  else
+	    bold fg_red exit_status unfg unbold space
+	  fi
+
+	  if is_superuser then
+	    reverse bold
+	  else
+	    bold fg_green
+	  fi
+
+	  user_host
+
+	  if is_superuser then
+	    unbold unreverse
+	  else
+	    unfg unbold
+	  fi
+
+	  space
+	  bold fg_blue pwd unfg unbold newline
+
+	  vi_mode_indicator space
+	)
+
+	AGKOZAK_ZPML_RPROMPT=(
+	  fg_yellow git_branch_status unfg
+	)
+
+	[[ "$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)" == $'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b\n$(_agkozak_vi_mode_indicator) ' ]]
+
+	assert $state equals 0
+
+	assert "$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)" same_as '%F{yellow}%3v%f'
+}

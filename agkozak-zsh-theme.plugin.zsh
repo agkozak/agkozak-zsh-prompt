@@ -538,7 +538,7 @@ _agkozak_construct_prompt() {
         is_superuser)
           echo -n '!'
           ;;
-        *) _agkozak_parser_error 'Unsupported condition.' && return
+        *) _agkozak_parser_error "Unsupported condition: $i" && return
           ;;
       esac
       ternary_stack+='cond'

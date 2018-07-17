@@ -272,3 +272,32 @@ else
 fi
 
 unset FOO
+
+# 10. pure-like prompt
+
+source ../agkozak-zsh-theme.plugin.zsh
+AGKOZAK_HAS_COLORS=1
+
+AGKOZAK_ZPML_PROMPT=(
+  fg_blue literal '%~' unfg
+  fg_242 git_branch_status unfg
+  newline
+  if is_exit_0 then
+    fg_magenta
+  else
+    fg_red
+  fi
+  literal '❯' unfg space
+)
+
+AGKOZAK_ZPML_RPROMPT=()
+
+PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
+
+if [[ $PROMPT == $'%F{blue}%~%f%F{242}%3v%f\n%(?.%F{magenta}.%F{red})❯%f ' ]]; then
+  results 'pure-like prompt' pass
+else
+  results 'pure-like prompt' fails
+fi
+
+unset AGKOZAK_ZPML_PROMPT AGKOZAK_ZPML_RPROMPT

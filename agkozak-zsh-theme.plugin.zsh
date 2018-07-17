@@ -621,7 +621,6 @@ _agkozak_construct_prompt() {
   fi
 
   if [[ $color_stack != '' ]]; then
-    echo $color_stack
     _agkozak_parser_error "You probably forgot to 'unbold', 'un_fg', 'un_bg' or 'unreverse' something in $1."
   fi
 }

@@ -508,7 +508,7 @@ _agkozak_parser_error() {
 #   $1 Name of prompt to be constructed
 ############################################################
 _agkozak_construct_prompt() {
-  local i ternary_stack literal
+  local i ternary_stack literal output
 
   local -A styles
   styles=(
@@ -522,7 +522,7 @@ _agkozak_construct_prompt() {
 
   for i in $(eval echo -n "\$$1"); do
     if (( literal )); then
-      echo -n "$i"
+      output+="$i"
       literal=0
     elif [[ $i == 'literal' ]]; then
       literal=1
@@ -530,13 +530,13 @@ _agkozak_construct_prompt() {
       case $i in
         is_exit_*)
           if [[ ${i#is_exit_} == '0' ]]; then
-            echo -n '?'
+            output+='?'
           else
-            echo -n "${i#is_exit_}?"
+            output+="${i#is_exit_}?"
           fi
           ;;
         is_superuser)
-          echo -n '!'
+          output+='!'
           ;;
         *) _agkozak_parser_error "Unsupported condition: $i" && return 1
           ;;
@@ -546,66 +546,66 @@ _agkozak_construct_prompt() {
       case $i in
         if)
           if [[ $ternary_stack != '' ]]; then
-            _agkozak_parser_error $'Missing \'fi\'.' && return 1
+            _agkozak_parser_error "Missing 'fi'." && return 1
           else
-            echo -n '%('
+            output+='%('
             ternary_stack+='if'
           fi
           ;;
         then)
           if [[ $ternary_stack != 'ifcond' ]]; then
-            _agkozak_parser_error $'Missing \`if\' or condition.' && return 1
+            _agkozak_parser_error "Missing 'if' or condition." && return 1
           else
-            echo -n '.'           # TODO: a period may be incorrect, depending on
+            output+='.'           # TODO: a period may be incorrect, depending on
             ternary_stack+="$i"   # what the ternary is supposed to print.
           fi
           ;;
         else)
           if [[ $ternary_stack != 'ifcondthen' ]]; then
-            _agkozak_parser_error $'Missing \`if\', condition, or \`then\'.' \
-              && return
+            _agkozak_parser_error "Missing 'if', condition, or 'then'." \
+              && return 1
           else
-            echo -n '.'           # TODO: ditto.
+            output+='.'           # TODO: ditto.
             ternary_stack+="$i"
           fi
           ;;
         fi)
           if [[ $ternary_stack == 'ifcondthenelse' ]]; then
-            echo -n ')'
+            output+=')'
           # When `else' is implicit
           elif [[ $ternary_stack == 'ifcondthen' ]]; then
-            echo -n '.)'          # TODO: see above.
+            output+='.)'          # TODO: see above.
           else
-            _agkozak_parser_error $'Missing \`if\', condition, or \`then\'.' \
+            _agkozak_parser_error "Missing 'if', condition, or 'then'." \
               && return 1
           fi
           ternary_stack=''
           ;;
         bold|reverse)
-          echo -n $styles[$i]
+          output+="$styles[$i]"
           ;;
         fg_*)
           (( AGKOZAK_HAS_COLORS )) && {
-            echo -n "%F{${i#fg_}}"
+            output+="%F{${i#fg_}}"
           }
           ;;
         bg_*)
           (( AGKOZAK_HAS_COLORS )) && {
-            echo -n "%K{${i#bg_}}"
+            output+="%K{${i#bg_}}"
           }
           ;;
         unfg|unbg)
           (( AGKOZAK_HAS_COLORS )) && {
-            echo -n $styles[$i]
+            output+="$styles[$i]"
           }
           ;;
         unbold|unreverse)
-          echo -n $styles[$i]
+          output+="$styles[$i]"
           ;;
-        space) echo -n ' ' ;;
-        newline) echo -n $'\n' ;;
+        space) output+=' ' ;;
+        newline) output+=$'\n' ;;
         *)
-          [[ -n ${AGKOZAK_ZPML_MACROS[$i]} ]] && echo -n ${AGKOZAK_ZPML_MACROS[$i]}
+          [[ -n ${AGKOZAK_ZPML_MACROS[$i]} ]] && output+="${AGKOZAK_ZPML_MACROS[$i]}"
           ;;
       esac
     fi
@@ -613,6 +613,8 @@ _agkozak_construct_prompt() {
 
   if [[ $ternary_stack != '' ]]; then
     _agkozak_parser_error "Invalid condition in $1."
+  else
+    echo -n "$output"
   fi
 }
 

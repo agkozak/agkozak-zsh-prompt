@@ -15,7 +15,7 @@ results() {
 
 # 1. Test production of default prompts
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 AGKOZAK_HAS_COLORS=1
 
 set_macro custom_whitespace '${AGKOZAK_PROMPT_WHITESPACE}'
@@ -65,7 +65,7 @@ unset AGKOZAK_ZPML_PROMPT AGKOZAK_ZPML_RPROMPT
 
 # 2. Default prompt in documentation
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 AGKOZAK_HAS_COLORS=1
 
 AGKOZAK_ZPML_PROMPT=(
@@ -112,7 +112,7 @@ unset AGKOZAK_ZPML_PROMPT AGKOZAK_ZPML_RPROMPT
 
 # 3. Default Emacs shell prompt
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 
 set_macro emacs_pwd '$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
 set_macro sync_git_branch_status '$(_agkozak_branch_status)'
@@ -143,7 +143,7 @@ unset AGKOZAK_ZPML_PROMPT
 
 # 4. @borekb theme
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 AGKOZAK_HAS_COLORS=1
 
 AGKOZAK_ZPML_PROMPT=(
@@ -176,7 +176,7 @@ unset AGKOZAK_ZPML_PROMPT
 
 # 5. borekb B&@
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 AGKOZAK_HAS_COLORS=0
 
 AGKOZAK_ZPML_PROMPT=(
@@ -209,7 +209,7 @@ unset AGKOZAK_ZPML_PROMPT
 
 # 6. Empty condition
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 
 FOO=(
   if is_superuser
@@ -230,7 +230,7 @@ unset FOO BAR
 
 #  7. Missing `if' or condition
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 
 FOO=( is_superuser then literal '#' else literal '!' )
 
@@ -247,7 +247,7 @@ unset FOO BAR
 
 # 8. Missing `then'
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 
 FOO=( if is_superuser literal '#' else literal '!' )
 
@@ -261,7 +261,7 @@ unset FOO
 
 # 9. Missing `fi'
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 
 FOO=( if is_superuser then literal '#' else literal '!' )
 
@@ -275,7 +275,7 @@ unset FOO
 
 # 10. pure-like prompt
 
-source ../agkozak-zsh-theme.plugin.zsh
+source agkozak-zsh-theme.plugin.zsh
 AGKOZAK_HAS_COLORS=1
 
 AGKOZAK_ZPML_PROMPT=(

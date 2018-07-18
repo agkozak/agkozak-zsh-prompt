@@ -42,3 +42,5 @@
 
 	assert "$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)" same_as '%F{yellow}%3v%f'
 }
+
+# vim: ts=2:sts=2:sw=2

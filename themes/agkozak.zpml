@@ -1,5 +1,8 @@
 # agkozak theme
 
+set_macro custom_whitespace $'${AGKOZAK_PROMPT_WHITESPACE}'
+
+# Left prompt
 AGKOZAK_ZPML_PROMPT=(
 	if is_exit_0 then
 	else                                                 # Default: red
@@ -30,6 +33,7 @@ AGKOZAK_ZPML_PROMPT=(
 	vi_mode_indicator space
 )
 
+# Right prompt
 AGKOZAK_ZPML_RPROMPT=(                      # Default: yellow
 	fg_${AGKOZAK_COLORS_BRANCH_STATUS} git_branch_status unfg
 )

@@ -639,6 +639,9 @@ _agkozak_construct_prompt() {
 # zpml utility
 ############################################################
 zpml() {
+  # Keep ZPML simple: no need for typeset -g
+  setopt LOCAL_OPTIONS NO_WARN_CREATE_GLOBAL
+
   case $1 in
     load) source "${AGKOZAK_THEME_DIR}/themes/${2}.zpml"
   esac
@@ -723,45 +726,8 @@ agkozak_zsh_theme() {
   # Dogfooding: We'll construct the prompt from ZPML
   else
     [[ -z "${AGKOZAK_ZPML_PROMPT}${AGKOZAK_ZPML_RPROMPT}" ]] && {
-
-      # Left prompt
-      set_macro custom_whitespace $'${AGKOZAK_PROMPT_WHITESPACE}'
-
-      typeset -g AGKOZAK_ZPML_PROMPT=(
-        if is_exit_0 then
-        else                                                 # Default: red
-          bold fg_${AGKOZAK_COLORS_EXIT_STATUS} exit_status unfg unbold space
-        fi
-
-        # When the user is a superuser, the username and hostname are
-        # displayed in reverse video
-
-        if is_superuser then
-          reverse bold
-        else
-          bold fg_${AGKOZAK_COLORS_USER_HOST}                # Default: green
-        fi
-
-        user_host
-
-        if is_superuser then
-          unbold unreverse
-        else
-          unfg unbold
-        fi
-
-        space
-        bold fg_${AGKOZAK_COLORS_PATH} pwd unfg unbold       # Default: blue
-        custom_whitespace                                    # Default: newline
-
-        vi_mode_indicator space
-      )
-
-      # Right prompt
-      typeset -g AGKOZAK_ZPML_RPROMPT=(                      # Default: yellow
-        fg_${AGKOZAK_COLORS_BRANCH_STATUS} git_branch_status unfg
-      )
-
+      
+      zpml load agkozak
     }
 
     # Cache each ZPML prompt and then compile it

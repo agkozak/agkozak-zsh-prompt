@@ -6,6 +6,7 @@ Goals for agkozak-zsh-theme v3.0.0
 - Rewrite how parser errors are generated
 - Simplify the output of built-in functions and "macroize" them so that people can see how to customize them
 - Examples of how to write themes with macros and perhaps even custom functions
+- Distinction between provided macros, custom macros, and making namespaces
 
 # Other customizations
 - Provide global associative array for Git branch status symbols

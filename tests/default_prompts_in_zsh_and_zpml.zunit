@@ -1,0 +1,28 @@
+#!/usr/bin/env zunit
+
+@test 'Comparing ZPML and ZSH versions of default prompt (color)' {
+
+  load ../agkozak-zsh-theme.plugin.zsh
+  AGKOZAK_HAS_COLOR=1
+
+  ZSH_PROMPT=${PROMPT}
+  ZSH_RPROMPT=${RPROMPT}
+
+  zpml load agkozak
+
+  assert $PROMPT same_as $ZSH_PROMPT
+  assert $RPROMPT same_as $ZSH_RPROMPT
+}
+
+@test 'Comparing ZPML and ZSH versions of default prompt (monochrome)' {
+  load ../agkozak-zsh-theme.plugin.zsh
+  AGKOZAK_HAS_COLOR=0
+
+  ZSH_PROMPT=${PROMPT}
+  ZSH_RPROMPT=${RPROMPT}
+
+  zpml load agkozak
+
+  assert $PROMPT same_as $ZSH_PROMPT
+  assert $RPROMPT same_as $ZSH_RPROMPT
+}

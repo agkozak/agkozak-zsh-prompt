@@ -1,6 +1,6 @@
 #!/usr/bin/env zunit
 
-@test 'Condition lacking consequents'  {
+@test 'Testing condition lacking consequents'  {
 	load ../agkozak-zsh-theme.plugin.zsh
 
 	FOO=( if is_superuser then

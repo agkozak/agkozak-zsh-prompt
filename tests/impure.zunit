@@ -1,6 +1,6 @@
 #!/usr/bin/env zunit
 
-@test 'impure prompt' {
+@test 'Testing impure prompt' {
 	load ../agkozak-zsh-theme.plugin.zsh
 	AGKOZAK_HAS_COLORS=1
 

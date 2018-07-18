@@ -648,7 +648,15 @@ zpml() {
   setopt LOCAL_OPTIONS NO_WARN_CREATE_GLOBAL
 
   case $1 in
-    load) source "${AGKOZAK_THEME_DIR}/themes/${2}.zpml"
+    load)
+      source "${AGKOZAK_THEME_DIR}/themes/${2}.zpml" &> /dev/null
+      if (( $? )); then
+        echo 'Theme file not found.' >&2
+      fi
+      ;;
+    *)
+      echo 'Command not defined.' >&2
+      ;;
   esac
 }
 

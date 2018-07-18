@@ -418,11 +418,16 @@ _agkozak_async_init() {
 ############################################################
 # Runs right before the prompt is displayed
 #
-# 1) Imitates bash's PROMPT_DIRTRIM behavior
-# 2) Calculates working branch and working copy status
-# 3) If AGKOZAK_BLANK_LINES=1, prints blank line between prompts
+# 1) Loads new themes on the fly
+# 2) Imitates bash's PROMPT_DIRTRIM behavior
+# 3) Calculates working branch and working copy status
+# 4) If AGKOZAK_BLANK_LINES=1, prints blank line between prompts
 #
 # Globals:
+#   AGKOZAK_ZPML_PROMPT
+#   AGKOZAK_CURRENT_ZPML_PROMPT
+#   AGKOZAK_ZPML_RPROMPT
+#   AGKOZAK_CURRENT_ZPML_RPROMPT
 #   AGKOZAK_PROMPT_DIRTRIM
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_MULTILINE
@@ -431,6 +436,19 @@ _agkozak_async_init() {
 #   AGKOZAK_FIRST_PROMPT_PRINTED
 ############################################################
 _agkozak_precmd() {
+
+  # Keep a copy of each ZPML prompt cached; when either changes, cache the new
+  # one and then compile it
+  if [[ $AGKOZAK_ZPML_PROMPT != $AGKOZAK_CURRENT_ZPML_PROMPT ]]; then
+    AGKOZAK_CURRENT_ZPML_PROMPT=$AGKOZAK_ZPML_PROMPT
+    PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
+  fi
+
+  if [[ $AGKOZAK_ZPML_RPROMPT != $AGKOZAK_CURRENT_ZPML_RPROMPT ]]; then
+    AGKOZAK_CURRENT_ZPML_RPROMPT=$AGKOZAK_ZPML_RPROMPT
+    RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)"
+  fi
+
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
   psvar[3]=''
 
@@ -618,6 +636,15 @@ _agkozak_construct_prompt() {
 }
 
 ############################################################
+# zpml utility
+############################################################
+zpml() {
+  case $1 in
+    load) source "${AGKOZAK_THEME_DIR}/themes/${2}.zpml"
+  esac
+}
+
+############################################################
 # Theme setup
 #
 # Globals:
@@ -737,7 +764,11 @@ agkozak_zsh_theme() {
 
     }
 
+    # Cache each ZPML prompt and then compile it
+    typeset -g AGKOZAK_CURRENT_ZPML_PROMPT=$AGKOZAK_ZPML_PROMPT
     PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
+
+    typeset -g AGKOZAK_CURRENT_ZPML_RPROMPT=$AGKOZAK_CURRENT_ZPML_RPROMPT
     RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)"
 
     # The color prompts produced are:
@@ -760,7 +791,6 @@ agkozak_zsh_theme() {
 agkozak_zsh_theme
 
 # Clean up environment
-unset AGKOZAK_THEME_DIR
 unfunction _agkozak_load_async_lib _agkozak_has_usr1
 
 # vim: ts=2:et:sts=2:sw=2:

@@ -1,0 +1,16 @@
+# impure prompt
+AGKOZAK_BLANK_LINES=1
+
+AGKOZAK_ZPML_PROMPT=(
+  fg_blue literal '%~' unfg
+  fg_242 git_branch_status unfg
+  newline
+  if is_exit_0 then
+    fg_magenta
+  else
+    fg_red
+  fi
+    literal '❯' unfg space
+)
+
+AGKOZAK_ZPML_RPROMPT=()

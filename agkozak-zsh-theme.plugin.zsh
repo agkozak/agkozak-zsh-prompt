@@ -207,6 +207,8 @@ typeset -g AGKOZAK_THEME_DIR=${0:A:h}
 
 ###########################################################
 # Load the ZPML library
+#
+# TODO: Autoload the library functions
 ###########################################################
 source ${AGKOZAK_THEME_DIR}/lib/zpml/zpml.zsh
 typeset -g ZPML_THEME_DIR=${AGKOZAK_THEME_DIR}/themes

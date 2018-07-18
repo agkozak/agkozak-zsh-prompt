@@ -152,7 +152,7 @@ zpml_construct_prompt() {
           ternary_stack=''
           ;;
         bold|reverse)
-          output+="$styles[$i]"
+          output+="${styles[$i]}"
           ;;
         fg_*)
           (( ZPML_HAS_COLORS )) && {
@@ -166,11 +166,11 @@ zpml_construct_prompt() {
           ;;
         unfg|unbg)
           (( ZPML_HAS_COLORS )) && {
-            output+="$styles[$i]"
+            output+="${styles[$i]}"
           }
           ;;
         unbold|unreverse)
-          output+="$styles[$i]"
+          output+="${styles[$i]}"
           ;;
         space) output+=' ' ;;
         newline) output+=$'\n' ;;
@@ -204,7 +204,7 @@ zpml() {
     load)
       case $2 in
         random)
-          local themes=( ${ZPML_THEME_DIR}/*.zpml )
+          local themes=( "${ZPML_THEME_DIR}/*.zpml" )
           source "${themes[$(( $RANDOM % ${#themes[@]} + 1 ))]}" &> /dev/null
           # TODO: A bit kludgy, plus shouldn't I consider the possibility of
           # of someone's wanting to remove the left prompt?

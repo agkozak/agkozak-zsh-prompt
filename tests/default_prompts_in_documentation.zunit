@@ -3,6 +3,7 @@
 @test 'Testing default ZPML prompts in documentation' {
 
 	load ../agkozak-zsh-theme.plugin.zsh
+	zpml
 
 	ZPML_PROMPT=(
 	  if is_exit_0 then

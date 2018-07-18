@@ -2,6 +2,7 @@
 
 @test 'Testing condition lacking consequents'  {
 	load ../agkozak-zsh-theme.plugin.zsh
+	zpml
 
 	FOO=( if is_superuser then
 		else

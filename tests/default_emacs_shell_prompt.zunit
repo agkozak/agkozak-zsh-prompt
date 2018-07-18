@@ -2,6 +2,7 @@
 
 @test 'Testing default Emacs shell prompt' {
 	load ../agkozak-zsh-theme.plugin.zsh
+	zpml
 
 	set_macro emacs_pwd '$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
 	set_macro sync_git_branch_status '$(_agkozak_branch_status)'

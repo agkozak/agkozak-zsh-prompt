@@ -206,11 +206,12 @@ TRAPWINCH() {
 typeset -g AGKOZAK_THEME_DIR=${0:A:h}
 
 ###########################################################
-# Load the ZPML library
+# Autoload the ZPML library
 #
-# TODO: Autoload the library functions
 ###########################################################
-source ${AGKOZAK_THEME_DIR}/lib/zpml/zpml.zsh
+fpath+=( ${AGKOZAK_THEME_DIR}/lib/zpml )
+autoload -Uz zpml
+
 typeset -g ZPML_THEME_DIR=${AGKOZAK_THEME_DIR}/themes
 
 ###########################################################
@@ -459,12 +460,12 @@ _agkozak_precmd() {
   # one and then compile it
   if [[ $ZPML_PROMPT != $AGKOZAK_CURRENT_ZPML_PROMPT ]]; then
     AGKOZAK_CURRENT_ZPML_PROMPT=$ZPML_PROMPT
-    PROMPT="$(zpml_construct_prompt ZPML_PROMPT)"
+    zpml && PROMPT="$(zpml_construct_prompt ZPML_PROMPT)"
   fi
 
   if [[ $ZPML_RPROMPT != $AGKOZAK_CURRENT_ZPML_RPROMPT ]]; then
     AGKOZAK_CURRENT_ZPML_RPROMPT=$ZPML_RPROMPT
-    RPROMPT="$(zpml_construct_prompt ZPML_RPROMPT)"
+    zpml && RPROMPT="$(zpml_construct_prompt ZPML_RPROMPT)"
   fi
 
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
@@ -565,7 +566,7 @@ agkozak_zsh_theme() {
       prompt_char space
     )
 
-    PROMPT="$(zpml_construct_prompt ZPML_PROMPT)"
+    zpml && PROMPT="$(zpml_construct_prompt ZPML_PROMPT)"
 
     # The prompt produced is:
     #

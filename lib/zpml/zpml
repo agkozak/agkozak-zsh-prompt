@@ -1,3 +1,4 @@
+#autoload
 #  _________  __  __ _
 # |__  /  _ \|  \/  | |
 #   / /| |_) | |\/| | |
@@ -196,35 +197,36 @@ zpml_construct_prompt() {
 #
 # TODO: Arguments
 ############################################################
-zpml() {
-  # Keep ZPML simple: no need for typeset -g in theme files
-  setopt LOCAL_OPTIONS NO_WARN_CREATE_GLOBAL
+# Keep ZPML simple: no need for typeset -g in theme files
+setopt LOCAL_OPTIONS NO_WARN_CREATE_GLOBAL
 
-  case $1 in
-    load)
-      case $2 in
-        random)
-          local themes=( "${ZPML_THEME_DIR}/*.zpml" )
-          source "${themes[$(( $RANDOM % ${#themes[@]} + 1 ))]}" &> /dev/null
-          # TODO: A bit kludgy, plus shouldn't I consider the possibility of
-          # of someone's wanting to remove the left prompt?
-          if [[ -z $ZPML_RPROMPT ]]; then
-            RPROMPT=''
-          fi
-          ;;
-        *)
-          if ! source "${ZPML_THEME_DIR}/${2}.zpml" &> /dev/null; then
-            echo 'Theme file not found.' >&2
-          fi
-          # TODO: See immediately above.
-          if [[ -z $ZPML_RPROMPT ]]; then
-            RPROMPT=''
-          fi
-          ;;
-      esac
-      ;;
-    *)
-      echo 'Command not defined.' >&2
-      ;;
-  esac
-}
+case $1 in
+  '') return 0 ;;
+  load)
+    case $2 in
+      random)
+        local themes=( "${ZPML_THEME_DIR}/*.zpml" )
+        source "${themes[$(( $RANDOM % ${#themes[@]} + 1 ))]}" &> /dev/null
+        # TODO: A bit kludgy, plus shouldn't I consider the possibility of
+        # of someone's wanting to remove the left prompt?
+        if [[ -z $ZPML_RPROMPT ]]; then
+          RPROMPT=''
+        fi
+        ;;
+      *)
+        if ! source "${ZPML_THEME_DIR}/${2}.zpml" &> /dev/null; then
+          echo 'Theme file not found.' >&2
+        fi
+        # TODO: See immediately above.
+        if [[ -z $ZPML_RPROMPT ]]; then
+          RPROMPT=''
+        fi
+        ;;
+    esac
+    ;;
+  *)
+    echo 'Command not defined.' >&2
+    ;;
+esac
+
+# vim: ft=zsh:ts=2:sts=2:sw=2:et

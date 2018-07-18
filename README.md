@@ -115,7 +115,7 @@ is displayed as
 
 that is, without a tilde.
 
-If you would like to display a different number of directory elements, set the environment variable `$AGKOZAK_PROMPT_DIRTRIM` in your `.zshrc` file thus (as in the example below):
+If you would like to display a different number of directory elements, set the environment variable `AGKOZAK_PROMPT_DIRTRIM` in your `.zshrc` file thus (as in the example below):
 
     AGKOZAK_PROMPT_DIRTRIM=4     # Or whatever number you like
 

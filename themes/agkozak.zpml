@@ -1,4 +1,6 @@
 # agkozak theme
+#
+# https://github.com/agkozak/agkozak-zsh-theme
 
 set_macro custom_whitespace $'${AGKOZAK_PROMPT_WHITESPACE}'
 

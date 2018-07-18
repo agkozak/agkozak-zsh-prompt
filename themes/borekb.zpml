@@ -1,4 +1,6 @@
 # borekb theme
+#
+# https://github.com/agkozak/agkozak-zsh-theme
 
 AGKOZAK_ZPML_PROMPT=(
   if is_exit_0 then

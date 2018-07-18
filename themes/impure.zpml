@@ -1,5 +1,7 @@
 # impure prompt
 #
+# Based loosely on the pure prompt: https://github.com/sindresorhus/pure
+#
 # https://github.com/agkozak/agkozak-zsh-theme
 
 AGKOZAK_BLANK_LINES=1

@@ -1,5 +1,7 @@
 # borekb theme
 #
+# Built to the specifications of @borekb (https://github.com/borekb)
+#
 # https://github.com/agkozak/agkozak-zsh-theme
 
 AGKOZAK_ZPML_PROMPT=(

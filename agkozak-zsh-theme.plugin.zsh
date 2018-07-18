@@ -649,10 +649,23 @@ zpml() {
 
   case $1 in
     load)
-      source "${AGKOZAK_THEME_DIR}/themes/${2}.zpml" &> /dev/null
-      if (( $? )); then
-        echo 'Theme file not found.' >&2
-      fi
+      case $2 in
+        random)
+          local themes=( ${AGKOZAK_THEME_DIR}/themes/*.zpml )
+          source "${themes[$(( $RANDOM % ${#themes[@]} + 1 ))]}"
+          # TODO: A bit kludgy, plus shouldn't I consider the possibility of
+          # of someone's wanting to remove the left prompt?
+          [[ -z $AGKOZAK_ZPML_RPROMPT ]] && RPROMPT=''
+          ;;
+        *)
+          source "${AGKOZAK_THEME_DIR}/themes/${2}.zpml" &> /dev/null
+          # TODO: See immediately above.
+          [[ -z $AGKOZAK_ZPML_RPROMPT ]] && RPROMPT=''
+          if (( $? )); then
+            echo 'Theme file not found.' >&2
+          fi
+          ;;
+      esac
       ;;
     *)
       echo 'Command not defined.' >&2

@@ -8,7 +8,7 @@
 		fi
 	)
 
-	assert "$(_agkozak_construct_prompt FOO)" same_as '%(!..)'
+	assert "$(zpml_construct_prompt FOO)" same_as '%(!..)'
 }
 
 # vim: ts=2:sts=2:sw=2

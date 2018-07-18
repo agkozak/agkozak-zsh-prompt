@@ -5,19 +5,15 @@ AGKOZAK_ZPML_RPROMPT=()
 @test 'Testing borekb theme in color and monochrome' {
 	load ../agkozak-zsh-theme.plugin.zsh
 
-	AGKOZAK_HAS_COLORS=1
-
 	zpml load borekb
 
-	[[ "$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)" == $'%(?..%B%F{red}(%?%)%f%b )%B%F{blue}%2v%f%b%F{243}%3v%f\n%(!.#.$) ' ]]
+	[[ "$(zpml_construct_prompt ZPML_PROMPT color)" == $'%(?..%B%F{red}(%?%)%f%b )%B%F{blue}%2v%f%b%F{243}%3v%f\n%(!.#.$) ' ]]
 
 	assert $state equals 0
 
-	AGKOZAK_HAS_COLORS=0
-	
 	zpml load borekb
 
-	[[ "$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)" == $'%(?..%B(%?%)%b )%B%2v%b%3v\n%(!.#.$) ' ]]
+	[[ "$(zpml_construct_prompt ZPML_PROMPT mono)" == $'%(?..%B(%?%)%b )%B%2v%b%3v\n%(!.#.$) ' ]]
 
 	assert $state equals 0
 }

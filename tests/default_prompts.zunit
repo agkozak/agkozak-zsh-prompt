@@ -3,13 +3,11 @@
 @test 'Testing production of default prompts from ZPML' {
 	load ../agkozak-zsh-theme.plugin.zsh
 
-	AGKOZAK_HAS_COLORS=1
-
 	zpml load agkozak
 
-	assert "$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)" same_as '%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
+	assert "$(zpml_construct_prompt ZPML_PROMPT)" same_as '%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
 
-	assert "$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)" same_as '%F{yellow}%3v%f'
+	assert "$(zpml_construct_prompt ZPML_RPROMPT)" same_as '%F{yellow}%3v%f'
 }
 
 # vim: ts=2:sts=2:sw=2

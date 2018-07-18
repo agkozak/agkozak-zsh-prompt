@@ -187,7 +187,7 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
 The default prompts (left and right) can be produced with the following code:
 
 ```
-AGKOZAK_ZPML_PROMPT=(
+ZPML_PROMPT=(
   if is_exit_0 then
   else
     bold fg_red exit_status unfg unbold space
@@ -213,7 +213,7 @@ AGKOZAK_ZPML_PROMPT=(
   vi_mode_indicator space
 )
 
-AGKOZAK_ZPML_RPROMPT=(
+ZPML_RPROMPT=(
   fg_yellow git_branch_status unfg
 )
 ```
@@ -227,7 +227,7 @@ RPROMPT='%F{yellow}%3v%f'
 If a user prefers not to see the username and hostname, likes the git status to be in the left prompt (and in color 243), and prefers the `bash`-style prompt character `$` over ZSH's native `%`, that can all be accomplished by putting the following into `.zshrc` before agkozak-zsh-theme is loaded:
 
 ```
-AGKOZAK_ZPML_PROMPT=(
+ZPML_PROMPT=(
   if is_exit_0 then
   else
     bold fg_red exit_status unfg unbold space
@@ -245,7 +245,7 @@ AGKOZAK_ZPML_PROMPT=(
   space
 )
 
-AGKOZAK_ZPML_RPROMPT=()
+ZPML_RPROMPT=()
 ```
 
 ## Asynchronous Methods

@@ -2,11 +2,10 @@
 
 @test 'Testing impure prompt' {
 	load ../agkozak-zsh-theme.plugin.zsh
-	AGKOZAK_HAS_COLORS=1
 
 	zpml load impure
 
-	[[ "$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)" == $'%F{blue}%~%f%F{242}%3v%f\n%(?.%F{magenta}.%F{red})❯%f ' ]]
+	[[ "$(zpml_construct_prompt ZPML_PROMPT color)" == $'%F{blue}%~%f%F{242}%3v%f\n%(?.%F{magenta}.%F{red})❯%f ' ]]
 
 	assert $state equals 0
 }

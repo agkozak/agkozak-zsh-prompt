@@ -73,9 +73,12 @@ _zpml_parser_error() {
 #
 # Arguments:
 #   $1 Name of prompt to be constructed
+#   $2 Whether to force color or mono (for debugging)
 ############################################################
 zpml_construct_prompt() {
   local i ternary_stack literal output
+  [[ $2 == 'color' ]] && ZPML_HAS_COLORS=1
+  [[ $2 == 'mono' ]] && ZPML_HAS_COLORS=0
 
   local -A styles
   styles=(

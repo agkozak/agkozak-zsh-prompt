@@ -7,7 +7,7 @@
 	set_macro sync_git_branch_status '$(_agkozak_branch_status)'
 	set_macro prompt_char '%#'
 
-	AGKOZAK_ZPML_PROMPT=(
+	ZPML_PROMPT=(
 	  if is_exit_0 then
 	  else
 	    exit_status space
@@ -20,7 +20,7 @@
 	  prompt_char space
 	)
 
-	assert "$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)" same_as '%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
+	assert "$(zpml_construct_prompt ZPML_PROMPT)" same_as '%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
 }
 
 # vim: ts=2:sts=2:sw=2

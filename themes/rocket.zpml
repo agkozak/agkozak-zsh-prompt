@@ -1,0 +1,31 @@
+# rocket theme
+#
+# A vague homage to Spaceship ZSH (https://github.com/denysdovhan/spaceship-prompt)
+#
+# https://github.com/agkozak/agkozak-zsh-theme
+
+set_macro rocket_vi_indicator '$(_agkozak_vi_mode_indicator "[I] " "[N] ")'
+
+AGKOZAK_ZPML_PROMPT=(
+  bold fg_cyan literal '%1~' unfg unbold
+  literal '%(3V.'
+    space bold fg_white literal 'on' unfg un space
+    bold fg_magenta literal 'branch' git_branch_status unfg unbold
+  literal '.)'
+  newline
+  # TODO: as soon as the is_emacs condition is available, use it to apply the
+  # next line conditionally
+  bold fg_white rocket_vi_indicator unfg unbold
+  if is_exit_0 then
+    fg_red
+  else
+    fg_yellow
+  fi
+  literal '➜'
+  unfg
+  space
+)
+
+AGKOZAK_ZPML_RPROMPT=()
+
+# vim: ft=zsh:ts=2:sts=2:sw=2:et

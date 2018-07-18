@@ -166,12 +166,22 @@ _agkozak_branch_changes() {
 ############################################################
 # When the user enters vi command mode, the % or # in the
 # prompt changes into a colon
+#
+# Arguments:
+#   $1 Insert mode indicator
+#   $2) Command mode indicator
+#   $3) What to show when in emacs mode
 ############################################################
 _agkozak_vi_mode_indicator() {
-  case $KEYMAP in
-    vicmd) print -n ':' ;;
-    *) print -n '%#' ;;
-  esac
+  [[ -z $1 ]] && set '%%' ':' '%%'  # Settings for default prompt
+  if [[ -o emacs ]]; then
+    print -n "$3"
+  else  
+    case $KEYMAP in
+      vicmd) print -n "$2" ;;
+      *) print -n "$1" ;;
+    esac
+  fi
 }
 
 ############################################################
@@ -652,17 +662,20 @@ zpml() {
       case $2 in
         random)
           local themes=( ${AGKOZAK_THEME_DIR}/themes/*.zpml )
-          source "${themes[$(( $RANDOM % ${#themes[@]} + 1 ))]}"
+          source "${themes[$(( $RANDOM % ${#themes[@]} + 1 ))]}" &> /dev/null
           # TODO: A bit kludgy, plus shouldn't I consider the possibility of
           # of someone's wanting to remove the left prompt?
-          [[ -z $AGKOZAK_ZPML_RPROMPT ]] && RPROMPT=''
+          if [[ -z $AGKOZAK_ZPML_RPROMPT ]]; then
+            RPROMPT=''
+          fi
           ;;
         *)
-          source "${AGKOZAK_THEME_DIR}/themes/${2}.zpml" &> /dev/null
-          # TODO: See immediately above.
-          [[ -z $AGKOZAK_ZPML_RPROMPT ]] && RPROMPT=''
-          if (( $? )); then
+          if ! source "${AGKOZAK_THEME_DIR}/themes/${2}.zpml" &> /dev/null; then
             echo 'Theme file not found.' >&2
+          fi
+          # TODO: See immediately above.
+          if [[ -z $AGKOZAK_ZPML_RPROMPT ]]; then
+            RPROMPT=''
           fi
           ;;
       esac

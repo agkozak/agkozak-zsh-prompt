@@ -216,9 +216,9 @@ typeset -g AGKOZAK_THEME_DIR=${0:A:h}
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
     if (( AGKOZAK_THEME_DEBUG )); then
-      source ${AGKOZAK_THEME_DIR}/lib/async.zsh
+      source ${AGKOZAK_THEME_DIR}/lib/zsh-async/async.zsh
     else
-      source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null
+      source ${AGKOZAK_THEME_DIR}/lib/zsh-async/async.zsh &> /dev/null
     fi
     local success=$?
     return $success

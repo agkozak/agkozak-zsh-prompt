@@ -15,9 +15,9 @@ ZPML_PROMPT=(
   newline
   bold fg_white rocket_vi_indicator unfg unbold
   if is_exit_0 then
-    fg_red
-  else
     fg_yellow
+  else
+    fg_red
   fi
   literal '➜'
   unfg

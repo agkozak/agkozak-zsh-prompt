@@ -736,30 +736,29 @@ agkozak_zsh_theme() {
     # to this theme
     unset zle_bracketed_paste
 
-  # Dogfooding: We'll construct the prompt from ZPML
   else
-    [[ -z "${AGKOZAK_ZPML_PROMPT}${AGKOZAK_ZPML_RPROMPT}" ]] && {
+    # When using the default theme, it is faster (particularly in MSYS2/Cywgin)
+    # not to have to load and compile it
 
-      zpml load agkozak
-    }
+    if (( AGKOZAK_HAS_COLORS )); then
+      # The color left prompt
+      PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+      PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+      PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
+      PROMPT+='$(_agkozak_vi_mode_indicator) '
 
-    # Cache each ZPML prompt and then compile it
-    typeset -g AGKOZAK_CURRENT_ZPML_PROMPT=$AGKOZAK_ZPML_PROMPT
-    PROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_PROMPT)"
+      # The color right prompt
+      RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
+    else
+      # The monochrome left prompt
+      PROMPT='%(?..(%?%) )'
+      PROMPT+='%(!.%S.)%n%1v%(!.%s.) '
+      PROMPT+=$'%2v${AGKOZAK_PROMPT_WHITESPACE}'
+      PROMPT+='$(_agkozak_vi_mode_indicator) '
 
-    typeset -g AGKOZAK_CURRENT_ZPML_RPROMPT=$AGKOZAK_CURRENT_ZPML_RPROMPT
-    RPROMPT="$(_agkozak_construct_prompt AGKOZAK_ZPML_RPROMPT)"
-
-    # The color prompts produced are:
-    #
-    # PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-    # PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
-    # PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
-    # PROMPT+='$(_agkozak_vi_mode_indicator) '
-
-    # The color right prompt
-    # RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
-
+      # The monochrome right prompt
+      RPROMPT='%3v'
+    fi
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

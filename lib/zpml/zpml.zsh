@@ -33,4 +33,195 @@
 # https://github.com/agkozak/agkozak-zsh-theme
 #
 
+(( $(tput colors) >= 8 )) && typeset -g ZPML_HAS_COLORS=1
 
+############################################################
+# Set a macro
+#
+# Globals:
+#   ZPML_MACROS
+#
+# Arguments:
+#   $1 Macro name
+#   $2 Macro (preferably quoted)
+############################################################
+set_macro() {
+  ZPML_MACROS[$1]="$2"
+}
+
+############################################################
+# For printing parser errors
+#
+# Globals:
+#   ZPML_HAS_COLORS
+#
+# Arguments:
+#   $1 Error text
+############################################################
+_zpml_parser_error() {
+  (( ZPML_HAS_COLORS )) && print -Pn "%F{red}" >&2
+  print -n "zpml: $1" >&2
+  (( ZPML_HAS_COLORS )) && print -P "%f" >&2
+}
+
+############################################################
+# Parse an array and output a prompt
+#
+# Globals:
+#   ZPML_HAS_COLORS
+#   ZPML_MACROS
+#
+# Arguments:
+#   $1 Name of prompt to be constructed
+############################################################
+zpml_construct_prompt() {
+  local i ternary_stack literal output
+
+  local -A styles
+  styles=(
+    bold      '%B'
+    unbold    '%b'
+    reverse   '%S'
+    unreverse '%s'
+    unfg      '%f'
+    unbg      '%b'
+  )
+
+  for i in $(eval echo -n "\$$1"); do
+    if (( literal )); then
+      output+="$i"
+      literal=0
+    elif [[ $i == 'literal' ]]; then
+      literal=1
+    elif [[ $ternary_stack == 'if' ]]; then
+      case $i in
+        is_exit_*)
+          if [[ ${i#is_exit_} == '0' ]]; then
+            output+='?'
+          else
+            output+="${i#is_exit_}?"
+          fi
+          ;;
+        is_superuser)
+          output+='!'
+          ;;
+        *) _zpml_parser_error "Unsupported condition: $i" && return 1
+          ;;
+      esac
+      ternary_stack+='cond'
+    else
+      case $i in
+        if)
+          if [[ $ternary_stack != '' ]]; then
+            _zpml_parser_error "Missing 'fi'." && return 1
+          else
+            output+='%('
+            ternary_stack+='if'
+          fi
+          ;;
+        then)
+          if [[ $ternary_stack != 'ifcond' ]]; then
+            _zpml_parser_error "Missing 'if' or conditional statement." && return 1
+          else
+            output+='.'           # TODO: a period may be incorrect, depending on
+            ternary_stack+="$i"   # what the ternary is supposed to print.
+          fi
+          ;;
+        else)
+          if [[ $ternary_stack != 'ifcondthen' ]]; then
+            _zpml_parser_error "Missing 'if', condition, or 'then'." \
+              && return 1
+          else
+            output+='.'           # TODO: ditto.
+            ternary_stack+="$i"
+          fi
+          ;;
+        fi)
+          if [[ $ternary_stack == 'ifcondthenelse' ]]; then
+            output+=')'
+          # When `else' is implicit
+          elif [[ $ternary_stack == 'ifcondthen' ]]; then
+            output+='.)'          # TODO: see above.
+          else
+            _zpml_parser_error "Missing 'if', condition, or 'then'." \
+              && return 1
+          fi
+          ternary_stack=''
+          ;;
+        bold|reverse)
+          output+="$styles[$i]"
+          ;;
+        fg_*)
+          (( ZPML_HAS_COLORS )) && {
+            output+="%F{${i#fg_}}"
+          }
+          ;;
+        bg_*)
+          (( ZPML_HAS_COLORS )) && {
+            output+="%K{${i#bg_}}"
+          }
+          ;;
+        unfg|unbg)
+          (( ZPML_HAS_COLORS )) && {
+            output+="$styles[$i]"
+          }
+          ;;
+        unbold|unreverse)
+          output+="$styles[$i]"
+          ;;
+        space) output+=' ' ;;
+        newline) output+=$'\n' ;;
+        *)
+          [[ -n ${ZPML_MACROS[$i]} ]] && output+="${ZPML_MACROS[$i]}"
+          ;;
+      esac
+    fi
+  done
+
+  if [[ $ternary_stack != '' ]]; then
+    _zpml_parser_error "Invalid condition in $1."
+  else
+    echo -n "$output"
+  fi
+}
+
+############################################################
+# zpml utility
+#
+# Globals:
+#   ZPML_THEME_DIR
+#
+# TODO: Arguments
+############################################################
+zpml() {
+  # Keep ZPML simple: no need for typeset -g in theme files
+  setopt LOCAL_OPTIONS NO_WARN_CREATE_GLOBAL
+
+  case $1 in
+    load)
+      case $2 in
+        random)
+          local themes=( ${ZPML_THEME_DIR}/*.zpml )
+          source "${themes[$(( $RANDOM % ${#themes[@]} + 1 ))]}" &> /dev/null
+          # TODO: A bit kludgy, plus shouldn't I consider the possibility of
+          # of someone's wanting to remove the left prompt?
+          if [[ -z $ZPML_RPROMPT ]]; then
+            RPROMPT=''
+          fi
+          ;;
+        *)
+          if ! source "${ZPML_THEME_DIR}/${2}.zpml" &> /dev/null; then
+            echo 'Theme file not found.' >&2
+          fi
+          # TODO: See immediately above.
+          if [[ -z $ZPML_RPROMPT ]]; then
+            RPROMPT=''
+          fi
+          ;;
+      esac
+      ;;
+    *)
+      echo 'Command not defined.' >&2
+      ;;
+  esac
+}

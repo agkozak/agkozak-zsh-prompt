@@ -6,7 +6,7 @@
 
 AGKOZAK_BLANK_LINES=1
 
-AGKOZAK_ZPML_PROMPT=(
+ZPML_PROMPT=(
   fg_blue literal '%~' unfg
   fg_242 git_branch_status unfg
   newline
@@ -18,6 +18,6 @@ AGKOZAK_ZPML_PROMPT=(
     literal '❯' unfg space
 )
 
-AGKOZAK_ZPML_RPROMPT=()
+ZPML_RPROMPT=()
 
 # vim: ft=zsh:ts=2:sts=2:sw=2

@@ -5,7 +5,7 @@
 set_macro custom_whitespace $'${AGKOZAK_PROMPT_WHITESPACE}'
 
 # Left prompt
-AGKOZAK_ZPML_PROMPT=(
+ZPML_PROMPT=(
 	if is_exit_0 then
 	else                                                 # Default: red
 	  bold fg_${AGKOZAK_COLORS_EXIT_STATUS} exit_status unfg unbold space
@@ -36,7 +36,7 @@ AGKOZAK_ZPML_PROMPT=(
 )
 
 # Right prompt
-AGKOZAK_ZPML_RPROMPT=(                      # Default: yellow
+ZPML_RPROMPT=(                      # Default: yellow
 	fg_${AGKOZAK_COLORS_BRANCH_STATUS} git_branch_status unfg
 )
 

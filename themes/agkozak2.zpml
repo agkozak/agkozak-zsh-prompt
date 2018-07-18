@@ -2,7 +2,7 @@
 #
 # https://github.com/agkozak/agkozak-zsh-theme
 
-AGKOZAK_ZPML_PROMPT=(
+ZPML_PROMPT=(
   if is_exit_0 then
   else
     bold fg_red exit_status unfg unbold space
@@ -31,6 +31,6 @@ AGKOZAK_ZPML_PROMPT=(
   vi_mode_indicator space
 )
 
-AGKOZAK_ZPML_RPROMPT=()
+ZPML_RPROMPT=()
 
 # vim: ft=zsh:ts=2:sts=2:sw=2

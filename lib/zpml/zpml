@@ -76,7 +76,7 @@ _zpml_parser_error() {
 #   $1 Name of prompt to be constructed
 #   $2 Whether to force color or mono (for debugging)
 ############################################################
-zpml_construct_prompt() {
+_zpml_construct_prompt() {
   local i ternary_stack literal output
   [[ $2 == 'color' ]] && ZPML_HAS_COLORS=1
   [[ $2 == 'mono' ]] && ZPML_HAS_COLORS=0
@@ -202,6 +202,7 @@ setopt LOCAL_OPTIONS NO_WARN_CREATE_GLOBAL
 
 case $1 in
   '') return 0 ;;
+  compile) _zpml_construct_prompt $2 $3 ;;
   load)
     case $2 in
       random)

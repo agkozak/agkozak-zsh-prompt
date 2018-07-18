@@ -21,7 +21,7 @@
 	  prompt_char space
 	)
 
-	assert "$(zpml_construct_prompt ZPML_PROMPT)" same_as '%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
+	assert "$(zpml compile ZPML_PROMPT)" same_as '%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
 }
 
 # vim: ts=2:sts=2:sw=2

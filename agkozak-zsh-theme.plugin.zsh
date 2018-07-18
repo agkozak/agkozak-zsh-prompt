@@ -460,12 +460,12 @@ _agkozak_precmd() {
   # one and then compile it
   if [[ $ZPML_PROMPT != $AGKOZAK_CURRENT_ZPML_PROMPT ]]; then
     AGKOZAK_CURRENT_ZPML_PROMPT=$ZPML_PROMPT
-    zpml && PROMPT="$(zpml_construct_prompt ZPML_PROMPT)"
+    zpml && PROMPT="$(zpml compile ZPML_PROMPT)"
   fi
 
   if [[ $ZPML_RPROMPT != $AGKOZAK_CURRENT_ZPML_RPROMPT ]]; then
     AGKOZAK_CURRENT_ZPML_RPROMPT=$ZPML_RPROMPT
-    zpml && RPROMPT="$(zpml_construct_prompt ZPML_RPROMPT)"
+    zpml && RPROMPT="$(zpml compile ZPML_RPROMPT)"
   fi
 
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
@@ -566,7 +566,7 @@ agkozak_zsh_theme() {
       prompt_char space
     )
 
-    zpml && PROMPT="$(zpml_construct_prompt ZPML_PROMPT)"
+    zpml && PROMPT="$(zpml compile ZPML_PROMPT)"
 
     # The prompt produced is:
     #

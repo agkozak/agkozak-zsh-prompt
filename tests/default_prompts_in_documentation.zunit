@@ -35,11 +35,11 @@
 	  fg_yellow git_branch_status unfg
 	)
 
-	[[ "$(zpml_construct_prompt ZPML_PROMPT)" == $'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b\n$(_agkozak_vi_mode_indicator) ' ]]
+	[[ "$(zpml compile ZPML_PROMPT)" == $'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b\n$(_agkozak_vi_mode_indicator) ' ]]
 
 	assert $state equals 0
 
-	assert "$(zpml_construct_prompt ZPML_RPROMPT)" same_as '%F{yellow}%3v%f'
+	assert "$(zpml compile ZPML_RPROMPT)" same_as '%F{yellow}%3v%f'
 }
 
 # vim: ts=2:sts=2:sw=2

@@ -45,8 +45,9 @@
 #                                           displayed for SSH connections)
 # psvar[2]     %2v                        Working directory or abbreviation
 #                                           thereof
-# psvar[3]     %3v                        Current working Git branch, along
-#                                           with indicator of changes made
+# psvar[3]     %3v                        Current working Git branch
+#
+# psvar[4]     %4v                        Changes to Git branch (symbols)
 
 # Set AGKOZAK_THEME_DEBUG to 1 to see debugging information
 AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
@@ -368,7 +369,10 @@ _agkozak_async_init() {
       # Set RPROMPT and stop worker
       ########################################################
       _agkozak_zsh_async_callback() {
-        psvar[3]="$(_agkozak_branch_status)"
+        local branch_status
+        branch_status="$(_agkozak_branch_status)"
+        psvar[3]="${branch_status% *}"
+        psvar[4]="${branch_status#* }"
         zle && zle reset-prompt
         async_stop_worker agkozak_git_status_worker -n
       }
@@ -430,7 +434,10 @@ _agkozak_async_init() {
       ########################################################
       TRAPUSR1() {
         # read from temp file
-        psvar[3]="$(cat /tmp/agkozak_zsh_theme_$$)"
+        local branch_status
+        branch_status="$(cat /tmp/agkozak_zsh_theme_$$)"
+        psvar[3]="${branch_status% *}"
+        psvar[4]="${branch_status#* }"
 
         # Reset asynchronous process number
         typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
@@ -488,7 +495,12 @@ _agkozak_precmd() {
   case $AGKOZAK_ASYNC_METHOD in
     'zsh-async') _agkozak_zsh_async ;;
     'usr1') _agkozak_usr1_async ;;
-    *) psvar[3]="$(_agkozak_branch_status)" ;;
+    *)
+      local branch_status
+      branch_status="$(_agkozak_branch_status)"
+      psvar[3]="${branch_status% *}"
+      psvar[4]="${branch_status#* }"
+      ;;
   esac
 
   if (( AGKOZAK_MULTILINE == 0 )); then
@@ -518,7 +530,8 @@ ZPML_MACROS=(
   user_host         '%n%1v'
   pwd               '%2v'
   vi_mode_indicator '$(_agkozak_vi_mode_indicator)'
-  git_branch_status '%3v'
+  git_branch        '%3v'
+  git_status        '%4v'
 )
 
 ############################################################
@@ -607,7 +620,7 @@ agkozak_zsh_theme() {
     # to this theme
     unset zle_bracketed_paste
 
-  elif [[ -n ${ZPML_THEME} ]]; then 
+  elif [[ -n ${ZPML_THEME} ]]; then
     # Let themes persist from shell to shell
     zpml && zpml load "${ZPML_THEME}"
   else
@@ -622,7 +635,7 @@ agkozak_zsh_theme() {
       PROMPT+='$(_agkozak_vi_mode_indicator) '
 
       # The color right prompt
-      RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%)%f.)'
+      RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v %4v%)%f.)'
     else
       # The monochrome left prompt
       PROMPT='%(?..(%?%) )'
@@ -631,7 +644,7 @@ agkozak_zsh_theme() {
       PROMPT+='$(_agkozak_vi_mode_indicator) '
 
       # The monochrome right prompt
-      RPROMPT='%(3V. (%3v%).)'
+      RPROMPT='%(3V. (%3v %4v%).)'
     fi
   fi
 

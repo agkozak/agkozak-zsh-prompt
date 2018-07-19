@@ -16,7 +16,7 @@ ZPML_PROMPT=(
   fg_blue literal '%~' unfg
 
 	if is_git then
-		space fg_242 literal '(' git_branch_status literal '%)' unfg
+		space fg_242 git_branch git_status unfg
 	fi
 
 	newline

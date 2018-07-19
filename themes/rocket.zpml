@@ -22,7 +22,10 @@ ZPML_PROMPT=(
   bold fg_cyan literal '%1~' unfg unbold
   if is_git then
     space bold fg_white literal 'on' unfg unbold space
-    bold fg_magenta literal '⎇' space git_branch_status unfg unbold
+    bold
+    fg_magenta literal '⎇' space git_branch unfg
+    space fg_red literal '[' git_status literal ']' unfg
+    unbold
   fi
   newline
   bold fg_white rocket_vi_indicator unfg unbold

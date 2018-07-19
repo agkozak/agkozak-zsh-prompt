@@ -157,12 +157,12 @@ _agkozak_branch_changes() {
   typeset -A messages
 
   messages=(
-              'renamed:'                ${AGKOZAK_GIT_SYMBOLS[renamed]}
-              'Your branch is ahead of' ${AGKOZAK_GIT_SYMBOLS[ahead]}
-              'new file:'               ${AGKOZAK_GIT_SYMBOLS[new]}
-              'Untracked files'         ${AGKOZAK_GIT_SYMBOLS[untracked]}
-              'deleted'                 ${AGKOZAK_GIT_SYMBOLS[deleted]}
-              'modified:'               ${AGKOZAK_GIT_SYMBOLS[modified]}
+              'renamed:'                "${AGKOZAK_GIT_SYMBOLS[renamed]}"
+              'Your branch is ahead of' "${AGKOZAK_GIT_SYMBOLS[ahead]}"
+              'new file:'               "${AGKOZAK_GIT_SYMBOLS[new]}"
+              'Untracked files'         "${AGKOZAK_GIT_SYMBOLS[untracked]}"
+              'deleted'                 "${AGKOZAK_GIT_SYMBOLS[deleted]}"
+              'modified:'               "${AGKOZAK_GIT_SYMBOLS[modified]}"
            )
 
   for k in ${(@k)messages}; do
@@ -220,7 +220,7 @@ typeset -g AGKOZAK_THEME_DIR=${0:A:h}
 # Autoload the ZPML library
 #
 ###########################################################
-fpath+=( ${AGKOZAK_THEME_DIR}/lib/zpml )
+fpath+=( "${AGKOZAK_THEME_DIR}/lib/zpml" )
 autoload -Uz zpml
 
 typeset -g ZPML_THEME_DIR=${AGKOZAK_THEME_DIR}/themes
@@ -236,9 +236,9 @@ typeset -g ZPML_THEME_DIR=${AGKOZAK_THEME_DIR}/themes
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
     if (( AGKOZAK_THEME_DEBUG )); then
-      source ${AGKOZAK_THEME_DIR}/lib/zsh-async/async.zsh
+      source "${AGKOZAK_THEME_DIR}/lib/zsh-async/async.zsh"
     else
-      source ${AGKOZAK_THEME_DIR}/lib/zsh-async/async.zsh &> /dev/null
+      source "${AGKOZAK_THEME_DIR}/lib/zsh-async/async.zsh" &> /dev/null
     fi
     local success=$?
     return $success
@@ -296,7 +296,8 @@ _agkozak_async_init() {
       #   https://github.com/sindresorhus/pure/issues/141)
       # TODO: WSL seems to work perfectly now with zsh-async, but it may not
       #   have in the past
-      local sysinfo="$(uname -a)"
+      local sysinfo
+      sysinfo="$(uname -a)"
 
       case $sysinfo in
         # On MSYS2, zsh-async won't load; on Cygwin, it loads but does not work.
@@ -389,7 +390,7 @@ _agkozak_async_init() {
         if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
-              kill -s HUP $AGKOZAK_USR1_ASYNC_WORKER &> /dev/null || :
+              kill -s HUP "$AGKOZAK_USR1_ASYNC_WORKER" &> /dev/null || :
           fi
 
           # Start background computation of Git status
@@ -469,12 +470,12 @@ _agkozak_precmd() {
 
   # Keep a copy of each ZPML prompt cached; when either changes, cache the new
   # one and then compile it
-  if [[ $ZPML_PROMPT != $AGKOZAK_CURRENT_ZPML_PROMPT ]]; then
+  if [[ $ZPML_PROMPT != "$AGKOZAK_CURRENT_ZPML_PROMPT" ]]; then
     AGKOZAK_CURRENT_ZPML_PROMPT=$ZPML_PROMPT
     zpml && PROMPT="$(zpml compile ZPML_PROMPT)"
   fi
 
-  if [[ $ZPML_RPROMPT != $AGKOZAK_CURRENT_ZPML_RPROMPT ]]; then
+  if [[ $ZPML_RPROMPT != "$AGKOZAK_CURRENT_ZPML_RPROMPT" ]]; then
     AGKOZAK_CURRENT_ZPML_RPROMPT=$ZPML_RPROMPT
     zpml && RPROMPT="$(zpml compile ZPML_RPROMPT)"
   fi

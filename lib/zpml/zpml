@@ -33,7 +33,8 @@
 #
 # https://github.com/agkozak/agkozak-zsh-theme
 #
-
+# shellcheck disable=SC2190
+#
 (( $(tput colors) >= 8 )) && typeset -g ZPML_HAS_COLORS=1
 
 ############################################################
@@ -126,7 +127,7 @@ _zpml_construct_prompt() {
             ternary_stack+='if'
           fi
           ;;
-        then)
+        'then')
           if [[ $ternary_stack != 'ifcond' ]]; then
             _zpml_parser_error "Missing 'if' or conditional statement." && return 1
           else
@@ -143,7 +144,7 @@ _zpml_construct_prompt() {
             ternary_stack+="$i"
           fi
           ;;
-        fi)
+        'fi')
           if [[ $ternary_stack == 'ifcondthenelse' ]]; then
             output+=')'
           # When `else' is implicit
@@ -205,7 +206,7 @@ setopt LOCAL_OPTIONS NO_WARN_CREATE_GLOBAL
 
 case $1 in
   '') return 0 ;;
-  compile) _zpml_construct_prompt $2 $3 ;;
+  compile) _zpml_construct_prompt "$2" "$3" ;;
   load)
     case $2 in
       random)

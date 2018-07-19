@@ -136,6 +136,17 @@ _agkozak_branch_status() {
   [[ -n $branch ]] && printf '%s %s' "$branch" "$(_agkozak_branch_changes)"
 }
 
+# Default Git symbols to use if themes do not override them
+typeset -gA ZPML_GIT_SYMBOLS
+ZPML_GIT_SYMBOLS=(
+  renamed   '>'
+  ahead     '*'
+  new       '+'
+  untracked '?'
+  deleted   'x'
+  modified  '!'
+)
+
 ############################################################
 # Display symbols representing changes to the working copy
 #

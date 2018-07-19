@@ -194,6 +194,21 @@ _zpml_construct_prompt() {
 }
 
 ############################################################
+# Default Git symbols to use if themes do not override them
+############################################################
+zpml_load_git_symbols() {
+typeset -gA ZPML_GIT_SYMBOLS
+  ZPML_GIT_SYMBOLS=(
+    renamed   '>'
+    ahead     '*'
+    new       '+'
+    untracked '?'
+    deleted   'x'
+    modified  '!'
+  )
+}
+
+############################################################
 # zpml utility
 #
 # Globals:
@@ -204,21 +219,11 @@ _zpml_construct_prompt() {
 # Keep ZPML simple: no need for typeset -g in theme files
 setopt LOCAL_OPTIONS NO_WARN_CREATE_GLOBAL
 
-# Default Git symbols to use if themes do not override them
-typeset -gA ZPML_GIT_SYMBOLS
-ZPML_GIT_SYMBOLS=(
-  renamed   '>'
-  ahead     '*'
-  new       '+'
-  untracked '?'
-  deleted   'x'
-  modified  '!'
-)
-
 case $1 in
   '') return 0 ;;
   compile) _zpml_construct_prompt "$2" "$3" ;;
   load)
+    zpml_load_git_symbols
     case $2 in
       random)
         local themes

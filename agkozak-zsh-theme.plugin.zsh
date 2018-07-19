@@ -135,6 +135,17 @@ _agkozak_branch_status() {
   [[ -n $branch ]] && printf '%s%s' "$branch" "$(_agkozak_branch_changes)"
 }
 
+[[ -z $AGKOZAK_GIT_SYMBOLS ]] && {
+  typeset -gA AGKOZAK_GIT_SYMBOLS=(
+    renamed   '>'
+    ahead     '*'
+    new       '+'
+    untracked '?'
+    deleted   'x'
+    modified  '!'
+  )
+}
+
 ############################################################
 # Display symbols representing changes to the working copy
 ############################################################
@@ -143,15 +154,15 @@ _agkozak_branch_changes() {
 
   git_status="$(LC_ALL=C command git status 2>&1)"
 
-  declare -A messages
+  typeset -A messages
 
   messages=(
-              'renamed:'                '>'
-              'Your branch is ahead of' '*'
-              'new file:'               '+'
-              'Untracked files'         '?'
-              'deleted'                 'x'
-              'modified:'               '!'
+              'renamed:'                ${AGKOZAK_GIT_SYMBOLS[renamed]}
+              'Your branch is ahead of' ${AGKOZAK_GIT_SYMBOLS[ahead]}
+              'new file:'               ${AGKOZAK_GIT_SYMBOLS[new]}
+              'Untracked files'         ${AGKOZAK_GIT_SYMBOLS[untracked]}
+              'deleted'                 ${AGKOZAK_GIT_SYMBOLS[deleted]}
+              'modified:'               ${AGKOZAK_GIT_SYMBOLS[modified]}
            )
 
   for k in ${(@k)messages}; do
@@ -483,6 +494,7 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
   fi
 
+  # TODO: Reset blank lines when loading a new theme
   if (( AGKOZAK_BLANK_LINES )); then
     if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
       echo

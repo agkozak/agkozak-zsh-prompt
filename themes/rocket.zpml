@@ -1,8 +1,16 @@
 # rocket theme
 #
 # A vague homage to Spaceship ZSH (https://github.com/denysdovhan/spaceship-prompt)
-#
 # https://github.com/agkozak/agkozak-zsh-theme
+
+AGKOZAK_GIT_SYMBOLS=(
+  renamed   '»'
+  ahead     '⇡'
+  new       '+'
+  untracked '?'
+  deleted   '✘'
+  modified  '!'
+)
 
 set_macro rocket_vi_indicator '$(_agkozak_vi_mode_indicator "[I] " "[N] ")'
 

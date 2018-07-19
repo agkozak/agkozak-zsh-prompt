@@ -210,9 +210,9 @@ case $1 in
   load)
     case $2 in
       random)
-        local themes=( "${ZPML_THEME_DIR}/*.zpml" )
-        local random_theme="${themes[$(( $RANDOM % ${#themes[@]} + 1 ))]}" 
-        source ${random_theme} &> /dev/null && typeset -g ZPML_THEME=${random_theme}
+        local themes=( "${ZPML_THEME_DIR}"/*.zpml )
+        local random_theme="${themes[$(( RANDOM % ${#themes[@]} + 1 ))]}" 
+        source "${random_theme}" &> /dev/null && typeset -gx ZPML_THEME=${random_theme}
         # TODO: A bit kludgy, plus shouldn't I consider the possibility of
         # of someone's wanting to remove the left prompt?
         if [[ -z $ZPML_RPROMPT ]]; then
@@ -223,7 +223,7 @@ case $1 in
         if ! source "${ZPML_THEME_DIR}/${2}.zpml" &> /dev/null; then
           echo 'Theme file not found.' >&2
         else
-          typeset -g ZPML_THEME=$2
+          typeset -gx ZPML_THEME=$2
         fi
         # TODO: See immediately above.
         if [[ -z $ZPML_RPROMPT ]]; then

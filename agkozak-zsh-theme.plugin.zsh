@@ -594,6 +594,9 @@ agkozak_zsh_theme() {
     # to this theme
     unset zle_bracketed_paste
 
+  elif [[ -n ${ZPML_THEME} ]]; then 
+    # Let themes persist from shell to shell
+    zpml && zpml load "${ZPML_THEME}"
   else
     # When using the default theme, it is faster (particularly in MSYS2/Cywgin)
     # not to have to load and compile it

@@ -5,6 +5,7 @@
 # https://github.com/agkozak/agkozak-zsh-theme
 
 AGKOZAK_GIT_SYMBOLS[ahead]='⇡'
+AGKOZAK_GIT_SYMBOLS[deleted]='*'
 
 AGKOZAK_BLANK_LINES=1
 

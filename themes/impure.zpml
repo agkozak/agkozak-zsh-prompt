@@ -4,6 +4,8 @@
 #
 # https://github.com/agkozak/agkozak-zsh-theme
 
+AGKOZAK_GIT_SYMBOLS[ahead]='⇡'
+
 AGKOZAK_BLANK_LINES=1
 
 set_macro impure_vi_mode_indicator '$(_agkozak_vi_mode_indicator ❯ ❮ ❯)' 

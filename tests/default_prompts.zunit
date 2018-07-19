@@ -5,9 +5,9 @@
 
 	zpml load agkozak
 
-	assert "$(zpml compile ZPML_PROMPT)" same_as '%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
+	assert "$(zpml compile ZPML_PROMPT colors)" same_as '%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}$(_agkozak_vi_mode_indicator) '
 
-	assert "$(zpml compile ZPML_RPROMPT)" same_as '%(3V.%F{yellow} (%3v %4v%)%f.)'
+	assert "$(zpml compile ZPML_RPROMPT colors)" same_as '%(3V.%F{yellow} (%3v%(4V. %4v.)%)%f.)'
 }
 
 # vim: ts=2:sts=2:sw=2

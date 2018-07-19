@@ -210,8 +210,10 @@ case $1 in
   load)
     case $2 in
       random)
-        local themes=( "${ZPML_THEME_DIR}"/*.zpml )
-        local random_theme="${themes[$(( RANDOM % ${#themes[@]} + 1 ))]}" 
+        local themes
+        themes=( "${ZPML_THEME_DIR}"/*.zpml )
+        local random_theme
+        random_theme="${themes[$(( RANDOM % ${#themes[@]} + 1 ))]}" 
         source "${random_theme}" &> /dev/null && typeset -gx ZPML_THEME=${random_theme}
         # TODO: A bit kludgy, plus shouldn't I consider the possibility of
         # of someone's wanting to remove the left prompt?

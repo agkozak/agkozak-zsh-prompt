@@ -9,10 +9,10 @@ Goals for agkozak-zsh-theme v3.0.0
 - Distinction between provided macros, custom macros, and making namespaces
 
 # Other customizations
-- Provide global associative array for Git branch status symbols
+- Provide global associative array for Git branch status symbols @done(2018-07-18)
 - Allow two global strings to override the default prompts entirely
-- Add a function to precmd to check for changes to customizations and themes and switch on the fly
-- Add a few default themes (perhaps an agkozak2 without right prompt and "impure") with a command to switch between theme
+- Add a function to precmd to check for changes to customizations and themes and switch on the fly @done(2018-07-18)
+- Add a few default themes (perhaps an agkozak2 without right prompt and "impure") with a command to switch between theme @done(2018-07-18)
 - See GitHub pull request for other customization ideas
 
 # Marketing

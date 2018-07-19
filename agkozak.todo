@@ -1,6 +1,9 @@
 Goals for agkozak-zsh-theme v3.0.0
 ==================================
 
+# Language
+- Support nested ternary conditions
+
 # Macros
 - Come up with names for ternary conditions and work into parser
 - Rewrite how parser errors are generated

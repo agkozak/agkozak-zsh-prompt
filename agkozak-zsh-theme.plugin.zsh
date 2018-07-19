@@ -372,7 +372,11 @@ _agkozak_async_init() {
         local branch_status
         branch_status="$(_agkozak_branch_status)"
         psvar[3]="${branch_status% *}"
-        psvar[4]="${branch_status#* }"
+        if [[ $psvar[3] != $branch_status ]]; then
+          psvar[4]="${branch_status#* }"
+        else
+          psvar[4]=''
+        fi
         zle && zle reset-prompt
         async_stop_worker agkozak_git_status_worker -n
       }
@@ -437,7 +441,11 @@ _agkozak_async_init() {
         local branch_status
         branch_status="$(cat /tmp/agkozak_zsh_theme_$$)"
         psvar[3]="${branch_status% *}"
-        psvar[4]="${branch_status#* }"
+        if [[ $psvar[3] != $branch_status ]]; then
+          psvar[4]="${branch_status#* }"
+        else
+          psvar[4]=''
+        fi
 
         # Reset asynchronous process number
         typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
@@ -499,7 +507,11 @@ _agkozak_precmd() {
       local branch_status
       branch_status="$(_agkozak_branch_status)"
       psvar[3]="${branch_status% *}"
-      psvar[4]="${branch_status#* }"
+      if [[ $psvar[3] != $branch_status ]]; then
+        psvar[4]="${branch_status#* }"
+      else
+        psvar[4]=''
+      fi
       ;;
   esac
 
@@ -531,7 +543,7 @@ ZPML_MACROS=(
   pwd               '%2v'
   vi_mode_indicator '$(_agkozak_vi_mode_indicator)'
   git_branch        '%3v'
-  git_status        '%4v'
+  git_status        '%(4V. %4v.)'
 )
 
 ############################################################
@@ -635,7 +647,7 @@ agkozak_zsh_theme() {
       PROMPT+='$(_agkozak_vi_mode_indicator) '
 
       # The color right prompt
-      RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v %4v%)%f.)'
+      RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%(4V. %4v.)%)%f.)'
     else
       # The monochrome left prompt
       PROMPT='%(?..(%?%) )'
@@ -644,7 +656,7 @@ agkozak_zsh_theme() {
       PROMPT+='$(_agkozak_vi_mode_indicator) '
 
       # The monochrome right prompt
-      RPROMPT='%(3V. (%3v %4v%).)'
+      RPROMPT='%(3V. (%3v%4V. %4v.)%).)'
     fi
   fi
 

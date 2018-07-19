@@ -12,6 +12,7 @@ AGKOZAK_GIT_SYMBOLS=(
   modified  '!'
 )
 
+set_macro rocket_git_status   '%(4V.[%4v].)'
 set_macro rocket_vi_indicator '$(_agkozak_vi_mode_indicator "[I] " "[N] ")'
 
 ZPML_PROMPT=(
@@ -24,7 +25,7 @@ ZPML_PROMPT=(
     space bold fg_white literal 'on' unfg unbold space
     bold
     fg_magenta literal '⎇' space git_branch unfg
-    space fg_red literal '[' git_status literal ']' unfg
+    space fg_red rocket_git_status unfg
     unbold
   fi
   newline

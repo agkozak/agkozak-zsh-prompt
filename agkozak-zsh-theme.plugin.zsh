@@ -133,24 +133,14 @@ _agkozak_branch_status() {
     *) ref="$(git rev-parse --short HEAD 2> /dev/null)" || return ;;
   esac
   branch="${ref#refs/heads/}"
-  [[ -n $branch ]] && printf '%s%s' "$branch" "$(_agkozak_branch_changes)"
-}
-
-# Default Git symbols
-[[ -z $AGKOZAK_GIT_SYMBOLS ]] && {
-  typeset -gA AGKOZAK_GIT_SYMBOLS
-  AGKOZAK_GIT_SYMBOLS=(
-    renamed   '>'
-    ahead     '*'
-    new       '+'
-    untracked '?'
-    deleted   'x'
-    modified  '!'
-  )
+  [[ -n $branch ]] && printf '%s %s' "$branch" "$(_agkozak_branch_changes)"
 }
 
 ############################################################
 # Display symbols representing changes to the working copy
+#
+# Globals:
+#   ZPML_GIT_SYMBOLS
 ############################################################
 _agkozak_branch_changes() {
   local git_status symbols k
@@ -160,12 +150,12 @@ _agkozak_branch_changes() {
   typeset -A messages
 
   messages=(
-              'renamed:'                "${AGKOZAK_GIT_SYMBOLS[renamed]}"
-              'Your branch is ahead of' "${AGKOZAK_GIT_SYMBOLS[ahead]}"
-              'new file:'               "${AGKOZAK_GIT_SYMBOLS[new]}"
-              'Untracked files'         "${AGKOZAK_GIT_SYMBOLS[untracked]}"
-              'deleted'                 "${AGKOZAK_GIT_SYMBOLS[deleted]}"
-              'modified:'               "${AGKOZAK_GIT_SYMBOLS[modified]}"
+              'renamed:'                "${ZPML_GIT_SYMBOLS[renamed]}"
+              'Your branch is ahead of' "${ZPML_GIT_SYMBOLS[ahead]}"
+              'new file:'               "${ZPML_GIT_SYMBOLS[new]}"
+              'Untracked files'         "${ZPML_GIT_SYMBOLS[untracked]}"
+              'deleted'                 "${ZPML_GIT_SYMBOLS[deleted]}"
+              'modified:'               "${ZPML_GIT_SYMBOLS[modified]}"
            )
 
   for k in ${(@k)messages}; do
@@ -174,7 +164,7 @@ _agkozak_branch_changes() {
     esac
   done
 
-  [[ -n $symbols ]] && printf ' %s' "$symbols"
+  [[ -n $symbols ]] && printf '%s' "$symbols"
 }
 
 ############################################################

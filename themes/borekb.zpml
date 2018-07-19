@@ -12,7 +12,11 @@ ZPML_PROMPT=(
 
   bold fg_blue pwd unfg unbold
 
-  fg_243 git_branch_status unfg newline
+	if is_git then
+		space fg_243 literal '(' git_branch_status literal '%)' unfg
+	fi
+
+  newline
 
   if is_superuser then
     literal '#'

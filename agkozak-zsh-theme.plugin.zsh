@@ -132,7 +132,7 @@ _agkozak_branch_status() {
     *) ref="$(git rev-parse --short HEAD 2> /dev/null)" || return ;;
   esac
   branch="${ref#refs/heads/}"
-  [[ -n $branch ]] && printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
+  [[ -n $branch ]] && printf '%s%s' "$branch" "$(_agkozak_branch_changes)"
 }
 
 ############################################################
@@ -592,7 +592,7 @@ agkozak_zsh_theme() {
       PROMPT+='$(_agkozak_vi_mode_indicator) '
 
       # The color right prompt
-      RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
+      RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%)%f.)'
     else
       # The monochrome left prompt
       PROMPT='%(?..(%?%) )'
@@ -601,7 +601,7 @@ agkozak_zsh_theme() {
       PROMPT+='$(_agkozak_vi_mode_indicator) '
 
       # The monochrome right prompt
-      RPROMPT='%3v'
+      RPROMPT='%(3V. (%3v%).)'
     fi
   fi
 

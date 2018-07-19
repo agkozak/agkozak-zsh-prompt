@@ -7,11 +7,15 @@
 set_macro rocket_vi_indicator '$(_agkozak_vi_mode_indicator "[I] " "[N] ")'
 
 ZPML_PROMPT=(
+  if is_superuser then
+    bold fg_red literal '%n' unfg unbold space
+    literal 'in' space
+  fi
   bold fg_cyan literal '%1~' unfg unbold
-  literal '%(3V.'
-    space bold fg_white literal 'on' unfg un space
-    bold fg_magenta literal '⎇' git_branch_status unfg unbold
-  literal '.)'
+  if is_git then
+    space bold fg_white literal 'on' unfg unbold space
+    bold fg_magenta literal '⎇' space git_branch_status unfg unbold
+  fi
   newline
   bold fg_white rocket_vi_indicator unfg unbold
   if is_exit_0 then

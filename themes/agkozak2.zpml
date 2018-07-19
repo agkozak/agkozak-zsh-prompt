@@ -25,7 +25,11 @@ ZPML_PROMPT=(
   space
 
   bold fg_blue pwd unfg unbold
-  fg_yellow git_branch_status unfg
+
+  if is_git then
+		space fg_yellow literal '(' git_branch_status literal '%)' unfg
+	fi
+
   newline
 
   vi_mode_indicator space

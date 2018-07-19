@@ -109,6 +109,9 @@ _zpml_construct_prompt() {
         is_superuser)
           output+='!'
           ;;
+        is_git*)
+          output+="3V"
+          ;;
         *) _zpml_parser_error "Unsupported condition: $i" && return 1
           ;;
       esac

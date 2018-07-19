@@ -214,7 +214,9 @@ ZPML_PROMPT=(
 )
 
 ZPML_RPROMPT=(
-  fg_yellow git_branch_status unfg
+  if is_git then
+    fg_yellow space literal '(' git_branch_status literal '%)' unfg
+  fi
 )
 ```
 

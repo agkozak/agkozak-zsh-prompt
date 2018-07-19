@@ -7,13 +7,13 @@ AGKOZAK_ZPML_RPROMPT=()
 
 	zpml load borekb
 
-	[[ "$(zpml compile ZPML_PROMPT color)" == $'%(?..%B%F{red}(%?%)%f%b )%B%F{blue}%2v%f%b%F{243}%3v%f\n%(!.#.$) ' ]]
+	[[ "$(zpml compile ZPML_PROMPT color)" == $'%(?..%B%F{red}(%?%)%f%b )%B%F{blue}%2v%f%b%(3V. %F{243}(%3v%)%f.)\n%(!.#.$) ' ]]
 
 	assert $state equals 0
 
 	zpml load borekb
 
-	[[ "$(zpml compile ZPML_PROMPT mono)" == $'%(?..%B(%?%)%b )%B%2v%b%3v\n%(!.#.$) ' ]]
+	[[ "$(zpml compile ZPML_PROMPT mono)" == $'%(?..%B(%?%)%b )%B%2v%b%(3V. (%3v%).)\n%(!.#.$) ' ]]
 
 	assert $state equals 0
 }

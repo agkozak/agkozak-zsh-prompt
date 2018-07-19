@@ -32,14 +32,16 @@
 	)
 
 	ZPML_RPROMPT=(
-	  fg_yellow git_branch_status unfg
+		if is_git then
+		  fg_yellow space literal '(' git_branch_status literal '%)' unfg
+		fi
 	)
 
 	[[ "$(zpml compile ZPML_PROMPT)" == $'%(?..%B%F{red}(%?%)%f%b )%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) %B%F{blue}%2v%f%b\n$(_agkozak_vi_mode_indicator) ' ]]
 
 	assert $state equals 0
 
-	assert "$(zpml compile ZPML_RPROMPT)" same_as '%F{yellow}%3v%f'
+	assert "$(zpml compile ZPML_RPROMPT)" same_as '%(3V.%F{yellow} (%3v%)%f.)'
 }
 
 # vim: ts=2:sts=2:sw=2

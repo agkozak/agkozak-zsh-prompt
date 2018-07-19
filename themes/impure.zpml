@@ -8,7 +8,10 @@ AGKOZAK_BLANK_LINES=1
 
 ZPML_PROMPT=(
   fg_blue literal '%~' unfg
-  fg_242 git_branch_status unfg
+
+	if is_git then
+		space fg_242 literal '(' git_branch_status literal '%)' unfg
+	fi
   newline
   if is_exit_0 then
     fg_magenta

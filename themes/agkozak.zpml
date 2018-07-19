@@ -37,7 +37,9 @@ ZPML_PROMPT=(
 
 # Right prompt
 ZPML_RPROMPT=(                      # Default: yellow
-	fg_${AGKOZAK_COLORS_BRANCH_STATUS} git_branch_status unfg
+  if is_git then
+		fg_${AGKOZAK_COLORS_BRANCH_STATUS} space literal '(' git_branch_status literal '%)' unfg
+	fi
 )
 
 # vim: ft=zsh:ts=2:sts=2:sw=2

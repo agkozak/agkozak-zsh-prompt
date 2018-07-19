@@ -1,27 +1,14 @@
 #!/usr/bin/env zunit
 
 @test 'Testing default Emacs shell prompt' {
+	INSIDE_EMACS='foo'
+	TERM=dumb
+
 	load ../agkozak-zsh-theme.plugin.zsh
-	zpml
 
-	set_macro emacs_pwd '$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
-	set_macro sync_git_branch_status '$(_agkozak_branch_status)'
-	set_macro prompt_char '%#'
+	assert $PROMPT same_as '%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(emacs_git_branch_status) %# '
 
-	ZPML_PROMPT=(
-	  if is_exit_0 then
-	  else
-	    exit_status space
-	  fi
-
-	  user_host space
-
-	  emacs_pwd
-	  sync_git_branch_status space
-	  prompt_char space
-	)
-
-	assert "$(zpml compile ZPML_PROMPT)" same_as '%(?..(%?%) )%n%1v $(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")$(_agkozak_branch_status) %# '
+  assert $RPROMPT same_as ''	
 }
 
 # vim: ts=2:sts=2:sw=2

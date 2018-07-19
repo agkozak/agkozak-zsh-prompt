@@ -564,10 +564,20 @@ agkozak_zsh_theme() {
     psvar[1]=''
   fi
 
-  # The Emacs shell has only limited support for some zsh features
+  # The Emacs shell has only limited support for some ZSH features
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
+
+    emacs_git_branch_status () {
+      local branch_status
+      branch_status="$(_agkozak_branch_status)"
+      [[ -n "${branch_status}" ]] && branch_status=" (${branch_status}%)"
+      echo "$branch_status"
+    }
+
+    zpml
+
     set_macro emacs_pwd '$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
-    set_macro sync_git_branch_status '$(_agkozak_branch_status)'
+    set_macro emacs_git_branch_status '$(emacs_git_branch_status)'
     set_macro prompt_char '%#'
 
     typeset -g ZPML_PROMPT=(
@@ -579,7 +589,7 @@ agkozak_zsh_theme() {
       user_host space
 
       emacs_pwd
-      sync_git_branch_status space
+      emacs_git_branch_status space
       prompt_char space
     )
 
@@ -590,7 +600,7 @@ agkozak_zsh_theme() {
     # PROMPT='%(?..(%?%) )'
     # PROMPT+='%n%1v '
     # PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
-    # PROMPT+='$(_agkozak_branch_status) '
+    # PROMPT+=' $(emacs_git_branch_status) '
     # PROMPT+='%# '
 
     # TODO: The following really belongs in the user's .zshrc; it is unrelated

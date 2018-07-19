@@ -494,12 +494,13 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
   fi
 
-  # TODO: Reset blank lines when loading a new theme
-  if (( AGKOZAK_BLANK_LINES )); then
-    if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
-      echo
+  if [[ -z ${ZPML_THEME} ]] || [[ ${ZPML_THEME} == 'agkozak' ]]; then
+    if (( AGKOZAK_BLANK_LINES )); then
+      if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
+        echo
+      fi
+      typeset -g AGKOZAK_FIRST_PROMPT_PRINTED=1
     fi
-    typeset -g AGKOZAK_FIRST_PROMPT_PRINTED=1
   fi
 }
 

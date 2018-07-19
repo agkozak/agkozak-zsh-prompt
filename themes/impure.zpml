@@ -8,9 +8,11 @@ AGKOZAK_GIT_SYMBOLS[ahead]='⇡'
 
 AGKOZAK_BLANK_LINES=1
 
-set_macro impure_vi_mode_indicator '$(_agkozak_vi_mode_indicator ❯ ❮ ❯)' 
+set_macro impure_vi_mode_indicator '$(_agkozak_vi_mode_indicator ❯ ❮ ❯)'
 
 ZPML_PROMPT=(
+	newline
+
   fg_blue literal '%~' unfg
 
 	if is_git then
@@ -19,15 +21,15 @@ ZPML_PROMPT=(
 
 	newline
 
-	if is_exit_0 then
+	if is_superuser then
+		fg_red literal '#' unfg space
+	fi
+
+  if is_exit_0 then
     fg_magenta
   else
     fg_red
   fi
-
-	if is_superuser then
-		fg_red literal '#' unfg space
-	fi
 
 	impure_vi_mode_indicator unfg space
 )

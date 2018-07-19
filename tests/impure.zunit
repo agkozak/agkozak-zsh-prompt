@@ -5,7 +5,7 @@
 
 	zpml load impure
 
-	[[ "$(zpml compile ZPML_PROMPT color)" == $'%F{blue}%~%f%(3V. %F{242}(%3v%)%f.)\n%(?.%F{magenta}.%F{red})❯%f ' ]]
+	[[ "$(zpml compile ZPML_PROMPT color)" == $'\n%F{blue}%~%f%(3V. %F{242}(%3v%)%f.)\n%(?.%F{magenta}.%F{red})❯%f ' ]]
 
 	assert $state equals 0
 }

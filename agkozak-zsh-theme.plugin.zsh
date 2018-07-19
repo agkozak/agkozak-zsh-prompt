@@ -135,8 +135,10 @@ _agkozak_branch_status() {
   [[ -n $branch ]] && printf '%s%s' "$branch" "$(_agkozak_branch_changes)"
 }
 
+# Default Git symbols
 [[ -z $AGKOZAK_GIT_SYMBOLS ]] && {
-  typeset -gA AGKOZAK_GIT_SYMBOLS=(
+  typeset -gA AGKOZAK_GIT_SYMBOLS
+  AGKOZAK_GIT_SYMBOLS=(
     renamed   '>'
     ahead     '*'
     new       '+'
@@ -510,7 +512,8 @@ _agkozak_precmd() {
 ############################################################
 
 # An extensible associative array containing macros
-typeset -gA ZPML_MACROS=(
+typeset -gA ZPML_MACROS
+ZPML_MACROS=(
   exit_status       '(%?%)'
   user_host         '%n%1v'
   pwd               '%2v'

@@ -373,7 +373,7 @@ _agkozak_async_init() {
         local branch_status
         branch_status="$(_agkozak_branch_status)"
         psvar[3]="${branch_status% *}"
-        if [[ $psvar[3] != $branch_status ]]; then
+        if [[ ${branch_status#* } != ${psvar[3]} ]]; then
           psvar[4]="${branch_status#* }"
         else
           psvar[4]=''
@@ -442,7 +442,7 @@ _agkozak_async_init() {
         local branch_status
         branch_status="$(cat /tmp/agkozak_zsh_theme_$$)"
         psvar[3]="${branch_status% *}"
-        if [[ $psvar[3] != $branch_status ]]; then
+        if [[ ${branch_status#* } != ${psvar[3]} ]]; then
           psvar[4]="${branch_status#* }"
         else
           psvar[4]=''
@@ -508,7 +508,7 @@ _agkozak_precmd() {
       local branch_status
       branch_status="$(_agkozak_branch_status)"
       psvar[3]="${branch_status% *}"
-      if [[ $psvar[3] != $branch_status ]]; then
+      if [[ ${branch_status#* } != ${psvar[3]} ]]; then
         psvar[4]="${branch_status#* }"
       else
         psvar[4]=''

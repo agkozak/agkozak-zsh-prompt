@@ -145,6 +145,7 @@ ZPML_GIT_SYMBOLS=(
   untracked '?'
   deleted   'x'
   modified  '!'
+  behind    '@'
 )
 
 ############################################################
@@ -156,7 +157,7 @@ ZPML_GIT_SYMBOLS=(
 _agkozak_branch_changes() {
   local git_status symbols k
 
-  git_status="$(LC_ALL=C command git status 2>&1)"
+  git_status="$(LC_ALL=C command git status -uno 2>&1)"
 
   typeset -A messages
 
@@ -167,6 +168,7 @@ _agkozak_branch_changes() {
               'Untracked files'         "${ZPML_GIT_SYMBOLS[untracked]}"
               'deleted'                 "${ZPML_GIT_SYMBOLS[deleted]}"
               'modified:'               "${ZPML_GIT_SYMBOLS[modified]}"
+              'behind:'                 "${ZPML_GIT_SYMBOLS[behind]}"
            )
 
   for k in ${(@k)messages}; do

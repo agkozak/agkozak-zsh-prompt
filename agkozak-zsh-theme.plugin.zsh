@@ -594,10 +594,8 @@ agkozak_zsh_theme() {
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
 
     emacs_git_branch_status () {
-      local branch_status
-      branch_status="$(_agkozak_branch_status)"
-      [[ -n "${branch_status}" ]] && branch_status=" (${branch_status}%)"
-      echo "$branch_status"
+      local branch="$(_agkozak_branch_status)"
+      [[ -n $branch ]] && print " (${branch% })"
     }
 
     zpml

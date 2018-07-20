@@ -179,6 +179,24 @@ _agkozak_branch_changes() {
 }
 
 ############################################################
+# Populate psvar[3] and psvar[4] with Git branch and changes
+#
+# Arguments;
+#   $1 String produced by _agkozak_branch_status
+############################################################
+_agkozak_populate_git_vars() {
+  local branch_and_changes="$1"
+  psvar[3]="${branch_and_changes% *}"
+  if [[ ${branch_and_changes#* } != ${psvar[3]} ]]; then
+    psvar[4]="${branch_and_changes#* }"
+  else
+    psvar[4]=''
+  fi
+}
+
+
+
+############################################################
 # When the user enters vi command mode, the % or # in the
 # prompt changes into a colon
 #
@@ -371,13 +389,7 @@ _agkozak_async_init() {
       ########################################################
       _agkozak_zsh_async_callback() {
         local branch_status
-        branch_status="$(_agkozak_branch_status)"
-        psvar[3]="${branch_status% *}"
-        if [[ ${branch_status#* } != ${psvar[3]} ]]; then
-          psvar[4]="${branch_status#* }"
-        else
-          psvar[4]=''
-        fi
+        _agkozak_populate_git_vars "$(_agkozak_branch_status)"
         zle && zle reset-prompt
         async_stop_worker agkozak_git_status_worker -n
       }
@@ -440,13 +452,7 @@ _agkozak_async_init() {
       TRAPUSR1() {
         # read from temp file
         local branch_status
-        branch_status="$(cat /tmp/agkozak_zsh_theme_$$)"
-        psvar[3]="${branch_status% *}"
-        if [[ ${branch_status#* } != ${psvar[3]} ]]; then
-          psvar[4]="${branch_status#* }"
-        else
-          psvar[4]=''
-        fi
+        _agkozak_populate_git_vars "$(cat /tmp/agkozak_zsh_theme_$$)"
 
         # Reset asynchronous process number
         typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
@@ -500,19 +506,13 @@ _agkozak_precmd() {
 
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
   psvar[3]=''
+  psvar[4]=''
 
   case $AGKOZAK_ASYNC_METHOD in
     'zsh-async') _agkozak_zsh_async ;;
     'usr1') _agkozak_usr1_async ;;
     *)
-      local branch_status
-      branch_status="$(_agkozak_branch_status)"
-      psvar[3]="${branch_status% *}"
-      if [[ ${branch_status#* } != ${psvar[3]} ]]; then
-        psvar[4]="${branch_status#* }"
-      else
-        psvar[4]=''
-      fi
+      _agkozak_populate_git_vars "$(_agkozak_branch_status)"
       ;;
   esac
 

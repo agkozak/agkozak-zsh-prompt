@@ -223,13 +223,13 @@ case $1 in
   '') return 0 ;;
   compile) _zpml_construct_prompt "$2" "$3" ;;
   load)
-    zpml_load_git_symbols
     case $2 in
       random)
         local themes
         themes=( "${ZPML_THEME_DIR}"/*.zpml )
         local random_theme
         random_theme="${themes[$(( RANDOM % ${#themes[@]} + 1 ))]}"
+        [[ -f ${random_theme} ]] && zpml_load_git_symbols
         source "${random_theme}" &> /dev/null && typeset -gx ZPML_THEME=${random_theme}
         # TODO: A bit kludgy, plus shouldn't I consider the possibility of
         # of someone's wanting to remove the left prompt?
@@ -238,10 +238,11 @@ case $1 in
         fi
         ;;
       *)
-        if ! source "${ZPML_THEME_DIR}/${2}.zpml" &> /dev/null; then
-          echo 'Theme file not found.' >&2
+        if [[ -f ${ZPML_THEME_DIR}/${2}.zpml ]]; then
+          zpml_load_git_symbols
+          source "${ZPML_THEME_DIR}/${2}.zpml" && typeset -gx ZPML_THEME=$2
         else
-          typeset -gx ZPML_THEME=$2
+          echo 'Theme file not found.' >&2
         fi
         # TODO: See immediately above.
         if [[ -z $ZPML_RPROMPT ]]; then

@@ -658,7 +658,7 @@ agkozak_zsh_theme() {
       _agkozak_strip_colors() {
 
         local prompt=$1
-        local stack
+        local open_braces
 
         while [[ -n $prompt ]]; do
           if [[ $prompt == '%f'* ]]; then
@@ -666,28 +666,28 @@ agkozak_zsh_theme() {
           elif [[ $prompt == '%k'* ]]; then
             prompt=${prompt/\%b}
           elif [[ $prompt == '%F{'* ]]; then
-            (( stack++ ))
+            (( open_braces++ ))
             prompt=${prompt/\%F\{/}
-            while (( stack != 0 )); do
+            while (( open_braces != 0 )); do
               if [[ ${prompt:0:1} == '{' ]]; then
-                (( stack++ ))
+                (( open_braces++ ))
                 prompt=${prompt#?}
               elif [[ ${prompt:0:1} == '}' ]]; then
-                (( stack-- ))
+                (( open_braces-- ))
                 prompt=${prompt#?}
               else
                 prompt=${prompt#?}
               fi
             done
            elif [[ $prompt == '%K{'* ]]; then
-            (( stack++ ))
+            (( open_braces++ ))
             prompt=${prompt/\%K\{/}
-            while (( stack != 0 )); do
+            while (( open_braces != 0 )); do
               if [[ ${prompt:0:1} == '{' ]]; then
-                (( stack++ ))
+                (( open_braces++ ))
                 prompt=${prompt#?}
               elif [[ ${prompt:0:1} == '}' ]]; then
-                (( stack-- ))
+                (( open_braces-- ))
                 prompt=${prompt#?}
               else
                 prompt=${prompt#?}

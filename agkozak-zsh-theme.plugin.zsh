@@ -638,25 +638,72 @@ agkozak_zsh_theme() {
     # When using the default theme, it is faster (particularly in MSYS2/Cywgin)
     # not to have to load and compile it
 
-    if (( AGKOZAK_HAS_COLORS )); then
-      # The color left prompt
-      PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-      PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
-      PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
-      PROMPT+='$(_agkozak_vi_mode_indicator) '
+    # The color left prompt
+    PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+    PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+    PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
+    PROMPT+='$(_agkozak_vi_mode_indicator) '
 
-      # The color right prompt
-      RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%(4V. %4v.)%)%f.)'
-    else
-      # The monochrome left prompt
-      PROMPT='%(?..(%?%) )'
-      PROMPT+='%(!.%S.)%n%1v%(!.%s.) '
-      PROMPT+=$'%2v${AGKOZAK_PROMPT_WHITESPACE}'
-      PROMPT+='$(_agkozak_vi_mode_indicator) '
+    # The color right prompt
+    RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%(4V. %4v.)%)%f.)'
 
-      # The monochrome right prompt
-      RPROMPT='%(3V. (%3v%4V. %4v.)%).)'
-    fi
+    (( AGKOZAK_HAS_COLORS != 1 ))  && {
+
+      #########################################################
+      # Strip color codes from a prompt string
+      #
+      # Arguments:
+      #   $1 The prompt string
+      #########################################################
+      _agkozak_strip_colors() {
+
+        local prompt=$1
+        local stack
+
+        while [[ -n $prompt ]]; do
+          if [[ $prompt == '%f'* ]]; then
+            prompt=${prompt/\%f}
+          elif [[ $prompt == '%k'* ]]; then
+            prompt=${prompt/\%b}
+          elif [[ $prompt == '%F{'* ]]; then
+            (( stack++ ))
+            prompt=${prompt/\%F\{/}
+            while (( stack != 0 )); do
+              if [[ ${prompt:0:1} == '{' ]]; then
+                (( stack++ ))
+                prompt=${prompt#?}
+              elif [[ ${prompt:0:1} == '}' ]]; then
+                (( stack-- ))
+                prompt=${prompt#?}
+              else
+                prompt=${prompt#?}
+              fi
+            done
+           elif [[ $prompt == '%K{'* ]]; then
+            (( stack++ ))
+            prompt=${prompt/\%K\{/}
+            while (( stack != 0 )); do
+              if [[ ${prompt:0:1} == '{' ]]; then
+                (( stack++ ))
+                prompt=${prompt#?}
+              elif [[ ${prompt:0:1} == '}' ]]; then
+                (( stack-- ))
+                prompt=${prompt#?}
+              else
+                prompt=${prompt#?}
+              fi
+            done
+          else
+            print -n ${prompt:0:1}
+            prompt=${prompt#?}
+          fi
+        done
+      }
+
+      PROMPT="$(_agkozak_strip_colors $PROMPT)"
+      RPROMPT="$(_agkozak_strip_colors $RPROMPT)"
+    }
+
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

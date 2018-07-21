@@ -661,42 +661,28 @@ agkozak_zsh_theme() {
         local open_braces
 
         while [[ -n $prompt ]]; do
-          if [[ $prompt == '%f'* ]]; then
-            prompt=${prompt/\%f}
-          elif [[ $prompt == '%k'* ]]; then
-            prompt=${prompt/\%b}
-          elif [[ $prompt == '%F{'* ]]; then
-            (( open_braces++ ))
-            prompt=${prompt/\%F\{/}
-            while (( open_braces != 0 )); do
-              if [[ ${prompt:0:1} == '{' ]]; then
-                (( open_braces++ ))
+          case $prompt in
+            %F{*|%K{*)
+              (( open_braces++ ))
+              case $prompt in
+                %F{*) prompt=${prompt/\%F\{/} ;;
+                %K{*) prompt=${prompt/\%K\{/} ;;
+              esac
+              while (( open_braces != 0 )); do
+                case ${prompt:0:1} in
+                  {) (( open_braces++ )) ;;
+                  \}) (( open_braces-- )) ;;
+                esac
                 prompt=${prompt#?}
-              elif [[ ${prompt:0:1} == '}' ]]; then
-                (( open_braces-- ))
-                prompt=${prompt#?}
-              else
-                prompt=${prompt#?}
-              fi
-            done
-           elif [[ $prompt == '%K{'* ]]; then
-            (( open_braces++ ))
-            prompt=${prompt/\%K\{/}
-            while (( open_braces != 0 )); do
-              if [[ ${prompt:0:1} == '{' ]]; then
-                (( open_braces++ ))
-                prompt=${prompt#?}
-              elif [[ ${prompt:0:1} == '}' ]]; then
-                (( open_braces-- ))
-                prompt=${prompt#?}
-              else
-                prompt=${prompt#?}
-              fi
-            done
-          else
-            print -n ${prompt:0:1}
-            prompt=${prompt#?}
-          fi
+              done
+              ;;
+            %f*) prompt=${prompt/\%f/} ;;
+            %k*) prompt=${prompt/\%k/} ;;
+            *)
+              print -n ${prompt:0:1}
+              prompt=${prompt#?}
+              ;;
+          esac
         done
       }
 

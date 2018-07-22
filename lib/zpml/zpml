@@ -197,7 +197,7 @@ _zpml_construct_prompt() {
 # Default Git symbols to use if themes do not override them
 ############################################################
 zpml_load_git_symbols() {
-typeset -gA ZPML_GIT_SYMBOLS
+  typeset -gA ZPML_GIT_SYMBOLS
   ZPML_GIT_SYMBOLS=(
     renamed   '>'
     ahead     '*'

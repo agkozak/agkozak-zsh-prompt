@@ -495,12 +495,12 @@ _agkozak_precmd() {
   # Keep a copy of each ZPML prompt cached; when either changes, cache the new
   # one and then compile it
   if [[ $ZPML_PROMPT != "$AGKOZAK_CURRENT_ZPML_PROMPT" ]]; then
-    AGKOZAK_CURRENT_ZPML_PROMPT=$ZPML_PROMPT
+    typeset -g AGKOZAK_CURRENT_ZPML_PROMPT=$ZPML_PROMPT
     zpml && PROMPT="$(zpml compile ZPML_PROMPT)"
   fi
 
   if [[ $ZPML_RPROMPT != "$AGKOZAK_CURRENT_ZPML_RPROMPT" ]]; then
-    AGKOZAK_CURRENT_ZPML_RPROMPT=$ZPML_RPROMPT
+    typeset -g AGKOZAK_CURRENT_ZPML_RPROMPT=$ZPML_RPROMPT
     zpml && RPROMPT="$(zpml compile ZPML_RPROMPT)"
   fi
 

@@ -655,6 +655,7 @@ agkozak_zsh_theme() {
     PROMPT+='$(_agkozak_vi_mode_indicator) '
 
     # The color right prompt
+    typeset -g RPROMPT
     RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%(4V. %4v.)%)%f.)'
 
     (( AGKOZAK_HAS_COLORS != 1 ))  && {

@@ -52,7 +52,15 @@
 # Set AGKOZAK_THEME_DEBUG to 1 to see debugging information
 AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
 
-(( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL WARN_NESTED_VAR
+if (( AGKOZAK_THEME_DEBUG )); then
+  autoload -Uz is-at-least
+
+  setopt WARN_CREATE_GLOBAL
+
+  if is-at-least 5.4.0; then
+    setopt WARN_NESTED_VAR
+  fi
+fi
 
 # Decide if the prompt should be displayed in color
 (( $(tput colors) >= 8 )) && typeset -g AGKOZAK_HAS_COLORS=1
@@ -495,12 +503,14 @@ _agkozak_precmd() {
   # Keep a copy of each ZPML prompt cached; when either changes, cache the new
   # one and then compile it
   if [[ $ZPML_PROMPT != "$AGKOZAK_CURRENT_ZPML_PROMPT" ]]; then
-    typeset -g AGKOZAK_CURRENT_ZPML_PROMPT=$ZPML_PROMPT
+    typeset -g AGKOZAK_CURRENT_ZPML_PROMPT
+    AGKOZAK_CURRENT_ZPML_PROMPT=$ZPML_PROMPT
     zpml && PROMPT="$(zpml compile ZPML_PROMPT)"
   fi
 
   if [[ $ZPML_RPROMPT != "$AGKOZAK_CURRENT_ZPML_RPROMPT" ]]; then
-    typeset -g AGKOZAK_CURRENT_ZPML_RPROMPT=$ZPML_RPROMPT
+    typeset -g AGKOZAK_CURRENT_ZPML_RPROMPT
+    AGKOZAK_CURRENT_ZPML_RPROMPT=$ZPML_RPROMPT
     zpml && RPROMPT="$(zpml compile ZPML_RPROMPT)"
   fi
 

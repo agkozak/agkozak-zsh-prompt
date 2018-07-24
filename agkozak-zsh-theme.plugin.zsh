@@ -675,10 +675,7 @@ agkozak_zsh_theme() {
           case $prompt in
             %F{*|%K{*)
               (( open_braces++ ))
-              case $prompt in
-                %F{*) prompt=${prompt/\%F\{/} ;;
-                %K{*) prompt=${prompt/\%K\{/} ;;
-              esac
+              prompt=${prompt#%[FK]\{} 
               while (( open_braces != 0 )); do
                 case ${prompt:0:1} in
                   {) (( open_braces++ )) ;;
@@ -687,8 +684,7 @@ agkozak_zsh_theme() {
                 prompt=${prompt#?}
               done
               ;;
-            %f*) prompt=${prompt/\%f/} ;;
-            %k*) prompt=${prompt/\%k/} ;;
+            %f*|%k*) prompt=${prompt#%[fk]} ;;
             *)
               print -n ${prompt:0:1}
               prompt=${prompt#?}

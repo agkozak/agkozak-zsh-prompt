@@ -195,7 +195,7 @@ _agkozak_branch_changes() {
 _agkozak_populate_git_vars() {
   local branch_and_changes="$1"
   psvar[3]="${branch_and_changes% *}"
-  if [[ ${branch_and_changes#* } != ${psvar[3]} ]]; then
+  if [[ ${branch_and_changes#* } != "${psvar[3]}" ]]; then
     psvar[4]="${branch_and_changes#* }"
   else
     psvar[4]=''
@@ -604,7 +604,8 @@ agkozak_zsh_theme() {
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
 
     emacs_git_branch_status () {
-      local branch="$(_agkozak_branch_status)"
+      local branch
+      branch="$(_agkozak_branch_status)"
       [[ -n $branch ]] && print " (${branch% })"
     }
 
@@ -673,12 +674,12 @@ agkozak_zsh_theme() {
 
         while [[ -n $prompt ]]; do
           case $prompt in
-            %F{*|%K{*)
+            %F\{*|%K\{*)
               (( open_braces++ ))
               prompt=${prompt#%[FK]\{} 
               while (( open_braces != 0 )); do
                 case ${prompt:0:1} in
-                  {) (( open_braces++ )) ;;
+                  \{) (( open_braces++ )) ;;
                   \}) (( open_braces-- )) ;;
                 esac
                 prompt=${prompt#?}
@@ -686,15 +687,15 @@ agkozak_zsh_theme() {
               ;;
             %f*|%k*) prompt=${prompt#%[fk]} ;;
             *)
-              print -n ${prompt:0:1}
+              print -n "${prompt:0:1}"
               prompt=${prompt#?}
               ;;
           esac
         done
       }
 
-      PROMPT="$(_agkozak_strip_colors $PROMPT)"
-      RPROMPT="$(_agkozak_strip_colors $RPROMPT)"
+      PROMPT="$(_agkozak_strip_colors "$PROMPT")"
+      RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
     }
 
   fi

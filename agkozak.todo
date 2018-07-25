@@ -20,3 +20,6 @@ Goals for agkozak-zsh-theme v3.0.0
 
 # Marketing
 - Refer to the project as a prompt, not a theme, throughout. Consider changing the repo name, etc.
+
+# Documentation
+- Explain what _agkozak_prompt_dirtrim does when named directories are in use (see ZSH prompt expansion documentation)

@@ -428,7 +428,7 @@ _agkozak_async_init() {
           _agkozak_usr1_async_worker &!
           typeset -g AGKOZAK_USR1_ASYNC_WORKER=$!
         else
-          echo 'agkozak-zsh-theme: TRAPUSR1() has been redefined. Disabling asynchronous mode.' >&2
+          echo 'agkozak-zsh-theme: TRAPUSR1 has been redefined. Disabling asynchronous mode.' >&2
           typeset -g AGKOZAK_ASYNC_METHOD='none'
         fi
       }
@@ -603,7 +603,7 @@ agkozak_zsh_theme() {
   # The Emacs shell has only limited support for some ZSH features
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
 
-    emacs_git_branch_status () {
+    emacs_git_branch_status() {
       local branch
       branch="$(_agkozak_branch_status)"
       [[ -n $branch ]] && print " (${branch% })"

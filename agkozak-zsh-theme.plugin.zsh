@@ -505,10 +505,6 @@ agkozak_zsh_theme() {
     PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
     PROMPT+='$(_agkozak_branch_status) '
     PROMPT+='%# '
-
-    # TODO: This really belongs in the user's .zshrc; it is unrelated to
-    # this theme
-    unset zle_bracketed_paste
   else
     if _agkozak_has_colors; then
 

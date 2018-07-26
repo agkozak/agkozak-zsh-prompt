@@ -37,26 +37,26 @@
 
 # shellcheck disable=SC2034,SC2088,SC2148,SC2154,SC2190
 
-# $psvar[] Usage
+# psvar[] Usage
 #
-# $psvar Index  Prompt String Equivalent    Usage
+# psvar Index   Prompt String Equivalent    Usage
 #
-# $psvar[1]     %1v                         Hostname/abbreviated hostname (only
+# psvar[1]      %1v                         Hostname/abbreviated hostname (only
 #                                           displayed for SSH connections)
-# $psvar[2]     %2v                         Working directory or abbreviation
+# psvar[2]      %2v                         Working directory or abbreviation
 #                                           thereof
-# $psvar[3]     %3v                         Current working Git branch, along
+# psvar[3]      %3v                         Current working Git branch, along
 #                                           with indicator of changes made
 
-# Set $AGKOZAK_THEME_DEBUG to 1 to see debugging information
+# Set AGKOZAK_THEME_DEBUG to 1 to see debugging information
 AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
 
 (( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL WARN_NESTED_VAR
 
-# Set $AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
+# Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
 typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
 
-# Set $AGKOZAK_COLORS_* variables to any valid color
+# Set AGKOZAK_COLORS_* variables to any valid color
 #   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color     (default: red)
 #   AGKOZAK_COLORS_USER_HOST changes the username/hostname color (default: green)
 #   AGKOZAK_COLORS_PATH changes the path color                   (default: blue)
@@ -210,9 +210,9 @@ typeset -g AGKOZAK_THEME_DIR=${0:A:h}
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
     if (( AGKOZAK_THEME_DEBUG )); then
-      source ${AGKOZAK_THEME_DIR}/lib/async.zsh
+      source "${AGKOZAK_THEME_DIR}/lib/async.zsh"
     else
-      source ${AGKOZAK_THEME_DIR}/lib/async.zsh &> /dev/null
+      source "${AGKOZAK_THEME_DIR}/lib/async.zsh" &> /dev/null
     fi
     local success=$?
     return $success
@@ -242,7 +242,7 @@ _agkozak_has_usr1() {
 }
 
 ###########################################################
-# Force the async method, if set in $AGKOZAK_FORCE_ASYNC_METHOD.
+# Force the async method, if set in AGKOZAK_FORCE_ASYNC_METHOD.
 # Otherwise, determine the async method from the environment,
 # whether or not zsh-async will load successfully, and whether
 # or not SIGUSR1 is already taken
@@ -295,7 +295,7 @@ _agkozak_async_init() {
 
               # Having exhausted known problematic systems, try to load
               # zsh-async; in case that doesn't work, try the SIGUSR1 method if
-              # SIGUSR1 is available and TRAPUSR1() hasn't been defined; failing
+              # SIGUSR1 is available and TRAPUSR1 hasn't been defined; failing
               # that, switch off asynchronous mode
               elif _agkozak_load_async_lib; then
                 typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
@@ -336,7 +336,7 @@ _agkozak_async_init() {
       }
 
       ########################################################
-      # Set RPROPT and stop worker
+      # Set RPROMPT and stop worker
       ########################################################
       _agkozak_zsh_async_callback() {
         psvar[3]="$(_agkozak_branch_status)"
@@ -350,7 +350,7 @@ _agkozak_async_init() {
       ########################################################
       # precmd uses this function to launch async workers to
       # calculate the Git status. It can tell if anything has
-      # redefined the TRAPUSR1() function that actually
+      # redefined the TRAPUSR1 function that actually
       # displays the status; if so, it will drop the theme
       # down into non-asynchronous mode.
       #
@@ -363,14 +363,14 @@ _agkozak_async_init() {
         if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
-              kill -s HUP $AGKOZAK_USR1_ASYNC_WORKER &> /dev/null || :
+              kill -s HUP "$AGKOZAK_USR1_ASYNC_WORKER" &> /dev/null || :
           fi
 
           # Start background computation of Git status
           _agkozak_usr1_async_worker &!
           typeset -g AGKOZAK_USR1_ASYNC_WORKER=$!
         else
-          echo 'agkozak-zsh-theme: TRAPUSR1() has been redefined. Disabling asynchronous mode.' >&2
+          echo 'agkozak-zsh-theme: TRAPUSR1 has been redefined. Disabling asynchronous mode.' >&2
           typeset -g AGKOZAK_ASYNC_METHOD='none'
         fi
       }
@@ -488,7 +488,7 @@ agkozak_zsh_theme() {
     add-zsh-hook precmd _agkozak_precmd
   fi
 
-  # Only display the $HOSTNAME for an ssh connection or for a superuser
+  # Only display the HOSTNAME for an ssh connection or for a superuser
   if _agkozak_is_ssh || (( EUID == 0 )); then
     psvar[1]="$(print -Pn "@%m")"
   else
@@ -498,7 +498,7 @@ agkozak_zsh_theme() {
   # When the user is a superuser, the username and hostname are
   # displayed in reverse video
 
-  # The Emacs shell has only limited support for some zsh features
+  # The Emacs shell has only limited support for some ZSH features
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '

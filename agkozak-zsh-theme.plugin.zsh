@@ -554,12 +554,12 @@ agkozak_zsh_theme() {
               prompt=${prompt#?}
               ;;
           esac
-       done
-     }
+        done
+      }
 
-     PROMPT="$(_agkozak_strip_colors "$PROMPT")"
-     RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
-  }
+      PROMPT="$(_agkozak_strip_colors "$PROMPT")"
+      RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
+    }
 
   fi
 

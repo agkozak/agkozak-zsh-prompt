@@ -570,6 +570,7 @@ ZPML_MACROS=(
 #   AGKOZAK_COLORS_USER_HOST
 #   AGKOZAK_COLORS_PATH
 #   AGKOZAK_COLORS_BRANCH_STATUS
+#   AGKOZAK_HAS_COLORS
 ############################################################
 agkozak_zsh_theme() {
 
@@ -658,7 +659,7 @@ agkozak_zsh_theme() {
     typeset -g RPROMPT
     RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%(4V. %4v.)%)%f.)'
 
-    (( AGKOZAK_HAS_COLORS != 1 ))  && {
+    (( AGKOZAK_HAS_COLORS != 1 )) && {
 
       #########################################################
       # Strip color codes from a prompt string
@@ -696,7 +697,7 @@ agkozak_zsh_theme() {
       PROMPT="$(_agkozak_strip_colors "$PROMPT")"
       RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
     }
-
+  
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

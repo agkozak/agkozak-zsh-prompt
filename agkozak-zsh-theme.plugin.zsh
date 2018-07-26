@@ -311,9 +311,9 @@ _agkozak_async_init() {
                       unsetopt BG_NICE                # nice doesn't work on WSL
                       typeset -g AGKOZAK_ASYNC_METHOD='usr1'
                       ;;
-                    # TODO: the SIGUSR1 method doesn't work on Solaris 11 yet
+                    # TODO: the SIGUSR1 method doesn't work on Solaris 11.3
                     # but it does work on OpenIndiana
-                    # SIGUSR2 works on Solaris 11
+                    # SIGUSR2 works on Solaris 11.3
                     *solaris*) typeset -g AGKOZAK_ASYNC_METHOD='none' ;;
                     *) typeset -g AGKOZAK_ASYNC_METHOD='usr1' ;;
                   esac

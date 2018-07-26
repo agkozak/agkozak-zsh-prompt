@@ -39,15 +39,14 @@
 
 # psvar[] Usage
 #
-# psvar Index  Prompt String Equivalent   Usage
+# psvar Index   Prompt String Equivalent    Usage
 #
-# psvar[1]     %1v                        Hostname/abbreviated hostname (only
+# psvar[1]      %1v                         Hostname/abbreviated hostname (only
 #                                           displayed for SSH connections)
-# psvar[2]     %2v                        Working directory or abbreviation
+# psvar[2]      %2v                         Working directory or abbreviation
 #                                           thereof
-# psvar[3]     %3v                        Current working Git branch
-#
-# psvar[4]     %4v                        Changes to Git branch (symbols)
+# psvar[3]      %3v                         Current working Git branch, along
+#                                           with indicator of changes made
 
 # Set AGKOZAK_THEME_DEBUG to 1 to see debugging information
 AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}

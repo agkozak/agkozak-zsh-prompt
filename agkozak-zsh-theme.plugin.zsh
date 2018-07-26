@@ -151,7 +151,7 @@ _agkozak_branch_changes() {
 
   git_status="$(LC_ALL=C command git status 2>&1)"
 
-  declare -A messages
+  typeset -A messages
 
   messages=(
               'renamed:'                '>'

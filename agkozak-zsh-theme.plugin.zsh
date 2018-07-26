@@ -675,7 +675,7 @@ agkozak_zsh_theme() {
           case $prompt in
             %F\{*|%K\{*)
               (( open_braces++ ))
-              prompt=${prompt#%[FK]\{} 
+              prompt=${prompt#%[FK]\{}
               while (( open_braces != 0 )); do
                 case ${prompt:0:1} in
                   \{) (( open_braces++ )) ;;
@@ -696,7 +696,7 @@ agkozak_zsh_theme() {
       PROMPT="$(_agkozak_strip_colors "$PROMPT")"
       RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
     }
-  
+
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

@@ -51,7 +51,15 @@
 # Set AGKOZAK_THEME_DEBUG to 1 to see debugging information
 AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
 
-(( AGKOZAK_THEME_DEBUG )) && setopt WARN_CREATE_GLOBAL WARN_NESTED_VAR
+if (( AGKOZAK_THEME_DEBUG )); then
+  autoload -Uz is-at-least
+
+  setopt WARN_CREATE_GLOBAL
+
+  if is-at-least 5.4.0; then
+    setopt WARN_NESTED_VAR
+  fi
+fi
 
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
 typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
@@ -270,7 +278,8 @@ _agkozak_async_init() {
       #   https://github.com/sindresorhus/pure/issues/141)
       # TODO: WSL seems to work perfectly now with zsh-async, but it may not
       #   have in the past
-      local sysinfo="$(uname -a)"
+      local sysinfo
+      sysinfo="$(uname -a)"
 
       case $sysinfo in
         # On MSYS2, zsh-async won't load; on Cygwin, it loads but does not work.

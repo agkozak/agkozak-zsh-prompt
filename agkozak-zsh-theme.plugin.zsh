@@ -110,7 +110,7 @@ _agkozak_is_ssh() {
 #   ~/.../polyglot/img
 #
 # Arguments:
-#   $1 Number of directory elements to display
+#   $1 Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
   [[ $1 -ge 1 ]] || set 2

@@ -61,6 +61,9 @@ if (( AGKOZAK_THEME_DEBUG )); then
   fi
 fi
 
+# Decide if the prompt should be displayed in color
+(( $(tput colors) >= 8 )) && typeset -g AGKOZAK_HAS_COLORS=1
+
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
 typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
 
@@ -90,13 +93,6 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 ############################################################
 _agkozak_is_ssh() {
   [[ -n "${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-}" ]]
-}
-
-############################################################
-# Does the terminal support enough colors?
-############################################################
-_agkozak_has_colors() {
-  (( $(tput colors) >= 8 ))
 }
 
 ############################################################
@@ -475,6 +471,7 @@ _agkozak_precmd() {
 #   AGKOZAK_USR1_ASYNC_WORKER
 #   AGKOZAK_THEME_DEBUG
 #   AGKOZAK_THEME_DIR
+#   AGKOZAK_HAS_COLORS
 ############################################################
 agkozak_zsh_theme() {
 
@@ -515,27 +512,55 @@ agkozak_zsh_theme() {
     PROMPT+='$(_agkozak_branch_status) '
     PROMPT+='%# '
   else
-    if _agkozak_has_colors; then
+    # The color left prompt
+    PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+    PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+    PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
+    PROMPT+='$(_agkozak_vi_mode_indicator) '
 
-      # The color left prompt
-      PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-      PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
-      PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
-      PROMPT+='$(_agkozak_vi_mode_indicator) '
+    # The color right prompt
+    RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
 
-      # The color right prompt
-      RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
-    else
+    (( AGKOZAK_HAS_COLORS != 1 )) && {
 
-      # The monochrome left prompt
-      PROMPT='%(?..(%?%) )'
-      PROMPT+='%(!.%S.)%n%1v%(!.%s.) '
-      PROMPT+=$'%2v${AGKOZAK_PROMPT_WHITESPACE}'
-      PROMPT+='$(_agkozak_vi_mode_indicator) '
 
-      # The monochrome right prompt
-      RPROMPT='%3v'
-    fi
+      #########################################################
+      # Strip color codes from a prompt string
+      #
+      # Arguments:
+      #   $1 The prompt string
+      #########################################################
+      _agkozak_strip_colors() {
+
+        local prompt=$1
+        local open_braces
+
+        while [[ -n $prompt ]]; do
+          case $prompt in
+            %F\{*|%K\{*)
+              (( open_braces++ ))
+              prompt=${prompt#%[FK]\{}
+              while (( open_braces != 0 )); do
+                case ${prompt:0:1} in
+                  \{) (( open_braces++ )) ;;
+                  \}) (( open_braces-- )) ;;
+                esac
+                prompt=${prompt#?}
+              done
+              ;;
+            %f*|%k*) prompt=${prompt#%[fk]} ;;
+            *)
+              print -n "${prompt:0:1}"
+              prompt=${prompt#?}
+              ;;
+          esac
+       done
+     }
+
+     PROMPT="$(_agkozak_strip_colors "$PROMPT")"
+     RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
+  }
+
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then
@@ -548,6 +573,6 @@ agkozak_zsh_theme
 # Clean up environment
 unset AGKOZAK_THEME_DIR
 unfunction _agkozak_load_async_lib _agkozak_has_usr1 \
-  _agkozak_is_ssh _agkozak_has_colors
+  _agkozak_is_ssh
 
 # vim: ts=2:et:sts=2:sw=2:

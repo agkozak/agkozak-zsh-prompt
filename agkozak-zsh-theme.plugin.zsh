@@ -558,7 +558,7 @@ agkozak_zsh_theme() {
   # displayed in reverse video
 
   # The Emacs shell has only limited support for some ZSH features
-  if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
+  if [[ $TERM = 'dumb' ]]; then
     # Avoid the ugly ^[[?2004h control sequence
     unset zle_bracketed_paste
 

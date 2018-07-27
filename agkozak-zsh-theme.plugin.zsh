@@ -559,6 +559,9 @@ agkozak_zsh_theme() {
 
   # The Emacs shell has only limited support for some ZSH features
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
+    # Avoid the ugly ^[[?2004h control sequence
+    unset zle_bracketed_paste
+
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
     PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'

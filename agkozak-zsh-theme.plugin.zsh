@@ -477,6 +477,39 @@ _agkozak_async_init() {
 # THE PROMPT
 ############################################################
 
+#########################################################
+# Strip color codes from a prompt string
+#
+# Arguments:
+#   $1 The prompt string
+#########################################################
+_agkozak_strip_colors() {
+
+  local prompt=$1
+  local open_braces
+
+  while [[ -n $prompt ]]; do
+    case $prompt in
+      %F\{*|%K\{*)
+        (( open_braces++ ))
+        prompt=${prompt#%[FK]\{}
+        while (( open_braces != 0 )); do
+          case ${prompt:0:1} in
+            \{) (( open_braces++ )) ;;
+            \}) (( open_braces-- )) ;;
+          esac
+          prompt=${prompt#?}
+        done
+        ;;
+      %f*|%k*) prompt=${prompt#%[fk]} ;;
+      *)
+        print -n "${prompt:0:1}"
+        prompt=${prompt#?}
+        ;;
+    esac
+  done
+}
+
 ############################################################
 # Runs right before the prompt is displayed
 #
@@ -539,6 +572,25 @@ _agkozak_precmd() {
       typeset -g AGKOZAK_FIRST_PROMPT_PRINTED=1
     fi
   fi
+
+  # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
+  # corresponding prompt is updated
+
+  if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
+    typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+    PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+    if (( AGKOZAK_HAS_COLORS != 1 )); then
+      PROMPT=$(_agkozak_strip_colors "${PROMPT}")
+    fi
+  fi
+
+  if [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK_CURRENT_CUSTOM_RPROMPT}" ]]; then
+    typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
+    RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
+    if (( AGKOZAK_HAS_COLORS != 1 )); then
+      RPROMPT=$(_agkozak_strip_colors "${RPROMPT}")
+    fi
+  fi
 }
 
 ############################################################
@@ -588,7 +640,9 @@ agkozak_zsh_theme() {
   zle -N zle-keymap-select
 
   # Don't use ZSH hooks in Emacs classic shell
-  if [[ -z $INSIDE_EMACS ]] && [[ $TERM != dumb ]]; then
+  if [[ -n $INSIDE_EMACS ]] && [[ $TERM == 'dumb' ]]; then
+    :
+  else
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd _agkozak_precmd
   fi
@@ -601,7 +655,10 @@ agkozak_zsh_theme() {
   fi
 
   # The Emacs shell has only limited support for some ZSH features
-  if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
+  if [[ $TERM = 'dumb' ]]; then
+
+    # Avoid the ugly ^[[?2004h control sequence
+    unset zle_bracketed_paste
 
     emacs_git_branch_status() {
       local branch
@@ -628,7 +685,7 @@ agkozak_zsh_theme() {
       prompt_char space
     )
 
-    zpml && PROMPT="$(zpml compile ZPML_PROMPT)"
+    PROMPT="$(zpml compile ZPML_PROMPT)"
 
     # The prompt produced is:
     #
@@ -638,65 +695,45 @@ agkozak_zsh_theme() {
     # PROMPT+=' $(emacs_git_branch_status) '
     # PROMPT+='%# '
 
-    # TODO: The following really belongs in the user's .zshrc; it is unrelated
-    # to this theme
-    unset zle_bracketed_paste
-
-  elif [[ -n ${ZPML_THEME} ]]; then
-    # Let themes persist from shell to shell
-    zpml && zpml load "${ZPML_THEME}"
   else
-    # When using the default theme, it is faster (particularly in MSYS2/Cywgin)
-    # not to have to load and compile it
 
-    # The color left prompt
-    PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-    PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
-    PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
-    PROMPT+='$(_agkozak_vi_mode_indicator) '
+    # Avoid continuation lines in Emacs term and ansi-term
+    [[ -n $INSIDE_EMACS ]] && ZLE_RPROMPT_INDENT=2
+  
+  
+    if [[ -n ${ZPML_THEME} ]]; then
 
-    # The color right prompt
-    typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%(4V. %4v.)%)%f.)'
+      # Let themes persist from shell to shell
+      zpml && zpml load "${ZPML_THEME}"
 
-    (( AGKOZAK_HAS_COLORS != 1 )) && {
+    else
 
-      #########################################################
-      # Strip color codes from a prompt string
-      #
-      # Arguments:
-      #   $1 The prompt string
-      #########################################################
-      _agkozak_strip_colors() {
+      # When using the default theme, it is faster (particularly in MSYS2/Cywgin)
+      # not to have to load and compile it
 
-        local prompt=$1
-        local open_braces
+      if (( ${+AGKOZAK_CUSTOM_PROMPT} )); then
+        PROMPT="${AGKOZAK_CUSTOM_PROMPT}"
+      else
+        # The color left prompt
+        PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+        PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+        PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
+        PROMPT+='$(_agkozak_vi_mode_indicator) '
+      fi
 
-        while [[ -n $prompt ]]; do
-          case $prompt in
-            %F\{*|%K\{*)
-              (( open_braces++ ))
-              prompt=${prompt#%[FK]\{}
-              while (( open_braces != 0 )); do
-                case ${prompt:0:1} in
-                  \{) (( open_braces++ )) ;;
-                  \}) (( open_braces-- )) ;;
-                esac
-                prompt=${prompt#?}
-              done
-              ;;
-            %f*|%k*) prompt=${prompt#%[fk]} ;;
-            *)
-              print -n "${prompt:0:1}"
-              prompt=${prompt#?}
-              ;;
-          esac
-        done
+      if (( ${+AGKOZAK_CUSTOM_RPROMPT} )); then
+        RPROMPT="${AGKOZAK_CUSTOM_RPROMPT}"
+      else
+        # The color right prompt
+        typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%(4V. %4v.)%)%f.)'
+      fi
+
+      (( AGKOZAK_HAS_COLORS != 1 )) && {
+        PROMPT="$(_agkozak_strip_colors "$PROMPT")"
+        RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
       }
 
-      PROMPT="$(_agkozak_strip_colors "$PROMPT")"
-      RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
-    }
-
+    fi
   fi
 
   if (( AGKOZAK_THEME_DEBUG )); then

@@ -541,7 +541,8 @@ agkozak_zsh_theme() {
   zle -N zle-keymap-select
 
   # Don't use ZSH hooks in Emacs classic shell
-  if [[ -z $INSIDE_EMACS ]] && [[ $TERM != dumb ]]; then
+  if [[ -n $INSIDE_EMACS ]] && [[ $TERM == 'dumb' ]]; then
+  else
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd _agkozak_precmd
   fi
@@ -557,7 +558,7 @@ agkozak_zsh_theme() {
   # displayed in reverse video
 
   # The Emacs shell has only limited support for some ZSH features
-  if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
+  if [[ -n $INSIDE_EMACS ]] || [[ $TERM = 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
     PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'

@@ -512,14 +512,23 @@ agkozak_zsh_theme() {
     PROMPT+='$(_agkozak_branch_status) '
     PROMPT+='%# '
   else
-    # The color left prompt
-    PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-    PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
-    PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
-    PROMPT+='$(_agkozak_vi_mode_indicator) '
 
-    # The color right prompt
-    typeset -g RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
+    if (( ${+AGKOZAK_CUSTOM_PROMPT} )); then
+      PROMPT="${AGKOZAK_CUSTOM_PROMPT}"
+    else
+      # The color left prompt
+      PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+      PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+      PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
+      PROMPT+='$(_agkozak_vi_mode_indicator) '
+    fi
+
+    if (( ${+AGKOZAK_CUSTOM_RPROMPT} )); then
+      RPROMPT="${AGKOZAK_CUSTOM_RPROMPT}"
+    else
+      # The color right prompt
+      typeset -g RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
+    fi
 
     (( AGKOZAK_HAS_COLORS != 1 )) && {
 

@@ -498,19 +498,19 @@ _agkozak_precmd() {
   # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
   # corresponding prompt is updated
 
-  if [[ ${AGKOZAK_CUSTOM_PROMPT} != ${AGKOZAK_CURRENT_CUSTOM_PROMPT} ]]; then
+  if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     if (( AGKOZAK_HAS_COLORS != 1 )); then
-      PROMPT=$(_agkozak_strip_colors ${PROMPT})
+      PROMPT=$(_agkozak_strip_colors "${PROMPT}")
     fi
   fi
 
-  if [[ ${AGKOZAK_CUSTOM_RPROMPT} != ${AGKOZAK_CURRENT_CUSTOM_RPROMPT} ]]; then
+  if [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK_CURRENT_CUSTOM_RPROMPT}" ]]; then
     typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
     RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
     if (( AGKOZAK_HAS_COLORS != 1 )); then
-      RPROMPT=$(_agkozak_strip_colors ${RPROMPT})
+      RPROMPT=$(_agkozak_strip_colors "${RPROMPT}")
     fi
   fi
 }
@@ -542,6 +542,7 @@ agkozak_zsh_theme() {
 
   # Don't use ZSH hooks in Emacs classic shell
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM == 'dumb' ]]; then
+    :
   else
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd _agkozak_precmd

@@ -495,6 +495,9 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_FIRST_PROMPT_PRINTED=1
   fi
 
+  # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
+  # corresponding prompt is updated
+
   if [[ ${AGKOZAK_CUSTOM_PROMPT} != ${AGKOZAK_CURRENT_CUSTOM_PROMPT} ]]; then
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}

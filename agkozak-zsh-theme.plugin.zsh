@@ -565,6 +565,8 @@ agkozak_zsh_theme() {
     PROMPT+='$(_agkozak_branch_status) '
     PROMPT+='%# '
   else
+    # Avoid continuation lines in Emacs term and ansi-term
+    [[ -n $INSIDE_EMACS ]] && ZLE_RPROMPT_INDENT=2
 
     if (( ${+AGKOZAK_CUSTOM_PROMPT} )); then
       PROMPT="${AGKOZAK_CUSTOM_PROMPT}"

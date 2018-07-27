@@ -424,6 +424,39 @@ _agkozak_async_init() {
 # THE PROMPT
 ############################################################
 
+#########################################################
+# Strip color codes from a prompt string
+#
+# Arguments:
+#   $1 The prompt string
+#########################################################
+_agkozak_strip_colors() {
+
+  local prompt=$1
+  local open_braces
+
+  while [[ -n $prompt ]]; do
+    case $prompt in
+      %F\{*|%K\{*)
+        (( open_braces++ ))
+        prompt=${prompt#%[FK]\{}
+        while (( open_braces != 0 )); do
+          case ${prompt:0:1} in
+            \{) (( open_braces++ )) ;;
+            \}) (( open_braces-- )) ;;
+          esac
+          prompt=${prompt#?}
+        done
+        ;;
+      %f*|%k*) prompt=${prompt#%[fk]} ;;
+      *)
+        print -n "${prompt:0:1}"
+        prompt=${prompt#?}
+        ;;
+    esac
+  done
+}
+
 ############################################################
 # Runs right before the prompt is displayed
 #
@@ -460,6 +493,22 @@ _agkozak_precmd() {
       echo
     fi
     typeset -g AGKOZAK_FIRST_PROMPT_PRINTED=1
+  fi
+
+  if [[ ${AGKOZAK_CUSTOM_PROMPT} != ${AGKOZAK_CURRENT_CUSTOM_PROMPT} ]]; then
+    typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+    PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+    if (( AGKOZAK_HAS_COLORS != 1 )); then
+      PROMPT=$(_agkozak_strip_colors ${PROMPT})
+    fi
+  fi
+
+  if [[ ${AGKOZAK_CUSTOM_RPROMPT} != ${AGKOZAK_CURRENT_CUSTOM_RPROMPT} ]]; then
+    typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
+    RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
+    if (( AGKOZAK_HAS_COLORS != 1 )); then
+      RPROMPT=$(_agkozak_strip_colors ${RPROMPT})
+    fi
   fi
 }
 
@@ -531,41 +580,6 @@ agkozak_zsh_theme() {
     fi
 
     (( AGKOZAK_HAS_COLORS != 1 )) && {
-
-
-      #########################################################
-      # Strip color codes from a prompt string
-      #
-      # Arguments:
-      #   $1 The prompt string
-      #########################################################
-      _agkozak_strip_colors() {
-
-        local prompt=$1
-        local open_braces
-
-        while [[ -n $prompt ]]; do
-          case $prompt in
-            %F\{*|%K\{*)
-              (( open_braces++ ))
-              prompt=${prompt#%[FK]\{}
-              while (( open_braces != 0 )); do
-                case ${prompt:0:1} in
-                  \{) (( open_braces++ )) ;;
-                  \}) (( open_braces-- )) ;;
-                esac
-                prompt=${prompt#?}
-              done
-              ;;
-            %f*|%k*) prompt=${prompt#%[fk]} ;;
-            *)
-              print -n "${prompt:0:1}"
-              prompt=${prompt#?}
-              ;;
-          esac
-        done
-      }
-
       PROMPT="$(_agkozak_strip_colors "$PROMPT")"
       RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
     }

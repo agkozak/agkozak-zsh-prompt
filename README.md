@@ -134,6 +134,7 @@ Untracked | ?
 New file(s) | +
 Ahead | \*
 Renamed | >
+Behind | &
 
 ## Exit Status
 

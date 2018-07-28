@@ -160,6 +160,7 @@ _agkozak_branch_changes() {
               'Untracked files'         '?'
               'deleted'                 'x'
               'modified:'               '!'
+              'behind'                  '&'
            )
 
   for k in ${(@k)messages}; do

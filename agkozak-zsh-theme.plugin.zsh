@@ -161,6 +161,7 @@ _agkozak_branch_changes() {
               'deleted'                 'x'
               'modified:'               '!'
               'behind'                  '&'
+              'diverged'                '&*'
            )
 
   for k in ${(@k)messages}; do

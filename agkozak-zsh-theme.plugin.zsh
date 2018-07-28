@@ -113,17 +113,15 @@ _agkozak_is_ssh() {
 ############################################################
 _agkozak_prompt_dirtrim() {
   [[ $1 -ge 1 ]] || set 2
-  local abbreviated_path
   case $PWD in
     $HOME) print -n '~' ;;  # Or TrueOS will print ~/.../~
     $HOME*)
-      abbreviated_path="$(print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)")"
+      print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)"
       ;;
     *)
-      abbreviated_path="$(print -Pn "%($(($1 + 1))/|.../%${1}d|%d)")"
+      print -Pn "%($(($1 + 1))/|.../%${1}d|%d)"
       ;;
   esac
-  print -n "$abbreviated_path"
 }
 
 ############################################################
@@ -500,19 +498,19 @@ _agkozak_precmd() {
   # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
   # corresponding prompt is updated
 
-  if [[ ${AGKOZAK_CUSTOM_PROMPT} != ${AGKOZAK_CURRENT_CUSTOM_PROMPT} ]]; then
+  if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     if (( AGKOZAK_HAS_COLORS != 1 )); then
-      PROMPT=$(_agkozak_strip_colors ${PROMPT})
+      PROMPT=$(_agkozak_strip_colors "${PROMPT}")
     fi
   fi
 
-  if [[ ${AGKOZAK_CUSTOM_RPROMPT} != ${AGKOZAK_CURRENT_CUSTOM_RPROMPT} ]]; then
+  if [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK_CURRENT_CUSTOM_RPROMPT}" ]]; then
     typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
     RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
     if (( AGKOZAK_HAS_COLORS != 1 )); then
-      RPROMPT=$(_agkozak_strip_colors ${RPROMPT})
+      RPROMPT=$(_agkozak_strip_colors "${RPROMPT}")
     fi
   fi
 }
@@ -544,6 +542,7 @@ agkozak_zsh_theme() {
 
   # Don't use ZSH hooks in Emacs classic shell
   if [[ -n $INSIDE_EMACS ]] && [[ $TERM == 'dumb' ]]; then
+    :
   else
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd _agkozak_precmd
@@ -560,7 +559,7 @@ agkozak_zsh_theme() {
   # displayed in reverse video
 
   # The Emacs shell has only limited support for some ZSH features
-  if [[ -n $INSIDE_EMACS ]] && [[ $TERM = 'dumb' ]]; then
+  if [[ $TERM = 'dumb' ]]; then
     # Avoid the ugly ^[[?2004h control sequence
     unset zle_bracketed_paste
 

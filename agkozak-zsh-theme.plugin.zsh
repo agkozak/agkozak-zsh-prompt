@@ -263,7 +263,7 @@ _agkozak_async_init() {
   if [[ $AGKOZAK_FORCE_ASYNC_METHOD =~ "(zsh-async|usr1|none)" ]]; then
     typeset -g AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
 
-  # Otherwise, provide for systems with specific needs
+  # Otherwise, first provide for certain quirky systems
   else
     local sysinfo
     sysinfo="$(uname -a)"
@@ -293,7 +293,7 @@ _agkozak_async_init() {
     elif [[ $TERM == 'dumb' ]]; then
       typeset -g AGKOZAK_ASYNC_METHOD='none'
 
-    # After all the preceding considerations, try loading zsh-async successfully
+    # After all the preceding considerations, try loading zsh-async
     elif _agkozak_load_async_lib; then
       typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
 
@@ -302,14 +302,7 @@ _agkozak_async_init() {
 
       # Try usr1
       if _agkozak_has_usr1; then
-
-        # usr1 is not an option on Solaris 11.3 (SIGUSR2 is available, though).
-        # usr1 does work on OpenIndiana.
-        if [[ $sysinfo =~ ".*solaris.*" ]]; then
-          typeset -g AGKOZAK_ASYNC_METHOD='none'
-        else
           typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-        fi
 
       # Failing all else, fall back to synchronous mode
       else
@@ -317,7 +310,7 @@ _agkozak_async_init() {
       fi
     fi
   fi
- 
+
   case $AGKOZAK_ASYNC_METHOD in
     zsh-async)
 

@@ -10,6 +10,8 @@ ZPML_GIT_SYMBOLS=(
   untracked '?'
   deleted   '✘'
   modified  '!'
+  behind    '⇣'
+  diverged  '⇕'
 )
 
 set_macro rocket_git_status   '%(4V.[%4v].)'

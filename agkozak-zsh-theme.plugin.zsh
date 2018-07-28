@@ -150,6 +150,8 @@ ZPML_GIT_SYMBOLS=(
   untracked '?'
   deleted   'x'
   modified  '!'
+  behind    '&'
+  diverged  '&*'
 )
 
 ############################################################
@@ -172,6 +174,8 @@ _agkozak_branch_changes() {
               'Untracked files'         "${ZPML_GIT_SYMBOLS[untracked]}"
               'deleted'                 "${ZPML_GIT_SYMBOLS[deleted]}"
               'modified:'               "${ZPML_GIT_SYMBOLS[modified]}"
+              'behind'                  "${ZPML_GIT_SYMBOLS[behind]}"
+              'diverged'                "${ZPML_GIT_SYMBOLS[diverged]}"
            )
 
   for k in ${(@k)messages}; do
@@ -697,8 +701,8 @@ agkozak_zsh_theme() {
 
     # Avoid continuation lines in Emacs term and ansi-term
     [[ -n $INSIDE_EMACS ]] && ZLE_RPROMPT_INDENT=2
-  
-  
+
+
     if [[ -n ${ZPML_THEME} ]]; then
 
       # Let themes persist from shell to shell

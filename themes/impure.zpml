@@ -6,6 +6,8 @@
 
 ZPML_GIT_SYMBOLS[ahead]='⇡'
 ZPML_GIT_SYMBOLS[deleted]='*'
+ZPML_GIT_SYMBOLS[behind]='⇣'
+ZPML_GIT_SYMBOLS[diverged]='⇣⇡'
 
 ZPML_BLANK_LINES=1
 

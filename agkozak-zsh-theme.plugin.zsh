@@ -277,6 +277,9 @@ _agkozak_async_init() {
       local sysinfo
       sysinfo="$(uname -a)"
 
+      # nice doesn't work in WSL -- no *n*x kernel
+      [[ $sysinfo =~ .*Microsoft.*Linux$ ]] && unsetopt BG_NICE
+
       case $sysinfo in
         # On MSYS2, zsh-async won't load; on Cygwin, it loads but does not work.
         *Msys|*Cygwin) typeset -g AGKOZAK_ASYNC_METHOD='usr1' ;;
@@ -307,13 +310,9 @@ _agkozak_async_init() {
               else
                 if _agkozak_has_usr1; then
                   case $sysinfo in
-                    *Microsoft*Linux)
-                      unsetopt BG_NICE                # nice doesn't work on WSL
-                      typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-                      ;;
-                    # TODO: the SIGUSR1 method doesn't work on Solaris 11.3
-                    # but it does work on OpenIndiana
-                    # SIGUSR2 works on Solaris 11.3
+                    # zsh-async should work in Solaris 11.3, but usr1 does not
+                    # (SIGUSR2 does). Both zsh-async and usr1 work in
+                    # OpenIndiana
                     *solaris*) typeset -g AGKOZAK_ASYNC_METHOD='none' ;;
                     *) typeset -g AGKOZAK_ASYNC_METHOD='usr1' ;;
                   esac

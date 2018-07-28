@@ -113,17 +113,15 @@ _agkozak_is_ssh() {
 ############################################################
 _agkozak_prompt_dirtrim() {
   [[ $1 -ge 1 ]] || set 2
-  local abbreviated_path
   case $PWD in
     $HOME) print -n '~' ;;  # Or TrueOS will print ~/.../~
     $HOME*)
-      abbreviated_path="$(print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)")"
+      print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)"
       ;;
     *)
-      abbreviated_path="$(print -Pn "%($(($1 + 1))/|.../%${1}d|%d)")"
+      print -Pn "%($(($1 + 1))/|.../%${1}d|%d)"
       ;;
   esac
-  print -n "$abbreviated_path"
 }
 
 ############################################################

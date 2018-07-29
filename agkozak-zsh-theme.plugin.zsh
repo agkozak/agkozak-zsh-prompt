@@ -571,7 +571,7 @@ agkozak_zsh_theme() {
       RPROMPT="${AGKOZAK_CUSTOM_RPROMPT}"
     else
       # The color right prompt
-      typeset -g RPROMPT='%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f'
+      typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
 
       AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
     fi

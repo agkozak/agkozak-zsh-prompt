@@ -260,7 +260,7 @@ _agkozak_async_init() {
 
   # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
   [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
-  if [[ $AGKOZAK_FORCE_ASYNC_METHOD =~ "(zsh-async|usr1|none)" ]]; then
+  if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (zsh-async|usr1|none) ]]; then
     typeset -g AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
 
   # Otherwise, first provide for certain quirky systems
@@ -272,11 +272,11 @@ _agkozak_async_init() {
     #
     # TODO: zsh-async works perfectly on recent versions of WSL, but it might
     # be worth knowing if it has always done so in the past
-    [[ $sysinfo =~ .*Microsoft.*Linux$ ]] && unsetopt BG_NICE
+    [[ $sysinfo == *Microsoft*Linux ]] && unsetopt BG_NICE
 
     # On MSYS2, zsh-async won't load; on Cygwin it loads but doesn't work
     # (see https://github.com/sindresorhus/pure/issues/141)
-    if [[ $sysinfo =~ ".*Msys$" ]] || [[ $sysinfo =~ ".*Cygwin$" ]]; then
+    if [[ $sysinfo == *Msys ]] || [[ $sysinfo == *Cygwin ]]; then
       typeset -g AGKOZAK_ASYNC_METHOD='usr1'
 
     # Avoid loading zsh-async on zsh v5.0.2

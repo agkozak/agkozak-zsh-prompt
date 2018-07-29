@@ -1,6 +1,7 @@
 # agkozak-zsh-theme
 
 [![MIT License](img/mit_license.svg)](https://opensource.org/licenses/MIT)
+[![GitHub tag](https://img.shields.io/github/tag/agkozak/agkozak-zsh-theme.svg)](https://GitHub.com/agkozak/agkozak-zsh-theme/tags/)
 ![zsh version 4.3.11 and higher](img/zsh_4.3.11_plus.svg)
 [![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-theme.svg)](https://github.com/agkozak/agkozak-zsh-theme/stargazers)
 

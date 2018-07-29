@@ -232,7 +232,7 @@ _agkozak_load_async_lib() {
 ###########################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
-    (( AGKOZAK_THEME_DEBUG )) && echo 'agkozak-zsh-theme: TRAPUSR1() already defined.' >&2
+    (( AGKOZAK_THEME_DEBUG )) && echo 'agkozak-zsh-theme: TRAPUSR1 already defined.' >&2
     false
   else
     case $signals in    # Array containing names of available signals

@@ -311,75 +311,58 @@ _agkozak_has_usr1() {
 ###########################################################
 _agkozak_async_init() {
 
-  case $AGKOZAK_FORCE_ASYNC_METHOD in
-    zsh-async)
-      _agkozak_load_async_lib
-      typeset -g AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
-      ;;
-    usr1|none)
-      typeset -g AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
-      ;;
-    *)
-      # Avoid trying to load zsh-async on systems where it is known not to work
-      #
-      # MSYS2) it doesn't load successfully
-      # Cygwin) it loads but doesn't work (see
-      #   https://github.com/sindresorhus/pure/issues/141)
-      # TODO: WSL seems to work perfectly now with zsh-async, but it may not
-      #   have in the past
-      local sysinfo
-      sysinfo="$(uname -a)"
+  # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
+  [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
+  if [[ $AGKOZAK_FORCE_ASYNC_METHOD =~ "(zsh-async|usr1|none)" ]]; then
+    typeset -g AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
 
-      case $sysinfo in
-        # On MSYS2, zsh-async won't load; on Cygwin, it loads but does not work.
-        *Msys|*Cygwin) typeset -g AGKOZAK_ASYNC_METHOD='usr1' ;;
-        *)
-          # Avoid loading zsh-async on zsh v5.0.2
-          # See https://github.com/mafredri/zsh-async/issues/12
-          # The theme appears to work properly now with zsh-async and zsh v5.0.8
-          case $ZSH_VERSION in
-            '5.0.2')
-              if _agkozak_has_usr1; then
-                typeset -g AGKOZAK_ASYNC_METHOD='usr1';
-              else
-                typeset -g AGKOZAK_ASYNC_METHOD='none'
-              fi
-              ;;
-            *)
+  # Otherwise, first provide for certain quirky systems
+  else
+    local sysinfo
+    sysinfo="$(uname -a)"
 
-              # Avoid problems with Emacs exec-path-from-shell-printf
-              if [[ $TERM = 'dumb' ]]; then
-                AGKOZAK_ASYNC_METHOD='none'
+    # WSL should have BG_NICE disabled, as it does not have a Linux kernel
+    #
+    # TODO: zsh-async works perfectly on recent versions of WSL, but it might
+    # be worth knowing if it has always done so in the past
+    [[ $sysinfo =~ .*Microsoft.*Linux$ ]] && unsetopt BG_NICE
 
-              # Having exhausted known problematic systems, try to load
-              # zsh-async; in case that doesn't work, try the SIGUSR1 method if
-              # SIGUSR1 is available and TRAPUSR1 hasn't been defined; failing
-              # that, switch off asynchronous mode
-              elif _agkozak_load_async_lib; then
-                typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
-              else
-                if _agkozak_has_usr1; then
-                  case $sysinfo in
-                    *Microsoft*Linux)
-                      unsetopt BG_NICE                # nice doesn't work on WSL
-                      typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-                      ;;
-                    # TODO: the SIGUSR1 method doesn't work on Solaris 11.3
-                    # but it does work on OpenIndiana
-                    # SIGUSR2 works on Solaris 11.3
-                    *solaris*) typeset -g AGKOZAK_ASYNC_METHOD='none' ;;
-                    *) typeset -g AGKOZAK_ASYNC_METHOD='usr1' ;;
-                  esac
-                else
-                  typeset -g AGKOZAK_ASYNC_METHOD='none'
-                fi
-              fi
-              ;;
-          esac
-          ;;
-      esac
-      ;;
-  esac
+    # On MSYS2, zsh-async won't load; on Cygwin it loads but doesn't work
+    # (see https://github.com/sindresorhus/pure/issues/141)
+    if [[ $sysinfo =~ ".*Msys$" ]] || [[ $sysinfo =~ ".*Cygwin$" ]]; then
+      typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+
+    # Avoid loading zsh-async on zsh v5.0.2
+    # (see https://github.com/mafredri/zsh-async/issues/12)
+    elif [[ $ZSH_VERSION == '5.0.2' ]]; then
+      if _agkozak_has_usr1; then
+        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+      else
+        typeset -g AGKOZAK_ASYNC_METHOD='none'
+      fi
+
+    # Asynchronous methods don't work in Emacs shell mode (but they do in term
+    # and ansi-term)
+    elif [[ $TERM == 'dumb' ]]; then
+      typeset -g AGKOZAK_ASYNC_METHOD='none'
+
+    # After all the preceding considerations, try loading zsh-async
+    elif _agkozak_load_async_lib; then
+      typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
+
+    # If, for some reason, zsh-async will not load
+    else
+
+      # Try usr1
+      if _agkozak_has_usr1; then
+          typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+
+      # Failing all else, fall back to synchronous mode
+      else
+        typeset -g AGKOZAK_ASYNC_METHOD='none'
+      fi
+    fi
+  fi
 
   case $AGKOZAK_ASYNC_METHOD in
     zsh-async)

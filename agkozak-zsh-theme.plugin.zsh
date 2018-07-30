@@ -564,7 +564,8 @@ agkozak_zsh_theme() {
       PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
       PROMPT+='$(_agkozak_vi_mode_indicator) '
 
-      AGKOZAK_CUSTOM_PROMPT=${PROMPT}
+      typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
+      typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     fi
 
     if (( ${+AGKOZAK_CUSTOM_RPROMPT} )); then
@@ -573,7 +574,8 @@ agkozak_zsh_theme() {
       # The color right prompt
       typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
 
-      AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
+      typeset -g AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
+      typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${RPROMPT}
     fi
 
     (( AGKOZAK_HAS_COLORS != 1 )) && {

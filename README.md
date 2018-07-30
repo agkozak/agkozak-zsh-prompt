@@ -184,7 +184,7 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
 
 ## ZPML: ZSH Prompt Macro Language
 
-*July 14, 2018: By request, I have just introduced the alpha version of a simple macro language that simplifies the task of customizing prompts. [agkozak-zsh-theme is now written in it!](https://en.wikipedia.org/wiki/Eating_your_own_dog_food) Please help me to experiment with it. There will doubtless be small but possibly breaking changes to the syntax early on in its development, and the goal is to make it moderately extensible (expect documentation soon).*
+*July 14, 2018: By request, I have just introduced the alpha version of a simple macro language that simplifies the task of customizing prompts. I am still establishing syntax principles, so any customizations you make using the code in this branch are likely to break as the language develops. Feel free to look around, but for now I encourage you to make customizations to your prompt using the principles already included in the  [`master` branch](https://github.com/agkozak/agkozak-zsh-prompt#custom-colors).*
 
 The default prompts (left and right) can be produced with the following code:
 

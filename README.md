@@ -1,9 +1,9 @@
 # agkozak ZSH Prompt
 
 [![MIT License](img/mit_license.svg)](https://opensource.org/licenses/MIT)
-[![GitHub tag](https://img.shields.io/github/tag/agkozak/agkozak-zsh-theme.svg)](https://GitHub.com/agkozak/agkozak-zsh-theme/tags/)
+[![GitHub tag](https://img.shields.io/github/tag/agkozak/agkozak-zsh-prompt.svg)](https://GitHub.com/agkozak/agkozak-zsh-prompt/tags/)
 ![zsh version 4.3.11 and higher](img/zsh_4.3.11_plus.svg)
-[![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-theme.svg)](https://github.com/agkozak/agkozak-zsh-theme/stargazers)
+[![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-prompt.svg)](https://github.com/agkozak/agkozak-zsh-prompt/stargazers)
 
 The agkozak ZSH Prompt is an asynchronous, dynamic color Git prompt for `zsh` that uses basic ASCII symbols to show:
 
@@ -16,7 +16,7 @@ The agkozak ZSH Prompt is an asynchronous, dynamic color Git prompt for `zsh` th
 
 This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris 11.3. It also has full asynchronous functionality in Windows environments such as MSYS2, Cygwin, and WSL.
 
-![agkozak-zsh-theme](img/demo.gif)
+![The agkozak ZSH Prompt](img/demo.gif)
 
 ## Table of Contents
 
@@ -38,17 +38,17 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 The agkozak ZSH prompt requires no framework and can be simply sourced from your `.zshrc` file. Clone the git repo:
 
-    git clone https://github.com/agkozak/agkozak-zsh-theme
+    git clone https://github.com/agkozak/agkozak-zsh-prompt
 
 And add the following to your `.zshrc` file:
 
-    source /path/to/agkozak-zsh-theme.plugin.zsh
+    source /path/to/agkozak-zsh-prompt.plugin.zsh
 
 ### For [antigen](https://github.com/zsh-users/antigen) users
 
 Add the line
 
-    antigen bundle agkozak/agkozak-zsh-theme
+    antigen bundle agkozak/agkozak-zsh-prompt
 
 to your `.zshrc`, somewhere before the line that says `antigen apply`.
 
@@ -59,8 +59,8 @@ to your `.zshrc`, somewhere before the line that says `antigen apply`.
 Execute the following commands:
 
     [[ ! -d $ZSH_CUSTOM/themes ]] && mkdir $ZSH_CUSTOM/themes
-    git clone https://github.com/agkozak/agkozak-zsh-theme $ZSH_CUSTOM/themes/agkozak
-    ln -s $ZSH_CUSTOM/themes/agkozak/agkozak-zsh-theme.plugin.zsh $ZSH_CUSTOM/themes/agkozak.zsh-theme
+    git clone https://github.com/agkozak/agkozak-zsh-prompt $ZSH_CUSTOM/themes/agkozak
+    ln -s $ZSH_CUSTOM/themes/agkozak/agkozak-zsh-prompt.plugin.zsh $ZSH_CUSTOM/themes/agkozak.zsh-theme
 
 And set `ZSH_THEME=agkozak` in your `.zshrc` file.
 
@@ -68,7 +68,7 @@ And set `ZSH_THEME=agkozak` in your `.zshrc` file.
 
 Add the line
 
-    zgen load agkozak/agkozak-zsh-theme
+    zgen load agkozak/agkozak-zsh-prompt
 
 to your `.zshrc` somewhere before the line that says `zgen save`.
 
@@ -76,7 +76,7 @@ to your `.zshrc` somewhere before the line that says `zgen save`.
 
 Add the line
 
-    zplug "agkozak/agkozak-zsh-theme"
+    zplug "agkozak/agkozak-zsh-prompt"
 
 to your `.zshrc` somewhere before the line that says `zplug load`.
 
@@ -84,7 +84,7 @@ to your `.zshrc` somewhere before the line that says `zplug load`.
 
 Run the command 
 
-    zplugin load agkozak/agkozak-zsh-theme
+    zplugin load agkozak/agkozak-zsh-prompt
 
 to try out the prompt; add the same command to your `.zshrc` to load it automatically.
 
@@ -165,15 +165,15 @@ If you prefer to have a little space between instances of the prompt, put `AGKOZ
 
 ## Optional Single-Line Prompt
 
-Older versions of the agkozak ZSH Prompt provided a single-line prompt. [Because of changes made in ZSH 5.5](https://github.com/agkozak/agkozak-zsh-theme/issues/6) that affect the calculation of cursor position when the prompt wraps, it has become difficult to ensure that in that situation the cursor will land where it is supposed to, i.e. two positions after the `%` or `#` and not on top of the left prompt or after the right prompt. I have made the default prompt two-line, which fixes the problem entirely, but if you prefer a single-line prompt and are willing to put up with the occasional glitch, put
+Older versions of the agkozak ZSH Prompt provided a single-line prompt. [Because of changes made in ZSH 5.5](https://github.com/agkozak/agkozak-zsh-prompt/issues/6) that affect the calculation of cursor position when the prompt wraps, it has become difficult to ensure that in that situation the cursor will land where it is supposed to, i.e. two positions after the `%` or `#` and not on top of the left prompt or after the right prompt. I have made the default prompt two-line, which fixes the problem entirely, but if you prefer a single-line prompt and are willing to put up with the occasional glitch, put
 
     AGKOZAK_MULTILINE=0
 
-in your `.zshrc` before you source agkozak-zsh-theme.
+in your `.zshrc` before you source agkozak-zsh-prompt.
 
 Demo:
 
-[![agkozak-zsh-theme (Singe-Line)](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)
+[![agkozak ZSH Prompt (Singe-Line)](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)
 
 ## Custom Colors
 If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
@@ -208,11 +208,11 @@ The agkozak ZSH Prompt has two different ways of displaying its Git status async
 
 The `zsh-async`-based method uses the `zsh/zpty` library to spin off pseudo-terminals that can calculate the Git status without blocking the user from continuing to use the terminal. Unfortunately, `zsh/zpty` does not work well or at all on many systems: Cygwin and MSYS2 are notable examples, but even some installations of BSD or Linux or certain point releases of `zsh` do not support using `zsh/zpty` for the present purpose.
 
-The second method is quite similar to the first; it involves creating and disowning child processes that calculate the Git status and then kill themselves off, triggering SIGUSR1 in the process. The `zsh` `TRAPUSR1` function then displays the Git status in the right prompt.  The problem with this method is that other `zsh` scripts might choose to use `TRAPUSR1`, so the agkozak ZSH Prompt takes the precaution of checking to see if that function has been defined already -- if it has, the theme switches off asynchronous mode entirely. It also routinely checks to see if some other script or the user has redefined `TRAPUSR1` and switches off asynchronous mode out of precaution.
+The second method is quite similar to the first; it involves creating and disowning child processes that calculate the Git status and then kill themselves off, triggering SIGUSR1 in the process. The `zsh` `TRAPUSR1` function then displays the Git status in the right prompt.  The problem with this method is that other `zsh` scripts might choose to use `TRAPUSR1`, so the agkozak ZSH Prompt takes the precaution of checking to see if that function has been defined already -- if it has, the prompt switches off asynchronous mode entirely. It also routinely checks to see if some other script or the user has redefined `TRAPUSR1` and switches off asynchronous mode out of precaution.
 
-If you want to force the agkozak ZSH Prompt to use a specific asynchronous mode (or none at all), execute `export AGKOZAK_FORCE_ASYNC_METHOD=zsh-async`, `usr1`, or `none` before sourcing it. If you want more insight into how the theme is working in your shell, put `export AGKOZAK_THEME_DEBUG=1` in your `.zshrc`.
+If you want to force the agkozak ZSH Prompt to use a specific asynchronous mode (or none at all), execute `export AGKOZAK_FORCE_ASYNC_METHOD=zsh-async`, `usr1`, or `none` before sourcing it. If you want more insight into how the prompt is working in your shell, put `export AGKOZAK_PROMPT_DEBUG=1` in your `.zshrc`.
 
 
 <p align="center">
-  <img src="img/logo.png" alt="agkozak-zsh-theme Logo">
+  <img src="img/logo.png" alt="agkozak ZSH Prompt Logo">
 </p>

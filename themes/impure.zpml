@@ -2,7 +2,7 @@
 #
 # Based loosely on the pure prompt: https://github.com/sindresorhus/pure
 #
-# https://github.com/agkozak/agkozak-zsh-theme
+# https://github.com/agkozak/agkozak-zsh-prompt
 
 ZPML_GIT_SYMBOLS[ahead]='⇡'
 ZPML_GIT_SYMBOLS[deleted]='*'

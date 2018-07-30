@@ -32,7 +32,7 @@
 # SOFTWARE.
 #
 #
-# https://github.com/agkozak/agkozak-zsh-theme
+# https://github.com/agkozak/agkozak-zsh-prompt
 #
 
 # shellcheck disable=SC2034,SC2088,SC2148,SC2154,SC2190
@@ -48,10 +48,10 @@
 # psvar[3]      %3v                         Current working Git branch, along
 #                                           with indicator of changes made
 
-# Set AGKOZAK_THEME_DEBUG to 1 to see debugging information
-AGKOZAK_THEME_DEBUG=${AGKOZAK_THEME_DEBUG:-0}
+# Set AGKOZAK_PROMPT_DEBUG to 1 to see debugging information
+AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
 
-if (( AGKOZAK_THEME_DEBUG )); then
+if (( AGKOZAK_PROMPT_DEBUG )); then
   autoload -Uz is-at-least
 
   setopt WARN_CREATE_GLOBAL
@@ -245,31 +245,31 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS
 ###########################################################
 
-typeset -g AGKOZAK_THEME_DIR=${0:A:h}
+typeset -g AGKOZAK_PROMPT_DIR=${0:A:h}
 
 ###########################################################
 # Autoload the ZPML library
 #
 ###########################################################
-fpath+=( "${AGKOZAK_THEME_DIR}/lib/zpml" )
+fpath+=( "${AGKOZAK_PROMPT_DIR}/lib/zpml" )
 autoload -Uz zpml
 
-typeset -g ZPML_THEME_DIR=${AGKOZAK_THEME_DIR}/themes
+typeset -g ZPML_THEME_DIR=${AGKOZAK_PROMPT_DIR}/themes
 
 ###########################################################
 # If zsh-async has not already been loaded, try to load it;
 # the exit code should indicate success or failure
 #
 # Globals:
-#   AGKOZAK_THEME_DEBUG
-#   AGKOZAK_THEME_DIR
+#   AGKOZAK_PROMPT_DEBUG
+#   AGKOZAK_PROMPT_DIR
 ###########################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
-    if (( AGKOZAK_THEME_DEBUG )); then
-      source "${AGKOZAK_THEME_DIR}/lib/zsh-async/async.zsh"
+    if (( AGKOZAK_PROMPT_DEBUG )); then
+      source "${AGKOZAK_PROMPT_DIR}/lib/zsh-async/async.zsh"
     else
-      source "${AGKOZAK_THEME_DIR}/lib/zsh-async/async.zsh" &> /dev/null
+      source "${AGKOZAK_PROMPT_DIR}/lib/zsh-async/async.zsh" &> /dev/null
     fi
     local success=$?
     return $success
@@ -281,17 +281,17 @@ _agkozak_load_async_lib() {
 # zsh, use it; otherwise disable asynchronous mode
 #
 # Globals:
-#   AGKOZAK_THEME_DEBUG
+#   AGKOZAK_PROMPT_DEBUG
 ###########################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
-    (( AGKOZAK_THEME_DEBUG )) && echo 'agkozak-zsh-theme: TRAPUSR1 already defined.' >&2
+    (( AGKOZAK_PROMPT_DEBUG )) && echo 'agkozak-zsh-prompt: TRAPUSR1 already defined.' >&2
     false
   else
     case $signals in    # Array containing names of available signals
       *USR1*) true ;;
       *)
-        (( AGKOZAK_THEME_DEBUG )) && echo 'agkozak-zsh-theme: SIGUSR1 not available.' >&2
+        (( AGKOZAK_PROMPT_DEBUG )) && echo 'agkozak-zsh-prompt: SIGUSR1 not available.' >&2
         false
         ;;
     esac
@@ -392,9 +392,9 @@ _agkozak_async_init() {
       ########################################################
       # precmd uses this function to launch async workers to
       # calculate the Git status. It can tell if anything has
-      # redefined the TRAPUSR1 function that actually displays
-      # the status; if so, it will drop the theme down into
-      # non-asynchronous mode.
+      # redefined the TRAPUSR1 function that actually
+      # displays the status; if so, it will drop the prompt
+      # down into non-asynchronous mode.
       #
       # Globals:
       #   AGKOZAK_TRAPUSR1_FUNCTION
@@ -412,7 +412,7 @@ _agkozak_async_init() {
           _agkozak_usr1_async_worker &!
           typeset -g AGKOZAK_USR1_ASYNC_WORKER=$!
         else
-          echo 'agkozak-zsh-theme: TRAPUSR1 has been redefined. Disabling asynchronous mode.' >&2
+          echo 'agkozak-zsh-prompt: TRAPUSR1 has been redefined. Disabling asynchronous mode.' >&2
           typeset -g AGKOZAK_ASYNC_METHOD='none'
         fi
       }
@@ -421,14 +421,14 @@ _agkozak_async_init() {
       # Asynchronous Git branch status using SIGUSR1
       #
       # Globals:
-      #   AGKOZAK_THEME_DEBUG
+      #   AGKOZAK_PROMPT_DEBUG
       ########################################################
       _agkozak_usr1_async_worker() {
         # Save Git branch status to temporary file
-        _agkozak_branch_status > "/tmp/agkozak_zsh_theme_$$"
+        _agkozak_branch_status > "/tmp/agkozak_zsh_prompt_$$"
 
         # Signal parent process
-        if (( AGKOZAK_THEME_DEBUG )); then
+        if (( AGKOZAK_PROMPT_DEBUG )); then
           kill -s USR1 $$
         else
           kill -s USR1 $$ &> /dev/null
@@ -444,7 +444,7 @@ _agkozak_async_init() {
       TRAPUSR1() {
         # read from temp file
         local branch_status
-        _agkozak_populate_git_vars "$(cat /tmp/agkozak_zsh_theme_$$)"
+        _agkozak_populate_git_vars "$(cat /tmp/agkozak_zsh_prompt_$$)"
 
         # Reset asynchronous process number
         typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
@@ -579,7 +579,7 @@ _agkozak_precmd() {
 }
 
 ############################################################
-# The agkozak-zsh-theme ZSH Prompt Macro Language
+# The agkozak-zsh-prompt ZSH Prompt Macro Language (ZPML)
 ############################################################
 
 # An extensible associative array containing macros
@@ -594,13 +594,13 @@ ZPML_MACROS=(
 )
 
 ############################################################
-# Theme setup
+# Prompt setup
 #
 # Globals:
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_USR1_ASYNC_WORKER
-#   AGKOZAK_THEME_DEBUG
-#   AGKOZAK_THEME_DIR
+#   AGKOZAK_PROMPT_DEBUG
+#   AGKOZAK_PROMPT_DIR
 #   AGKOZAK_PROMPT_DIRTRIM
 #   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_COLORS_EXIT_STATUS
@@ -609,7 +609,7 @@ ZPML_MACROS=(
 #   AGKOZAK_COLORS_BRANCH_STATUS
 #   AGKOZAK_HAS_COLORS
 ############################################################
-agkozak_zsh_theme() {
+agkozak_zsh_prompt() {
 
   _agkozak_async_init
 
@@ -685,7 +685,6 @@ agkozak_zsh_theme() {
     # Avoid continuation lines in Emacs term and ansi-term
     [[ -n $INSIDE_EMACS ]] && ZLE_RPROMPT_INDENT=2
 
-
     if [[ -n ${ZPML_THEME} ]]; then
 
       # Let themes persist from shell to shell
@@ -713,6 +712,11 @@ agkozak_zsh_theme() {
         typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}} (%3v%(4V. %4v.)%)%f.)'
       fi
 
+      typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
+      typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+      typeset -g AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
+      typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${RPROMPT}
+
       (( AGKOZAK_HAS_COLORS != 1 )) && {
         PROMPT="$(_agkozak_strip_colors "$PROMPT")"
         RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
@@ -721,12 +725,12 @@ agkozak_zsh_theme() {
     fi
   fi
 
-  if (( AGKOZAK_THEME_DEBUG )); then
-    echo "agkozak-zsh-theme: using async method: $AGKOZAK_ASYNC_METHOD" >&2
+  if (( AGKOZAK_PROMPT_DEBUG )); then
+    echo "agkozak-zsh-prompt: using async method: $AGKOZAK_ASYNC_METHOD" >&2
   fi
 }
 
-agkozak_zsh_theme
+agkozak_zsh_prompt
 
 # Clean up environment
 unfunction _agkozak_load_async_lib _agkozak_has_usr1

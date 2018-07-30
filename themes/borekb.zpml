@@ -2,7 +2,7 @@
 #
 # Built to the specifications of @borekb (https://github.com/borekb)
 #
-# https://github.com/agkozak/agkozak-zsh-theme
+# https://github.com/agkozak/agkozak-zsh-prompt
 
 ZPML_PROMPT=(
   if is_exit_0 then

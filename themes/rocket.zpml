@@ -1,7 +1,7 @@
 # rocket theme
 #
 # A vague homage to Spaceship ZSH (https://github.com/denysdovhan/spaceship-prompt)
-# https://github.com/agkozak/agkozak-zsh-theme
+# https://github.com/agkozak/agkozak-zsh-prompt
 
 ZPML_GIT_SYMBOLS=(
   renamed   '»'

@@ -302,7 +302,7 @@ _agkozak_async_init() {
 
       # Try usr1
       if _agkozak_has_usr1; then
-          typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
 
       # Failing all else, fall back to synchronous mode
       else
@@ -454,6 +454,11 @@ _agkozak_strip_colors() {
 #   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_FIRST_PROMPT_PRINTED
+#   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_CURRENT_CUSTOM_PROMPT
+#   AGKOZAK_CUSTOM_RPROMPT
+#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
+#   AGKOZAK_HAS_COLORS
 ############################################################
 _agkozak_precmd() {
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
@@ -504,6 +509,11 @@ _agkozak_precmd() {
 # Globals:
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_USR1_ASYNC_WORKER
+#   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_CURRENT_CUSTOM_PROMPT
+#   AGKOZAK_CUSTOM_RPROMPT
+#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
+#   AGKOZAK_HAS_COLORS
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_DIR
 #   AGKOZAK_HAS_COLORS
@@ -537,9 +547,6 @@ agkozak_zsh_prompt() {
   else
     psvar[1]=''
   fi
-
-  # When the user is a superuser, the username and hostname are
-  # displayed in reverse video
 
   # The Emacs shell has only limited support for some ZSH features
   if [[ $TERM = 'dumb' ]]; then

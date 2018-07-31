@@ -61,8 +61,15 @@ if (( AGKOZAK_PROMPT_DEBUG )); then
   fi
 fi
 
-# Decide if the prompt should be displayed in color
-(( $(tput colors) >= 8 )) && typeset -g AGKOZAK_HAS_COLORS=1
+###########################################################
+# Are colors available?
+#
+# Globals:
+#   AGKOZAK_HAS_COLORS
+###########################################################
+_agkozak_has_colors() {
+  (( ${AGKOZAK_HAS_COLORS:-(( $(tput colors) >= 8 ? 1 : 0 ))} ))
+}
 
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
 typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
@@ -458,7 +465,6 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
-#   AGKOZAK_HAS_COLORS
 ############################################################
 _agkozak_precmd() {
   psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
@@ -489,7 +495,7 @@ _agkozak_precmd() {
   if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
-    if (( AGKOZAK_HAS_COLORS != 1 )); then
+    if ! _agkozak_has_colors; then
       PROMPT=$(_agkozak_strip_colors "${PROMPT}")
     fi
   fi
@@ -497,7 +503,7 @@ _agkozak_precmd() {
   if [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK_CURRENT_CUSTOM_RPROMPT}" ]]; then
     typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
     RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
-    if (( AGKOZAK_HAS_COLORS != 1 )); then
+    if ! _agkozak_has_colors; then
       RPROMPT=$(_agkozak_strip_colors "${RPROMPT}")
     fi
   fi
@@ -513,10 +519,8 @@ _agkozak_precmd() {
 #   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
-#   AGKOZAK_HAS_COLORS
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_DIR
-#   AGKOZAK_HAS_COLORS
 ############################################################
 agkozak_zsh_prompt() {
 
@@ -585,10 +589,10 @@ agkozak_zsh_prompt() {
       typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${RPROMPT}
     fi
 
-    (( AGKOZAK_HAS_COLORS != 1 )) && {
+    if ! _agkozak_has_colors; then
       PROMPT="$(_agkozak_strip_colors "$PROMPT")"
       RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
-    }
+    fi
 
   fi
 

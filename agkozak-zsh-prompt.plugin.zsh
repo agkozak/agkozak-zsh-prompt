@@ -68,7 +68,8 @@ fi
 #   AGKOZAK_HAS_COLORS
 ###########################################################
 _agkozak_has_colors() {
-  (( ${AGKOZAK_HAS_COLORS:-(( $(tput colors) >= 8 ? 1 : 0 ))} ))
+  typeset -g AGKOZAK_HAS_COLORS=${AGKOZAK_HAS_COLORS:-$(( $(tput colors) >= 8 ? 1 : 0 ))}
+  (( AGKOZAK_HAS_COLORS ))
 }
 
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt

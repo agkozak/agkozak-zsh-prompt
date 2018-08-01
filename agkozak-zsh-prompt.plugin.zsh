@@ -61,17 +61,6 @@ if (( AGKOZAK_PROMPT_DEBUG )); then
   fi
 fi
 
-###########################################################
-# Are colors available?
-#
-# Globals:
-#   AGKOZAK_HAS_COLORS
-###########################################################
-_agkozak_has_colors() {
-  typeset -g AGKOZAK_HAS_COLORS=${AGKOZAK_HAS_COLORS:-$(( $(tput colors) >= 8 ? 1 : 0 ))}
-  (( AGKOZAK_HAS_COLORS ))
-}
-
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
 typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
 
@@ -90,6 +79,17 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 ############################################################
 # BASIC FUNCTIONS
 ############################################################
+
+###########################################################
+# Are colors available?
+#
+# Globals:
+#   AGKOZAK_HAS_COLORS
+###########################################################
+_agkozak_has_colors() {
+  typeset -g AGKOZAK_HAS_COLORS=${AGKOZAK_HAS_COLORS:-$(( $(tput colors) >= 8 ? 1 : 0 ))}
+  (( AGKOZAK_HAS_COLORS ))
+}
 
 ############################################################
 # Is the user connected via SSH?
@@ -176,7 +176,7 @@ _agkozak_branch_changes() {
     esac
   done
 
-  [[ -n $symbols ]] && printf ' %s' "${symbols//asterisk/*}"
+  [[ -n $symbols ]] && printf ' %s' "${symbols}"
 }
 
 ############################################################

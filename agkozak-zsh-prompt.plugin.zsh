@@ -61,8 +61,15 @@ if (( AGKOZAK_PROMPT_DEBUG )); then
   fi
 fi
 
-# Decide if the prompt should be displayed in color
-(( $(tput colors) >= 8 )) && typeset -g AGKOZAK_HAS_COLORS=1
+###########################################################
+# Are colors available?
+#
+# Globals:
+#   AGKOZAK_HAS_COLORS
+###########################################################
+_agkozak_has_colors() {
+  (( ${AGKOZAK_HAS_COLORS:-(( $(tput colors) >= 8 ? 1 : 0 ))} ))
+}
 
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
 typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
@@ -355,7 +362,7 @@ _agkozak_async_init() {
 
       # Try usr1
       if _agkozak_has_usr1; then
-          typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
 
       # Failing all else, fall back to synchronous mode
       else
@@ -514,6 +521,10 @@ _agkozak_strip_colors() {
 #   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_FIRST_PROMPT_PRINTED
+#   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_CURRENT_CUSTOM_PROMPT
+#   AGKOZAK_CUSTOM_RPROMPT
+#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
 
@@ -564,7 +575,7 @@ _agkozak_precmd() {
   if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
-    if (( AGKOZAK_HAS_COLORS != 1 )); then
+    if ! _agkozak_has_colors; then
       PROMPT=$(_agkozak_strip_colors "${PROMPT}")
     fi
   fi
@@ -572,7 +583,7 @@ _agkozak_precmd() {
   if [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK_CURRENT_CUSTOM_RPROMPT}" ]]; then
     typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
     RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
-    if (( AGKOZAK_HAS_COLORS != 1 )); then
+    if ! _agkozak_has_colors; then
       RPROMPT=$(_agkozak_strip_colors "${RPROMPT}")
     fi
   fi
@@ -599,15 +610,14 @@ ZPML_MACROS=(
 # Globals:
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_USR1_ASYNC_WORKER
+#   ZPML_PROMPT
+#   ZLE_RPROMPT_INDENT
+#   ZPML_THEME
+#   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_CURRENT_CUSTOM_PROMPT
+#   AGKOZAK_CUSTOM_RPROMPT
+#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 #   AGKOZAK_PROMPT_DEBUG
-#   AGKOZAK_PROMPT_DIR
-#   AGKOZAK_PROMPT_DIRTRIM
-#   AGKOZAK_PROMPT_WHITESPACE
-#   AGKOZAK_COLORS_EXIT_STATUS
-#   AGKOZAK_COLORS_USER_HOST
-#   AGKOZAK_COLORS_PATH
-#   AGKOZAK_COLORS_BRANCH_STATUS
-#   AGKOZAK_HAS_COLORS
 ############################################################
 agkozak_zsh_prompt() {
 
@@ -717,10 +727,10 @@ agkozak_zsh_prompt() {
       typeset -g AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
       typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${RPROMPT}
 
-      (( AGKOZAK_HAS_COLORS != 1 )) && {
-        PROMPT="$(_agkozak_strip_colors "$PROMPT")"
-        RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
-      }
+    if ! _agkozak_has_colors; then
+      PROMPT="$(_agkozak_strip_colors "$PROMPT")"
+      RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
+    fi
 
     fi
   fi

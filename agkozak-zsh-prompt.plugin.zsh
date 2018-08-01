@@ -153,26 +153,26 @@ _agkozak_branch_status() {
 # Display symbols representing changes to the working copy
 ############################################################
 _agkozak_branch_changes() {
-  local git_status symbols v
+  local git_status symbols k
 
   git_status="$(LC_ALL=C command git status 2>&1)"
 
   typeset -A messages
 
   messages=(
-              'renamed:'                '>'
-              'Your branch is ahead of' 'asterisk'
-              'new file:'               '+'
-              'Untracked files'         '?'
-              'deleted'                 'x'
-              'modified:'               '!'
-              'behind'                  '&'
-              'diverged'                '&*'
+              '&*'  'diverged'
+              '&'   'behind'
+              '*'   'Your branch is ahead of'
+              '+'   'new file:'
+              'x'   'deleted'
+              '!'   'modified:'
+              '>'   'renamed:'
+              '?'   'Untracked files'
            )
 
-  for v in '&*' '&' 'asterisk' '+' 'x' '!' '>' '?'; do
+  for k in '&*' '&' '*' '+' 'x' '!' '>' '?'; do
     case $git_status in
-      *${(k)messages[(r)$v]}*) symbols+="$v" ;;
+      *${messages[$k]}*) symbols+="$k" ;;
     esac
   done
 

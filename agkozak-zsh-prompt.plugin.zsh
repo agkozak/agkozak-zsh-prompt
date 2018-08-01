@@ -157,9 +157,9 @@ _agkozak_branch_changes() {
 
   git_status="$(LC_ALL=C command git status 2>&1)"
 
-  typeset -A messages
+  typeset -A status
 
-  messages=(
+  status=(
               '&*'  'diverged'
               '&'   'behind'
               '*'   'Your branch is ahead of'
@@ -172,7 +172,7 @@ _agkozak_branch_changes() {
 
   for k in '&*' '&' '*' '+' 'x' '!' '>' '?'; do
     case $git_status in
-      *${messages[$k]}*) symbols+="$k" ;;
+      *${status[$k]}*) symbols+="$k" ;;
     esac
   done
 

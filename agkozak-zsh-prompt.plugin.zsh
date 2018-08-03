@@ -530,7 +530,6 @@ _agkozak_precmd() {
 #   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
-#   AGKOZAK_PROMPT_DIR
 ############################################################
 agkozak_zsh_prompt() {
 

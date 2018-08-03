@@ -375,6 +375,7 @@ _agkozak_async_init() {
         else
           echo 'agkozak-zsh-prompt: TRAPUSR1 has been redefined. Disabling asynchronous mode.' >&2
           typeset -g AGKOZAK_ASYNC_METHOD='none'
+          psvar[3]="$(_agkozak_branch_status)"
         fi
       }
 

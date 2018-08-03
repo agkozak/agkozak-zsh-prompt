@@ -431,7 +431,7 @@ _agkozak_strip_colors() {
       %F\{*|%K\{*)
         (( open_braces++ ))
         prompt=${prompt#%[FK]\{}
-        while (( open_braces != 0 )); do
+        while (( open_braces )); do
           case ${prompt:0:1} in
             \{) (( open_braces++ )) ;;
             \}) (( open_braces-- )) ;;

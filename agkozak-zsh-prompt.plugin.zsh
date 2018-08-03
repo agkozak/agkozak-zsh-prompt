@@ -48,8 +48,21 @@
 # psvar[3]      %3v                         Current working Git branch, along
 #                                           with indicator of changes made
 
-# Set AGKOZAK_PROMPT_DEBUG to 1 to see debugging information
+# Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
 AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
+
+############################################################
+# Display a message on STDERR if debug mode is enabled.
+#
+# Globals:
+#   AGKOZAK_PROMPT_DEBUG
+#
+# Parameters:
+#   $1  Message to send to STDERR
+############################################################
+_agkozak_debug_print() {
+  (( AGKOZAK_PROMPT_DEBUG )) && print "$1" >&2
+}
 
 if (( AGKOZAK_PROMPT_DEBUG )); then
   autoload -Uz is-at-least
@@ -234,19 +247,16 @@ _agkozak_load_async_lib() {
 ###########################################################
 # If SIGUSR1 is available and not already in use by
 # zsh, use it; otherwise disable asynchronous mode
-#
-# Globals:
-#   AGKOZAK_PROMPT_DEBUG
 ###########################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
-    (( AGKOZAK_PROMPT_DEBUG )) && echo 'agkozak-zsh-prompt: TRAPUSR1 already defined.' >&2
+    _agkozak_debug_print 'agkozak-zsh-prompt: TRAPUSR1 already defined.'
     false
   else
     case $signals in    # Array containing names of available signals
       *USR1*) true ;;
       *)
-        (( AGKOZAK_PROMPT_DEBUG )) && echo 'agkozak-zsh-prompt: SIGUSR1 not available.' >&2
+        _agkozak_debug_print 'agkozak-zsh-prompt: SIGUSR1 not available.'
         false
         ;;
     esac
@@ -520,7 +530,6 @@ _agkozak_precmd() {
 #   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
-#   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_DIR
 ############################################################
 agkozak_zsh_prompt() {
@@ -597,9 +606,7 @@ agkozak_zsh_prompt() {
 
   fi
 
-  if (( AGKOZAK_PROMPT_DEBUG )); then
-    echo "agkozak-zsh-prompt: using async method: $AGKOZAK_ASYNC_METHOD" >&2
-  fi
+  _agkozak_debug_print "agkozak-zsh-prompt: Using async method: $AGKOZAK_ASYNC_METHOD"
 }
 
 agkozak_zsh_prompt

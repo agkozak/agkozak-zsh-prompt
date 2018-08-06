@@ -3,11 +3,12 @@
 #
 # zsh-async
 #
-# version: 1.6.0
+# version: 1.6.2
 # author: Mathias Fredriksson
 # url: https://github.com/mafredri/zsh-async
 #
 
+typeset -g ASYNC_VERSION=1.6.2
 # Produce debug output from zsh-async when set to 1.
 typeset -g ASYNC_DEBUG=${ASYNC_DEBUG:-0}
 
@@ -212,7 +213,7 @@ async_process_results() {
 	local caller=$3
 	local -a items
 	local null=$'\0' data
-	integer -l len pos num_processed
+	integer -l len pos num_processed has_next
 
 	typeset -gA ASYNC_PROCESS_BUFFER
 
@@ -240,13 +241,14 @@ async_process_results() {
 				pos=${ASYNC_PROCESS_BUFFER[$worker][(i)$null]}  # Get index of NULL-character (delimiter).
 			fi
 
+			has_next=$(( len != 0 ))
 			if (( $#items == 5 )); then
-				items+=($(( len != 0 )))
+				items+=($has_next)
 				$callback "${(@)items}"  # Send all parsed items to the callback.
 			else
 				# In case of corrupt data, invoke callback with *async* as job
 				# name, non-zero exit status and an error message on stderr.
-				$callback "async" 1 "" 0 "$0:$LINENO: error: bad format, got ${#items} items (${(@q)items})"
+				$callback "async" 1 "" 0 "$0:$LINENO: error: bad format, got ${#items} items (${(q)items})" $has_next
 			fi
 
 			(( num_processed++ ))

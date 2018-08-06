@@ -366,7 +366,7 @@ _agkozak_async_init() {
         if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
-              kill -s HUP "$AGKOZAK_USR1_ASYNC_WORKER" &> /dev/null || :
+            kill -s HUP "$AGKOZAK_USR1_ASYNC_WORKER" &> /dev/null || :
           fi
 
           # Start background computation of Git status

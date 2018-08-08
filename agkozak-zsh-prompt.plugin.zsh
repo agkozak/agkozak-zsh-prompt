@@ -35,7 +35,7 @@
 # https://github.com/agkozak/agkozak-zsh-prompt
 #
 
-# shellcheck disable=SC2034,SC2088,SC2148,SC2154,SC2190
+# shellcheck disable=SC1090,SC2016,SC2034,SC2088,SC2148,SC2154,SC2190
 
 # psvar[] Usage
 #
@@ -573,7 +573,7 @@ agkozak_zsh_prompt() {
     # Avoid continuation lines in Emacs term and ansi-term
     [[ -n $INSIDE_EMACS ]] && ZLE_RPROMPT_INDENT=2
 
-    if (( ${+AGKOZAK_CUSTOM_PROMPT} )); then
+    if (( $+AGKOZAK_CUSTOM_PROMPT )); then
       PROMPT="${AGKOZAK_CUSTOM_PROMPT}"
     else
       # The color left prompt
@@ -586,7 +586,7 @@ agkozak_zsh_prompt() {
       typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     fi
 
-    if (( ${+AGKOZAK_CUSTOM_RPROMPT} )); then
+    if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
       RPROMPT="${AGKOZAK_CUSTOM_RPROMPT}"
     else
       # The color right prompt

@@ -151,12 +151,12 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 _agkozak_branch_status() {
   local ref branch
-  ref=$(git symbolic-ref --quiet HEAD 2> /dev/null)
+  ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
   case $? in        # See what the exit code is.
     0) ;;           # $ref contains the name of a checked-out branch.
     128) return ;;  # No Git repository here.
     # Otherwise, see if HEAD is in detached state.
-    *) ref=$(git rev-parse --short HEAD 2> /dev/null) || return ;;
+    *) ref=$(command git rev-parse --short HEAD 2> /dev/null) || return ;;
   esac
   branch=${ref#refs/heads/}
   [[ -n $branch ]] && printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"

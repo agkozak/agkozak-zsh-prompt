@@ -151,14 +151,14 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 _agkozak_branch_status() {
   local ref branch
-  ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
+  ref="$(git symbolic-ref --quiet HEAD 2> /dev/null)"
   case $? in        # See what the exit code is.
     0) ;;           # $ref contains the name of a checked-out branch.
     128) return ;;  # No Git repository here.
     # Otherwise, see if HEAD is in detached state.
-    *) ref=$(command git rev-parse --short HEAD 2> /dev/null) || return ;;
+    *) ref="$(git rev-parse --short HEAD 2> /dev/null)" || return ;;
   esac
-  branch=${ref#refs/heads/}
+  branch="${ref#refs/heads/}"
   [[ -n $branch ]] && printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
 }
 
@@ -281,7 +281,7 @@ _agkozak_async_init() {
   # Otherwise, first provide for certain quirky systems
   else
     local sysinfo
-    sysinfo=$(uname -a)
+    sysinfo="$(uname -a)"
 
     # WSL should have BG_NICE disabled, as it does not have a Linux kernel
     #
@@ -342,7 +342,7 @@ _agkozak_async_init() {
       # Set RPROMPT and stop worker
       ########################################################
       _agkozak_zsh_async_callback() {
-        psvar[3]=$(_agkozak_branch_status)
+        psvar[3]="$(_agkozak_branch_status)"
         zle && zle reset-prompt
         async_stop_worker agkozak_git_status_worker -n
       }
@@ -363,7 +363,7 @@ _agkozak_async_init() {
       #   AGKOZAK_ASYNC_METHOD
       ########################################################
       _agkozak_usr1_async() {
-        if [[ $(builtin which TRAPUSR1) = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
+        if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
             kill -s HUP "$AGKOZAK_USR1_ASYNC_WORKER" &> /dev/null || :
@@ -375,7 +375,7 @@ _agkozak_async_init() {
         else
           echo 'agkozak-zsh-prompt: TRAPUSR1 has been redefined. Disabling asynchronous mode.' >&2
           typeset -g AGKOZAK_ASYNC_METHOD='none'
-          psvar[3]=$(_agkozak_branch_status)
+          psvar[3]="$(_agkozak_branch_status)"
         fi
       }
 
@@ -387,7 +387,7 @@ _agkozak_async_init() {
       ########################################################
       _agkozak_usr1_async_worker() {
         # Save Git branch status to temporary file
-        _agkozak_branch_status > /tmp/agkozak_zsh_prompt_$$
+        _agkozak_branch_status > "/tmp/agkozak_zsh_prompt_$$"
 
         # Signal parent process
         if (( AGKOZAK_PROMPT_DEBUG )); then
@@ -405,7 +405,7 @@ _agkozak_async_init() {
       ########################################################
       TRAPUSR1() {
         # read from temp file
-        psvar[3]=$(cat /tmp/agkozak_zsh_prompt_$$)
+        psvar[3]="$(cat /tmp/agkozak_zsh_prompt_$$)"
 
         # Reset asynchronous process number
         typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
@@ -414,7 +414,7 @@ _agkozak_async_init() {
         zle && zle reset-prompt
       }
 
-      typeset -g AGKOZAK_TRAPUSR1_FUNCTION=$(builtin which TRAPUSR1)
+      typeset -g AGKOZAK_TRAPUSR1_FUNCTION="$(builtin which TRAPUSR1)"
       ;;
   esac
 }
@@ -476,7 +476,7 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
-  psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
+  psvar[2]="$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")"
   psvar[3]=''
 
   case $AGKOZAK_ASYNC_METHOD in
@@ -578,7 +578,7 @@ agkozak_zsh_prompt() {
     [[ -n $VSCODE_PID ]] && ZLE_RPROMPT_INDENT=6
 
     if (( $+AGKOZAK_CUSTOM_PROMPT )); then
-      PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+      PROMPT="${AGKOZAK_CUSTOM_PROMPT}"
     else
       # The color left prompt
       PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
@@ -591,7 +591,7 @@ agkozak_zsh_prompt() {
     fi
 
     if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
-      RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
+      RPROMPT="${AGKOZAK_CUSTOM_RPROMPT}"
     else
       # The color right prompt
       typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
@@ -601,8 +601,8 @@ agkozak_zsh_prompt() {
     fi
 
     if ! _agkozak_has_colors; then
-      PROMPT=$(_agkozak_strip_colors "$PROMPT")
-      RPROMPT=$(_agkozak_strip_colors "$RPROMPT")
+      PROMPT="$(_agkozak_strip_colors "$PROMPT")"
+      RPROMPT="$(_agkozak_strip_colors "$RPROMPT")"
     fi
 
   fi

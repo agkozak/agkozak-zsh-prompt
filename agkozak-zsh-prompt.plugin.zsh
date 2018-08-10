@@ -573,7 +573,7 @@ agkozak_zsh_prompt() {
     # Avoid continuation lines in Emacs term and ansi-term
     [[ -n $INSIDE_EMACS ]] && ZLE_RPROMPT_INDENT=2
 
-    # When VSCode is using the DOM rederer, the right prompt overflows off the
+    # When VSCode is using the DOM renderer, the right prompt overflows off the
     # side of the screen
     [[ -n $VSCODE_PID ]] && ZLE_RPROMPT_INDENT=6
 

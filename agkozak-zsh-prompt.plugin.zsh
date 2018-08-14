@@ -134,14 +134,13 @@ _agkozak_is_ssh() {
 ############################################################
 _agkozak_prompt_dirtrim() {
   [[ $1 -ge 1 ]] || set 2
-  case $PWD in
-    $HOME) print -n '~' ;;  # Or TrueOS will print ~/.../~
-    $HOME*)
-      print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)"
-      ;;
-    *)
-      print -Pn "%($(($1 + 1))/|.../%${1}d|%d)"
-      ;;
+  local zsh_pwd
+  zsh_pwd=$(print -Pn '%~')
+  case $zsh_pwd in
+    \~) print -Pn $zsh_pwd ;;
+    \~/*) print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)" ;;
+    \~*) print -Pn "%($(($1 + 2))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
+    *) print -Pn "%($(($1 + 1))/|.../%${1}d|%d)" ;;
   esac
 }
 

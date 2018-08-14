@@ -150,12 +150,12 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 _agkozak_branch_status() {
   local ref branch
-  ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
+  ref=$(git symbolic-ref --quiet HEAD 2> /dev/null)
   case $? in        # See what the exit code is.
     0) ;;           # $ref contains the name of a checked-out branch.
     128) return ;;  # No Git repository here.
     # Otherwise, see if HEAD is in detached state.
-    *) ref=$(command git rev-parse --short HEAD 2> /dev/null) || return ;;
+    *) ref=$(git rev-parse --short HEAD 2> /dev/null) || return ;;
   esac
   branch=${ref#refs/heads/}
   [[ -n $branch ]] && printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
@@ -362,7 +362,7 @@ _agkozak_async_init() {
       #   AGKOZAK_ASYNC_METHOD
       ########################################################
       _agkozak_usr1_async() {
-        if [[ $(builtin which TRAPUSR1) = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
+        if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
             kill -s HUP "$AGKOZAK_USR1_ASYNC_WORKER" &> /dev/null || :
@@ -374,7 +374,7 @@ _agkozak_async_init() {
         else
           echo 'agkozak-zsh-prompt: TRAPUSR1 has been redefined. Disabling asynchronous mode.' >&2
           typeset -g AGKOZAK_ASYNC_METHOD='none'
-          psvar[3]=$(_agkozak_branch_status)
+          psvar[3]="$(_agkozak_branch_status)"
         fi
       }
 
@@ -413,7 +413,7 @@ _agkozak_async_init() {
         zle && zle reset-prompt
       }
 
-      typeset -g AGKOZAK_TRAPUSR1_FUNCTION=$(builtin which TRAPUSR1)
+      typeset -g AGKOZAK_TRAPUSR1_FUNCTION="$(builtin which TRAPUSR1)"
       ;;
   esac
 }

@@ -119,8 +119,8 @@ _agkozak_is_ssh() {
 ############################################################
 # Emulation of bash's PROMPT_DIRTRIM for zsh
 #
-# In $PWD, substitute $HOME with ~; if the remainder of the
-# $PWD has more than a certain number of directory elements
+# In PWD, substitute HOME with ~; if the remainder of the
+# PWD has more than a certain number of directory elements
 # to display (default: 2), abbreviate it with '...', e.g.
 #
 #   $HOME/dotfiles/polyglot/img
@@ -129,19 +129,49 @@ _agkozak_is_ssh() {
 #
 #   ~/.../polyglot/img
 #
+# If AGKOZAK_NAMED_DIRS is set to 1, ZSH named directories
+# will be displayed using their aliases in the prompt.
+#
 # Arguments:
 #   $1 Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
   [[ $1 -ge 1 ]] || set 2
-  local zsh_pwd
-  zsh_pwd=$(print -Pn '%~')
-  case $zsh_pwd in
-    \~) print -Pn $zsh_pwd ;;
-    \~/*) print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)" ;;
-    \~*) print -Pn "%($(($1 + 2))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
-    *) print -Pn "%($(($1 + 1))/|.../%${1}d|%d)" ;;
-  esac
+  if (( AGKOZAK_NAMED_DIRS )); then
+    local zsh_pwd
+    zsh_pwd=$(print -Pn '%~')
+    case $zsh_pwd in
+      \~) print -Pn $zsh_pwd ;;
+      \~/*) print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)" ;;
+      \~*) print -Pn "%($(($1 + 2))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
+      *) print -Pn "%($(($1 + 1))/|.../%${1}d|%d)" ;;
+    esac
+  else
+    local dir dir_minus_slashes dir_count
+    dir=${PWD#$HOME}
+    dir_minus_slashes=${dir//\//}
+    dir_count=$((${#dir} - ${#dir_minus_slashes}))
+
+    if (( dir_count <= $1 )); then
+      case $PWD in
+        ${HOME}*) printf '~%s' "${PWD#$HOME}" ;;
+        *) print -n "$PWD" ;;
+      esac
+    else
+      local lopped_path i
+      lopped_path=${PWD#$HOME}
+      i=0
+      while (( i != $1 )); do
+        lopped_path=${lopped_path%\/*}
+        (( i++ ))
+      done
+
+      case $PWD in
+        ${HOME}*) printf '~/...%s' "${dir#${lopped_path}}" ;;
+        *) printf '...%s' "${PWD#${lopped_path}}" ;;
+      esac
+    fi
+  fi
 }
 
 ############################################################

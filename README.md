@@ -130,14 +130,14 @@ If the current directory contains a Git repository, the agkozak ZSH Prompt displ
 
 Git Status | Symbol
 --- | ---
-Modified | !
-Deleted | x
-Untracked | ?
-New file(s) | +
-Ahead | \*
-Renamed | >
+Diverged | &\*
 Behind | &
-Diverged | &*
+Ahead | \*
+New file(s) | +
+Deleted | x
+Modified | !
+Renamed | >
+Untracked | ?
 
 ## Exit Status
 

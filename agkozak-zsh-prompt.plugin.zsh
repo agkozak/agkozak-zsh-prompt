@@ -129,8 +129,9 @@ _agkozak_is_ssh() {
 #
 #   ~/.../polyglot/img
 #
-# If AGKOZAK_NAMED_DIRS is set to 1, ZSH named directories
-# will be displayed using their aliases in the prompt.
+# Named directories will by default be displayed using their
+# aliases in the prompt. Set AGKOZAK_NAMED_DIRS=0 to have
+# them displayed just like any other directory.
 #
 # Arguments:
 #   $1 Number of directory elements to display (default: 2)

@@ -252,19 +252,22 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS
 ###########################################################
 
+typeset -g AGKOZAK_PROMPT_DIR="${0:A:h}"
+
 ###########################################################
 # If zsh-async has not already been loaded, try to load it;
 # the exit code should indicate success or failure
 #
 # Globals:
 #   AGKOZAK_PROMPT_DEBUG
+#   AGKOZAK_PROMPT_DIR
 ###########################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
     if (( AGKOZAK_PROMPT_DEBUG )); then
-      source "${0:A:h}/lib/async.zsh"
+      source "${AGKOZAK_PROMPT_DIR}/lib/async.zsh"
     else
-      source "${0:A:h}/lib/async.zsh" &> /dev/null
+      source "${AGKOZAK_PROMPT_DIR}/lib/async.zsh" &> /dev/null
     fi
     local success=$?
     return $success

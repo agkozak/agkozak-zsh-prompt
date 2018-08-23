@@ -100,8 +100,18 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 #   AGKOZAK_HAS_COLORS
 ###########################################################
 _agkozak_has_colors() {
-  typeset -g AGKOZAK_HAS_COLORS=${AGKOZAK_HAS_COLORS:-$(( $(tput colors) >= 8 ? 1 : 0 ))}
-  (( AGKOZAK_HAS_COLORS ))
+  if (( $+AGKOZAK_HAS_COLORS )); then
+    (( AGKOZAK_HAS_COLORS )) 
+  else
+    local colors
+    if [[ $OSTYPE == (*bsd*|dragonfly*) ]]; then
+      colors=$(tput Co)
+    else
+      colors=$(tput colors)
+    fi
+    typeset -g AGKOZAK_HAS_COLORS=$(( colors >= 8 ? 1 : 0 ))
+    (( AGKOZAK_HAS_COLORS ))
+  fi
 }
 
 ############################################################

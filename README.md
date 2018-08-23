@@ -122,11 +122,12 @@ If you would like to display a different number of directory elements, set the e
 
 ![AGKOZAK_PROMPT_DIRTRIM](img/AGKOZAK_PROMPT_DIRTRIM.png)
 
-By default, [static named directories created with `hash -d`](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Static-named-directories) will be displayed in the prompt just like any others. If you use them extensively, though, you may opt to set `AGKOZAK_NAMED_DIRS=1`. The prompt will then use the named directories as base directories for its path. For example, if you execute
+By default, [static named directories created with `hash -d`](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Static-named-directories) will be used as base directories in the path the prompt displays. For example,
+if you have executed
 
     hash -d wp-content=/var/www/html/wp-content
 
-then `/var/www/html/wp-content` will appear in the prompt as `~wp-content`, and `/var/www/html/wp-content/plugins/redirection/actions` will be represented as `~wp-content/.../redirection/actions`.
+then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `/var/www/html/wp-content/plugins/redirection/actions` will be represented as `~wp-content/.../redirection/actions`. If you prefer to have named directories displayed just like any others, set `AGKOZAK_NAMED_DIRS=0`.
 
 ## Git Branch and Status
 

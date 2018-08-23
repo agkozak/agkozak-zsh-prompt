@@ -139,14 +139,16 @@ _agkozak_is_ssh() {
 #
 #   ~/.../polyglot/img
 #
-# If AGKOZAK_NAMED_DIRS is set to 1, ZSH named directories
-# will be displayed using their aliases in the prompt.
+# Named directories will by default be displayed using their
+# aliases in the prompt. Set AGKOZAK_NAMED_DIRS=0 to have
+# them displayed just like any other directory.
 #
 # Arguments:
 #   $1 Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
   [[ $1 -ge 1 ]] || set 2
+  typeset -g AGKOZAK_NAMED_DIRS=${AGKOZAK_NAMED_DIRS:-1}
   if (( AGKOZAK_NAMED_DIRS )); then
     local zsh_pwd
     zsh_pwd=$(print -Pn '%~')
@@ -261,19 +263,22 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS
 ###########################################################
 
+typeset -g AGKOZAK_PROMPT_DIR="${0:A:h}"
+
 ###########################################################
 # If zsh-async has not already been loaded, try to load it;
 # the exit code should indicate success or failure
 #
 # Globals:
 #   AGKOZAK_PROMPT_DEBUG
+#   AGKOZAK_PROMPT_DIR
 ###########################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
     if (( AGKOZAK_PROMPT_DEBUG )); then
-      source "${0:A:h}/lib/async.zsh"
+      source "${AGKOZAK_PROMPT_DIR}/lib/async.zsh"
     else
-      source "${0:A:h}/lib/async.zsh" &> /dev/null
+      source "${AGKOZAK_PROMPT_DIR}/lib/async.zsh" &> /dev/null
     fi
     local success=$?
     return $success

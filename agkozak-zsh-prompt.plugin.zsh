@@ -329,18 +329,14 @@ _agkozak_async_init() {
 
   # Otherwise, first provide for certain quirky systems
   else
-    local sysinfo
-    sysinfo=$(uname -a)
 
     # WSL should have BG_NICE disabled, as it does not have a Linux kernel
-    #
-    # TODO: zsh-async works perfectly on recent versions of WSL, but it might
-    # be worth knowing if it has always done so in the past
-    [[ $sysinfo == *Microsoft*Linux ]] && unsetopt BG_NICE
+    [[ $OSTYPE = 'linux-gnu' ]] && grep Microsoft /proc/version &> /dev/null \
+      && unsetopt BG_NICE
 
     # On MSYS2, zsh-async won't load; on Cygwin it loads but doesn't work
     # (see https://github.com/sindresorhus/pure/issues/141)
-    if [[ $sysinfo == *Msys ]] || [[ $sysinfo == *Cygwin ]]; then
+    if [[ $OSTYPE == (msys|cygwin) ]]; then
       typeset -g AGKOZAK_ASYNC_METHOD='usr1'
 
     # Avoid loading zsh-async on zsh v5.0.2

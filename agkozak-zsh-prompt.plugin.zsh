@@ -107,13 +107,14 @@ _agkozak_has_colors() {
       *-256color) typeset -g AGKOZAK_HAS_COLORS=1 ;;
       vt100|dumb) typeset -g AGKOZAK_HAS_COLORS=0 ;;
       *)
-      local colors
-      case $OSTYPE in
-        *bsd*|dragonfly*) colors=$(tput Co) ;;
-        *) colors=$(tput colors) ;;
-      esac
-      typeset -g AGKOZAK_HAS_COLORS=$(( colors >= 8 ))
-  esac
+        local colors
+        case $OSTYPE in
+          *bsd*|dragonfly*) colors=$(tput Co) ;;
+          *) colors=$(tput colors) ;;
+        esac
+        typeset -g AGKOZAK_HAS_COLORS=$(( colors >= 8 ))
+        ;;
+    esac
   fi
   (( AGKOZAK_HAS_COLORS ))
 }

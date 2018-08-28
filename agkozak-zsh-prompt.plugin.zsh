@@ -197,12 +197,12 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 _agkozak_branch_status() {
   local ref branch
-  ref=$(git symbolic-ref --quiet HEAD 2> /dev/null)
+  ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
   case $? in        # See what the exit code is.
     0) ;;           # $ref contains the name of a checked-out branch.
     128) return ;;  # No Git repository here.
     # Otherwise, see if HEAD is in detached state.
-    *) ref=$(git rev-parse --short HEAD 2> /dev/null) || return ;;
+    *) ref=$(command git rev-parse --short HEAD 2> /dev/null) || return ;;
   esac
   branch=${ref#refs/heads/}
   [[ -n $branch ]] && printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
@@ -418,7 +418,7 @@ _agkozak_async_init() {
           _agkozak_usr1_async_worker &!
           typeset -g AGKOZAK_USR1_ASYNC_WORKER=$!
         else
-          echo 'agkozak-zsh-prompt: TRAPUSR1 has been redefined. Disabling asynchronous mode.' >&2
+          _agkozak_debug_print 'TRAPUSR1 has been redefined. Disabling asynchronous mode.'
           typeset -g AGKOZAK_ASYNC_METHOD='none'
           psvar[3]="$(_agkozak_branch_status)"
         fi
@@ -656,7 +656,6 @@ _agkozak_precmd() {
 }
 
 # Clean up environment
-unfunction _agkozak_load_async_lib _agkozak_has_usr1 \
-  _agkozak_is_ssh
+unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_is_ssh
 
 # vim: ts=2:et:sts=2:sw=2:

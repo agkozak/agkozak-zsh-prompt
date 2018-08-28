@@ -61,7 +61,7 @@ AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
 #   $1  Message to send to STDERR
 ############################################################
 _agkozak_debug_print() {
-  (( AGKOZAK_PROMPT_DEBUG )) && print "$1" >&2
+  (( AGKOZAK_PROMPT_DEBUG )) && print "agkozak-zsh-prompt: $1" >&2
 }
 
 if (( AGKOZAK_PROMPT_DEBUG )); then
@@ -296,13 +296,13 @@ _agkozak_load_async_lib() {
 ###########################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
-    _agkozak_debug_print 'agkozak-zsh-prompt: TRAPUSR1 already defined.'
+    _agkozak_debug_print 'TRAPUSR1 already defined.'
     false
   else
     case $signals in    # Array containing names of available signals
       *USR1*) true ;;
       *)
-        _agkozak_debug_print 'agkozak-zsh-prompt: SIGUSR1 not available.'
+        _agkozak_debug_print 'SIGUSR1 not available.'
         false
         ;;
     esac
@@ -652,7 +652,7 @@ agkozak_zsh_prompt() {
 
   fi
 
-  _agkozak_debug_print "agkozak-zsh-prompt: Using async method: $AGKOZAK_ASYNC_METHOD"
+  _agkozak_debug_print "Using async method: $AGKOZAK_ASYNC_METHOD"
 }
 
 agkozak_zsh_prompt

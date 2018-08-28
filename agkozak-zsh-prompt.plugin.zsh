@@ -574,7 +574,7 @@ _agkozak_precmd() {
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
-agkozak_zsh_prompt() {
+() {
 
   _agkozak_async_init
 
@@ -654,8 +654,6 @@ agkozak_zsh_prompt() {
 
   _agkozak_debug_print "Using async method: $AGKOZAK_ASYNC_METHOD"
 }
-
-agkozak_zsh_prompt
 
 # Clean up environment
 unfunction _agkozak_load_async_lib _agkozak_has_usr1 \

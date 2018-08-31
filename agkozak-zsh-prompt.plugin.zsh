@@ -297,13 +297,13 @@ _agkozak_load_async_lib() {
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
     _agkozak_debug_print 'TRAPUSR1 already defined.'
-    false
+    return 1
   else
     case $signals in    # Array containing names of available signals
-      *USR1*) true ;;
+      *USR1*) return 0 ;;
       *)
         _agkozak_debug_print 'SIGUSR1 not available.'
-        false
+        return 1
         ;;
     esac
   fi

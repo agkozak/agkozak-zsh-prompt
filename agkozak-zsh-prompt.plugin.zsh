@@ -109,7 +109,7 @@ _agkozak_has_colors() {
       *)
         local colors
         case $OSTYPE in
-          *bsd*|dragonfly*) colors=$(tput Co) ;;
+          freebsd*|dragonfly*) colors=$(tput Co) ;;
           *) colors=$(tput colors) ;;
         esac
         typeset -g AGKOZAK_HAS_COLORS=$(( colors >= 8 ))

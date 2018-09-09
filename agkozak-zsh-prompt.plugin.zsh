@@ -604,8 +604,11 @@ _agkozak_precmd() {
     psvar[1]=''
   fi
 
+  # The DragonFly BSD console
+  [[ $TERM == 'cons25' ]] && unset zle_bracketed_paste
+
   # The Emacs shell has only limited support for some ZSH features
-  if [[ $TERM = 'dumb' ]]; then
+  if [[ $TERM == 'dumb' ]]; then
     # Avoid the ugly ^[[?2004h control sequence
     unset zle_bracketed_paste
 

@@ -599,7 +599,7 @@ _agkozak_precmd() {
 
   # Only display the HOSTNAME for an ssh connection or for a superuser
   if _agkozak_is_ssh || (( EUID == 0 )); then
-    psvar[1]="$(print -Pn "@%m")"
+    psvar[1]="@${HOST%%.*}"
   else
     psvar[1]=''
   fi

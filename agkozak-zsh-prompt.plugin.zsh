@@ -164,10 +164,8 @@ _agkozak_prompt_dirtrim() {
       *) print -Pn "%($(($1 + 1))/|.../%${1}d|%d)" ;;
     esac
   else
-    local dir dir_minus_slashes dir_count
-    dir=${PWD#$HOME}
-    dir_minus_slashes=${dir//\//}
-    dir_count=$((${#dir} - ${#dir_minus_slashes}))
+    # The number of directory elements is the number of slashes in ${PWD#$HOME}
+    local dir_count=$((${#${PWD#$HOME}} - ${#${${PWD#HOME}//\//}}))
 
     if (( dir_count <= $1 )); then
       case $PWD in

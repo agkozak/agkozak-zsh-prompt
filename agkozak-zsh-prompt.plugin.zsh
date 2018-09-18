@@ -536,7 +536,7 @@ _agkozak_precmd() {
 
   if (( AGKOZAK_BLANK_LINES )); then
     if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
-      echo
+      print
     fi
     typeset -g AGKOZAK_FIRST_PROMPT_PRINTED=1
   fi
@@ -577,12 +577,8 @@ _agkozak_precmd() {
   _agkozak_async_init
 
   case $AGKOZAK_ASYNC_METHOD in
-    'zsh-async')
-      async_init
-      ;;
-    'usr1')
-      typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
-      ;;
+    'zsh-async') async_init ;;
+    'usr1') typeset -g AGKOZAK_USR1_ASYNC_WORKER=0 ;;
   esac
 
   zle -N zle-keymap-select

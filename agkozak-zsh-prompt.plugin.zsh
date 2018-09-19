@@ -164,17 +164,23 @@ _agkozak_prompt_dirtrim() {
       *) print -Pn "%($(($1 + 1))/|.../%${1}d|%d)" ;;
     esac
   else
+    local dir dir_count
+    case $HOME in
+      /) dir=${PWD} ;;
+      *) dir=${PWD#$HOME} ;;
+    esac
     # The number of directory elements is the number of slashes in ${PWD#$HOME}
-    local dir_count=$((${#${PWD#$HOME}} - ${#${${PWD#HOME}//\//}}))
+    dir_count=$((${#dir} - ${#${dir//\//}}))
 
     if (( dir_count <= $1 )); then
       case $PWD in
-        ${HOME}*) printf '~%s' "${PWD#$HOME}" ;;
+        ${HOME}) printf '%s' '~' ;;
+        ${HOME}*) printf '~%s' "${dir}" ;;
         *) print -n "$PWD" ;;
       esac
     else
       local lopped_path i
-      lopped_path=${PWD#$HOME}
+      lopped_path=${dir}
       i=0
       while (( i != $1 )); do
         lopped_path=${lopped_path%\/*}

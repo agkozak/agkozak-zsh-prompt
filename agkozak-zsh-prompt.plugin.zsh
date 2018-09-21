@@ -604,14 +604,15 @@ _agkozak_precmd() {
     psvar[1]=''
   fi
 
-  # The DragonFly BSD console
-  [[ $TERM == 'cons25' ]] && unset zle_bracketed_paste
-
-  # The Emacs shell has only limited support for some ZSH features
-  if [[ $TERM == 'dumb' ]]; then
-    # Avoid the ugly ^[[?2004h control sequence
+  # The DragonFly BSD console and Emacs shell can't handle bracketed paste.
+  # Let's avoid the ugly ^[[?2004 control sequence.
+  if [[ $TERM == 'cons25' ]] || [[ $TERM == 'dumb' ]]; then
     unset zle_bracketed_paste
+  fi
 
+  # The Emacs shell has only limited support for some ZSH features, so we use a
+  # more limited prompt.
+  if [[ $TERM == 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
     PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'

@@ -272,6 +272,9 @@ TRAPWINCH() {
 # ASYNCHRONOUS FUNCTIONS
 ###########################################################
 
+# Standarized $0 handling, follows:
+# https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc
+0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 typeset -g AGKOZAK_PROMPT_DIR="${0:A:h}"
 
 ###########################################################
@@ -328,7 +331,7 @@ _agkozak_async_init() {
 
   # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
   [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
-  if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (zsh-async|usr1|none) ]]; then
+  if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
     typeset -g AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
 
   # Otherwise, first provide for certain quirky systems
@@ -376,6 +379,32 @@ _agkozak_async_init() {
   fi
 
   case $AGKOZAK_ASYNC_METHOD in
+    subst-async)
+      _agkozak_subst_async() {
+        typeset -g AGKOZAK_ASYNC_FD=13371
+        exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+        command true # a workaround of Zsh bug
+        zle -F -w "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
+      }
+
+      _agkozak_zsh_subst_async_callback() {
+        local FD="$1" response
+
+        # Read data from $FD descriptor
+        IFS='' builtin read -rs -d $'\0' -u "$FD" response
+
+        # Withdraw callback, close the file-descriptor
+        zle -F -w ${FD}; exec {FD}<&-
+
+        # Make the changes visible
+        psvar[3]="$response"
+        zle && zle reset-prompt
+      }
+
+      # Option -w to `zle -F' requires the callback to be a widget
+      zle -N _agkozak_zsh_subst_async_callback
+      ;;
+
     zsh-async)
 
       ########################################################
@@ -529,6 +558,7 @@ _agkozak_precmd() {
   psvar[3]=''
 
   case $AGKOZAK_ASYNC_METHOD in
+    'subst-async') _agkozak_subst_async ;;
     'zsh-async') _agkozak_zsh_async ;;
     'usr1') _agkozak_usr1_async ;;
     *) psvar[3]="$(_agkozak_branch_status)" ;;
@@ -583,6 +613,7 @@ _agkozak_precmd() {
   _agkozak_async_init
 
   case $AGKOZAK_ASYNC_METHOD in
+    'subst-async') ;;
     'zsh-async') async_init ;;
     'usr1') typeset -g AGKOZAK_USR1_ASYNC_WORKER=0 ;;
   esac

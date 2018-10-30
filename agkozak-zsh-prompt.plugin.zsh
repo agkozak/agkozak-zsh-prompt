@@ -341,14 +341,8 @@ _agkozak_async_init() {
     [[ $OSTYPE = 'linux-gnu' ]] && grep Microsoft /proc/version &> /dev/null \
       && unsetopt BG_NICE
 
-    # On MSYS2, zsh-async won't load; on Cygwin it loads but doesn't work
-    # (see https://github.com/sindresorhus/pure/issues/141)
-    if [[ $OSTYPE == (msys|cygwin) ]]; then
-      typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-
-    # Avoid loading zsh-async on zsh v5.0.2
-    # (see https://github.com/mafredri/zsh-async/issues/12)
-    elif [[ $ZSH_VERSION == '5.0.2' ]]; then
+    # subst-async doesn't work on ZSH v5.0.2
+    if [[ $ZSH_VERSION == '5.0.2' ]]; then
       if _agkozak_has_usr1; then
         typeset -g AGKOZAK_ASYNC_METHOD='usr1'
       else
@@ -360,26 +354,16 @@ _agkozak_async_init() {
     elif [[ $TERM == 'dumb' ]]; then
       typeset -g AGKOZAK_ASYNC_METHOD='none'
 
-    # After all the preceding considerations, try loading zsh-async
-    elif _agkozak_load_async_lib; then
-      typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
-
-    # If, for some reason, zsh-async will not load
+    # Otherwise use subst-async
     else
-
-      # Try usr1
-      if _agkozak_has_usr1; then
-        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-
-      # Failing all else, fall back to synchronous mode
-      else
-        typeset -g AGKOZAK_ASYNC_METHOD='none'
-      fi
+      typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
     fi
   fi
 
   case $AGKOZAK_ASYNC_METHOD in
+
     subst-async)
+
       _agkozak_subst_async() {
         typeset -g AGKOZAK_ASYNC_FD=13371
         case $OSTYPE in
@@ -390,7 +374,7 @@ _agkozak_async_init() {
             exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
             ;;
         esac
-        command true # a workaround of Zsh bug
+        command true  # A workaround of a ZSH bug
         zle -F -w "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
       }
 
@@ -400,7 +384,7 @@ _agkozak_async_init() {
         # Read data from $FD descriptor
         IFS='' builtin read -rs -d $'\0' -u "$FD" response
 
-        # Withdraw callback, close the file-descriptor
+        # Withdraw callback and close the file descriptor
         zle -F -w ${FD}; exec {FD}<&-
 
         # Make the changes visible

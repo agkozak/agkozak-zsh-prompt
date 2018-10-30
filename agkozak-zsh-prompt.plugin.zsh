@@ -367,7 +367,8 @@ _agkozak_async_init() {
       _agkozak_subst_async() {
         typeset -g AGKOZAK_ASYNC_FD=13371
         case $OSTYPE in
-          solaris*)
+          # <() does not work perfectly on some systems
+          msys|cygwin|solaris*)
             exec {AGKOZAK_ASYNC_FD}< =( _agkozak_branch_status )
             ;;
           *)

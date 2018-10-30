@@ -382,7 +382,14 @@ _agkozak_async_init() {
     subst-async)
       _agkozak_subst_async() {
         typeset -g AGKOZAK_ASYNC_FD=13371
-        exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+        case $OSTYPE in
+          solaris*)
+            exec {AGKOZAK_ASYNC_FD}< =( _agkozak_branch_status )
+            ;;
+          *)
+            exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+            ;;
+        esac
         command true # a workaround of Zsh bug
         zle -F -w "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
       }

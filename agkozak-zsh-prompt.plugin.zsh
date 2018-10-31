@@ -218,7 +218,7 @@ _agkozak_branch_status() {
 
   if (( AGKOZAK_PROMPT_DEBUG )); then
     typeset -g AGKOZAK_PROMPT_BENCHMARK_RESULTS=" $(($EPOCHREALTIME - $AGKOZAK_PROMPT_BENCHMARK_START))"
-    AGKOZAK_PROMPT_BENCHMARK_RESULTS=" ${$(($(printf '%.3g' "$AGKOZAK_PROMPT_BENCHMARK_RESULTS") * 1000))%.} ms"
+    AGKOZAK_PROMPT_BENCHMARK_RESULTS=" ${$(($AGKOZAK_PROMPT_BENCHMARK_RESULTS * 1000))%.*} ms"
   fi
 
   [[ -n $branch ]] && printf ' (%s%s)%s' \

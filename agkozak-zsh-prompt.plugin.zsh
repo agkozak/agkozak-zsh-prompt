@@ -573,7 +573,7 @@ _agkozak_precmd() {
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
-  if (( AGKOZAK_MULTILINE == 0 )); then
+  if (( AGKOZAK_MULTILINE == 0 )) && [[ -z $INSIDE_EMACS ]]; then
     typeset -g AGKOZAK_PROMPT_WHITESPACE=' '
   else
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
@@ -660,7 +660,7 @@ _agkozak_precmd() {
     PROMPT+='%# '
   else
     # Avoid continuation lines in Emacs term and ansi-term
-    [[ -n $INSIDE_EMACS ]] && ZLE_RPROMPT_INDENT=2
+    [[ -n $INSIDE_EMACS ]] && ZLE_RPROMPT_INDENT=3
 
     # When VSCode is using the DOM renderer, the right prompt overflows off the
     # side of the screen

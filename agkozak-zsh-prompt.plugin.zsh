@@ -354,8 +354,23 @@ _agkozak_async_init() {
     [[ $OSTYPE = 'linux-gnu' ]] && grep Microsoft /proc/version &> /dev/null \
       && unsetopt BG_NICE
 
+    # TODO: <() process substituion doesn't work perfectly on MSYS2, Cygwin, or
+    # Solaris, and =() is at present less than desirable; for now, the following
+    # workaround should maintain the performance found in agkozak-zsh-prompt
+    # v2.3.3
+    if [[ $OSTYPE == (msys|cygwin) ]]; then
+      typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+    elif [[ $OSTYPE == solaris* ]]; then
+      if _agkozak_load_async_lib; then
+        typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
+      elif _agkozak_has_usr1; then
+        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+      else
+        typeset -g AGKOZAK_ASYNC_METHOD='none'
+      fi
+
     # subst-async doesn't work on ZSH v5.0.2
-    if [[ $ZSH_VERSION == '5.0.2' ]]; then
+    elif [[ $ZSH_VERSION == '5.0.2' ]]; then
       if _agkozak_has_usr1; then
         typeset -g AGKOZAK_ASYNC_METHOD='usr1'
       else

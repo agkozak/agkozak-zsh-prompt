@@ -450,6 +450,14 @@ _agkozak_async_init() {
 
     usr1)
 
+      # On MSYS2 and Cygwin, clean up temporary files more than one hour old
+      if [[ $OSTYPE == (msys|cygwin) ]]; then
+        () {
+          setopt LOCAL_OPTIONS NO_NOMATCH
+          command rm /tmp/agkozak_zsh_prompt_*(mh-1) &> /dev/null
+        }
+      fi
+
       ########################################################
       # precmd uses this function to launch async workers to
       # calculate the Git status. It can tell if anything has

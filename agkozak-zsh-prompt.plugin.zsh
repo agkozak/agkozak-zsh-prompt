@@ -487,6 +487,7 @@ _agkozak_async_init() {
       ########################################################
       _agkozak_usr1_async_worker() {
         # Save Git branch status to temporary file
+        setopt LOCAL_OPTIONS CLOBBER
         _agkozak_branch_status > /tmp/agkozak_zsh_prompt_$$
 
         # Signal parent process

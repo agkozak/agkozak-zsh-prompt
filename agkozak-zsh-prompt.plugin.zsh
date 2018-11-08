@@ -47,6 +47,8 @@
 #                                           thereof
 # psvar[3]      %3v                         Current working Git branch, along
 #                                           with indicator of changes made
+# psvar[4]      %4v                         Equals 'vicmd' when vi command mode
+#                                           is enabled; otherwise empty
 
 # Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
 AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
@@ -256,20 +258,12 @@ _agkozak_branch_changes() {
 }
 
 ############################################################
-# When the user enters vi command mode, the % or # in the
-# prompt changes into a colon
-############################################################
-_agkozak_vi_mode_indicator() {
-  case $KEYMAP in
-    vicmd) print -n ':' ;;
-    *) print -n '%#' ;;
-  esac
-}
-
-############################################################
-# Redraw the prompt when the vi mode changes
+# Redraw the prompt when the vi mode changes. When the user
+# enters vi command mode, the % or # in the prompt changes
+# to a colon
 ############################################################
 zle-keymap-select() {
+  [[ $KEYMAP == 'vicmd' ]] && psvar[4]='vicmd' || psvar[4]=''
   zle reset-prompt
   zle -R
 }
@@ -691,7 +685,7 @@ _agkozak_precmd() {
       PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
       PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
       PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
-      PROMPT+='$(_agkozak_vi_mode_indicator) '
+      PROMPT+='%(4V.:.%#) '
 
       typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
       typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}

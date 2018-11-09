@@ -164,7 +164,7 @@ _agkozak_prompt_dirtrim() {
   typeset -g AGKOZAK_NAMED_DIRS=${AGKOZAK_NAMED_DIRS:-1}
   if (( AGKOZAK_NAMED_DIRS )); then
     local zsh_pwd
-    zsh_pwd=$(print -Pn '%~')
+    print -v zsh_pwd -Pn '%~'
     case $zsh_pwd in
       \~) print -Pn $zsh_pwd ;;
       \~/*) print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)" ;;

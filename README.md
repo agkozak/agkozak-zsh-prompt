@@ -127,7 +127,7 @@ if you have executed
 
     hash -d wp-content=/var/www/html/wp-content
 
-then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `/var/www/html/wp-content/plugins/redirection/actions` will be represented as `~wp-content/.../redirection/actions`. If you prefer to have named directories displayed just like any others, set `AGKOZAK_NAMED_DIRS=0`. There is a performance benefit (particularly in MSYS2 and in Cygwin) to doing the latter.
+then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `/var/www/html/wp-content/plugins/redirection/actions` will be represented as `~wp-content/.../redirection/actions`. If you prefer to have named directories displayed just like any others, set `AGKOZAK_NAMED_DIRS=0`.
 
 ## Git Branch and Status
 

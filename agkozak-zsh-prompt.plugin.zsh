@@ -206,6 +206,10 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 # Display current branch name, followed by symbols
 # representing changes to the working copy
+#
+# Globals:
+#   AGKOZAK_PROMPT_BENCHMARK_RESULTS
+#   AGKOZAK_PROMPT_BENCHMARK_START
 ############################################################
 _agkozak_branch_status() {
   local ref branch
@@ -559,6 +563,8 @@ _agkozak_strip_colors() {
 # 3) If AGKOZAK_BLANK_LINES=1, prints blank line between prompts
 #
 # Globals:
+#   AGKOZAK_PROMPT_DEBUG
+#   AGKOZAK_PROMPT_BENCHMARK_START
 #   AGKOZAK_PROMPT_DIRTRIM
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_MULTILINE

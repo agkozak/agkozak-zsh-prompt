@@ -388,16 +388,16 @@ _agkozak_async_init() {
 
       _agkozak_subst_async() {
         typeset -g AGKOZAK_ASYNC_FD=13371
-        case $OSTYPE in
-          # Use =() as a workaround on systems where <() doesn't work perfectly
-          # (uses a temporary file)
-          msys|cygwin|solaris*)
-            exec {AGKOZAK_ASYNC_FD}< =( _agkozak_branch_status )
-            ;;
-          *)
-            exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
-            ;;
-        esac
+        # case $OSTYPE in
+        #   # Use =() as a workaround on systems where <() doesn't work perfectly
+        #   # (uses a temporary file)
+        #   msys|cygwin|solaris*)
+        #     exec {AGKOZAK_ASYNC_FD}< =( _agkozak_branch_status )
+        #     ;;
+        #   *)
+        exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+            # ;;
+        # esac
         # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
         command true
         zle -F -w "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback

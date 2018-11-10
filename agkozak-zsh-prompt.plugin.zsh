@@ -364,21 +364,6 @@ _agkozak_async_init() {
         typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
       fi
 
-    # TODO: <() process substituion doesn't work perfectly on MSYS2, Cygwin, or
-    # Solaris, and =() is at present less than desirable; for now, the following
-    # workaround should maintain the performance found in agkozak-zsh-prompt
-    # v2.3.3
-    # elif [[ $OSTYPE == (msys|cygwin) ]]; then
-    #   typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-    # elif [[ $OSTYPE == solaris* ]]; then
-    #   if _agkozak_load_async_lib; then
-    #     typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
-    #   elif _agkozak_has_usr1; then
-    #     typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-    #   else
-    #     typeset -g AGKOZAK_ASYNC_METHOD='none'
-    #   fi
-
     # subst-async doesn't work on ZSH v5.0.2
     elif [[ $ZSH_VERSION == '5.0.2' ]]; then
       if _agkozak_has_usr1; then
@@ -386,6 +371,12 @@ _agkozak_async_init() {
       else
         typeset -g AGKOZAK_ASYNC_METHOD='none'
       fi
+
+    # TODO: Older versions of ZSH (including versions 4.3.11-5.0.1 -- keep
+    # testing!) don't seem to like the syntax zle -F -w
+    elif ! is-at-least 5.0.8; then
+      _agkozak_load_async_lib
+      AGKOZAK_ASYNC_METHOD='zsh-async'
 
     # Asynchronous methods don't work in Emacs shell mode (but they do in term
     # and ansi-term)

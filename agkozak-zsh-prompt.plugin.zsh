@@ -372,9 +372,8 @@ _agkozak_async_init() {
         typeset -g AGKOZAK_ASYNC_METHOD='none'
       fi
 
-    # TODO: Older versions of ZSH (including versions 4.3.11-5.0.1 -- keep
-    # testing!) don't seem to like the syntax zle -F -w
-    elif ! is-at-least 5.0.8; then
+    # TODO: Versions of ZSH earlier than 5.0.3 don't seem to like `zle -F -w'
+    elif ! is-at-least 5.0.3; then
       _agkozak_load_async_lib
       AGKOZAK_ASYNC_METHOD='zsh-async'
 

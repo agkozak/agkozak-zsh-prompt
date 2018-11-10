@@ -211,6 +211,7 @@ _agkozak_prompt_dirtrim() {
 # representing changes to the working copy
 #
 # Globals:
+#   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_BENCHMARK_RESULTS
 #   AGKOZAK_PROMPT_BENCHMARK_START
 ############################################################

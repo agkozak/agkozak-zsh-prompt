@@ -348,15 +348,25 @@ _agkozak_async_init() {
   # Otherwise, first provide for certain quirky systems
   else
 
-    # WSL should have BG_NICE disabled, as it does not have a Linux kernel
-    [[ $OSTYPE = 'linux-gnu' ]] && grep Microsoft /proc/version &> /dev/null \
-      && unsetopt BG_NICE
+    # WSL
+    if [[ $OSTYPE == 'linux-gnu' ]]; then
+      if grep Microsoft /proc/version &> /dev/null; then
+        # WSL should have BG_NICE disabled, as it does not have a Linux kernel
+        unsetopt BG_NICE
+        if xdpyinfo &> /dev/null; then
+          # TODO: subst-async doesn't work well in a WSL Gnome terminal
+          _agkozak_load_async_lib
+          typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
+        else
+          typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
+        fi
+      fi
 
     # TODO: <() process substituion doesn't work perfectly on MSYS2, Cygwin, or
     # Solaris, and =() is at present less than desirable; for now, the following
     # workaround should maintain the performance found in agkozak-zsh-prompt
     # v2.3.3
-    if [[ $OSTYPE == (msys|cygwin) ]]; then
+    elif [[ $OSTYPE == (msys|cygwin) ]]; then
       typeset -g AGKOZAK_ASYNC_METHOD='usr1'
     elif [[ $OSTYPE == solaris* ]]; then
       if _agkozak_load_async_lib; then

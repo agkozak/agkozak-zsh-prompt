@@ -349,17 +349,16 @@ _agkozak_async_init() {
   else
 
     # WSL
-    if [[ $OSTYPE == 'linux-gnu' ]]; then
-      if grep Microsoft /proc/version &> /dev/null; then
-        # WSL should have BG_NICE disabled, as it does not have a Linux kernel
-        unsetopt BG_NICE
-        if xdpyinfo &> /dev/null; then
-          # TODO: subst-async doesn't work well in a WSL Gnome terminal
-          _agkozak_load_async_lib
-          typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
-        else
-          typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
-        fi
+    # TODO: Try to eliminate use of grep
+    if [[ $OSTYPE == 'linux-gnu' ]] && grep Microsoft /proc/version &> /dev/null; then
+      # WSL should have BG_NICE disabled, as it does not have a Linux kernel
+      unsetopt BG_NICE
+      if xdpyinfo &> /dev/null; then
+        # TODO: subst-async doesn't work well in a WSL Gnome terminal
+        _agkozak_load_async_lib
+        typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
+      else
+        typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
       fi
 
     # TODO: <() process substituion doesn't work perfectly on MSYS2, Cygwin, or

@@ -585,6 +585,7 @@ _agkozak_precmd() {
 
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
   psvar[3]=''
+  psvar[4]=''
 
   case $AGKOZAK_ASYNC_METHOD in
     'subst-async') _agkozak_subst_async ;;

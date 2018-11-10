@@ -366,16 +366,16 @@ _agkozak_async_init() {
     # Solaris, and =() is at present less than desirable; for now, the following
     # workaround should maintain the performance found in agkozak-zsh-prompt
     # v2.3.3
-    elif [[ $OSTYPE == (msys|cygwin) ]]; then
-      typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-    elif [[ $OSTYPE == solaris* ]]; then
-      if _agkozak_load_async_lib; then
-        typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
-      elif _agkozak_has_usr1; then
-        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-      else
-        typeset -g AGKOZAK_ASYNC_METHOD='none'
-      fi
+    # elif [[ $OSTYPE == (msys|cygwin) ]]; then
+    #   typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+    # elif [[ $OSTYPE == solaris* ]]; then
+    #   if _agkozak_load_async_lib; then
+    #     typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
+    #   elif _agkozak_has_usr1; then
+    #     typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+    #   else
+    #     typeset -g AGKOZAK_ASYNC_METHOD='none'
+    #   fi
 
     # subst-async doesn't work on ZSH v5.0.2
     elif [[ $ZSH_VERSION == '5.0.2' ]]; then
@@ -402,16 +402,15 @@ _agkozak_async_init() {
 
       _agkozak_subst_async() {
         typeset -g AGKOZAK_ASYNC_FD=13371
-        # case $OSTYPE in
-        #   # Use =() as a workaround on systems where <() doesn't work perfectly
-        #   # (uses a temporary file)
-        #   msys|cygwin|solaris*)
-        #     exec {AGKOZAK_ASYNC_FD}< =( _agkozak_branch_status )
-        #     ;;
-        #   *)
-        exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
-            # ;;
-        # esac
+        case $OSTYPE in
+          # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
+          msys|cygwin|solaris*)
+            exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status; command true )
+            ;;
+          *)
+            exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+            ;;
+        esac
         # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
         command true
         zle -F -w "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback

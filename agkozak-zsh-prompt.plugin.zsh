@@ -365,19 +365,6 @@ _agkozak_async_init() {
         typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
       fi
 
-    # subst-async doesn't work on ZSH v5.0.2
-    # elif [[ $ZSH_VERSION == '5.0.2' ]]; then
-    #   if _agkozak_has_usr1; then
-    #     typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-    #   else
-    #     typeset -g AGKOZAK_ASYNC_METHOD='none'
-    #   fi
-
-    # TODO: Versions of ZSH earlier than 5.0.3 don't seem to like `zle -F -w'
-    # elif ! is-at-least 5.0.3; then
-    #   _agkozak_load_async_lib
-    #   AGKOZAK_ASYNC_METHOD='zsh-async'
-
     # Asynchronous methods don't work in Emacs shell mode (but they do in term
     # and ansi-term)
     elif [[ $TERM == 'dumb' ]]; then
@@ -406,7 +393,6 @@ _agkozak_async_init() {
         esac
         # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
         command true
-        # zle -F -w "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
         zle -F "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
       }
 
@@ -417,7 +403,6 @@ _agkozak_async_init() {
         IFS='' builtin read -rs -d $'\0' -u "$FD" response
 
         # Withdraw callback and close the file descriptor
-        # zle -F -w ${FD}; exec {FD}<&-
         zle -F ${FD}; exec {FD}<&-
 
         # Make the changes visible
@@ -425,8 +410,6 @@ _agkozak_async_init() {
         zle && zle reset-prompt
       }
 
-      # Option -w to `zle -F' requires the callback to be a widget
-      # zle -N _agkozak_zsh_subst_async_callback
       ;;
 
     zsh-async)

@@ -354,8 +354,6 @@ _agkozak_async_init() {
 
     # WSL should have BG_NICE disabled, since it does not have a Linux kernel
     setopt LOCAL_OPTIONS EXTENDED_GLOB 
-    # local version=${(f)"$(</proc/version)"}
-    # [[ -n ${(M)version:#*Microsoft*} ]] && unsetopt BG_NICE
     [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]] && unsetopt BG_NICE
 
     # Asynchronous methods don't work in Emacs shell mode (but they do in term

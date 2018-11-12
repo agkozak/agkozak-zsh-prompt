@@ -74,12 +74,6 @@ if (( AGKOZAK_PROMPT_DEBUG )); then
   if is-at-least 5.4.0; then
     setopt WARN_NESTED_VAR
   fi
-
-  # Prompt benchmark
-  case $(zmodload) in
-    *zsh/datetime*) ;;
-    *) zmodload zsh/datetime ;;
-  esac
 fi
 
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
@@ -209,11 +203,6 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 # Display current branch name, followed by symbols
 # representing changes to the working copy
-#
-# Globals:
-#   AGKOZAK_PROMPT_DEBUG
-#   AGKOZAK_PROMPT_BENCHMARK_RESULTS
-#   AGKOZAK_PROMPT_BENCHMARK_START
 ############################################################
 _agkozak_branch_status() {
   local ref branch
@@ -226,13 +215,7 @@ _agkozak_branch_status() {
   esac
   branch=${ref#refs/heads/}
 
-  if (( AGKOZAK_PROMPT_DEBUG )); then
-    typeset -g AGKOZAK_PROMPT_BENCHMARK_RESULTS=$(($EPOCHREALTIME - $AGKOZAK_PROMPT_BENCHMARK_START))
-    AGKOZAK_PROMPT_BENCHMARK_RESULTS="${$(($AGKOZAK_PROMPT_BENCHMARK_RESULTS * 1000))%.*} ms"
-  fi
-
-  [[ -n $branch ]] && printf ' (%s%s) %s' \
-    "$branch" "$(_agkozak_branch_changes)" "$AGKOZAK_PROMPT_BENCHMARK_RESULTS"
+  [[ -n $branch ]] && printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
 }
 
 ############################################################
@@ -542,7 +525,6 @@ _agkozak_strip_colors() {
 #
 # Globals:
 #   AGKOZAK_PROMPT_DEBUG
-#   AGKOZAK_PROMPT_BENCHMARK_START
 #   AGKOZAK_PROMPT_DIRTRIM
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_MULTILINE
@@ -555,10 +537,6 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
-  # Prompt benchmark
-  (( AGKOZAK_PROMPT_DEBUG )) \
-    && typeset -g AGKOZAK_PROMPT_BENCHMARK_START=$EPOCHREALTIME
-
   psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
   psvar[3]=''
   psvar[4]=''

@@ -352,22 +352,15 @@ _agkozak_async_init() {
   # Otherwise, first provide for certain quirky systems
   else
 
-    # WSL
-    # TODO: Try to eliminate use of grep
-    if [[ $OSTYPE == 'linux-gnu' ]] && grep Microsoft /proc/version &> /dev/null; then
-      # WSL should have BG_NICE disabled, as it does not have a Linux kernel
-      unsetopt BG_NICE
-      if xdpyinfo &> /dev/null; then
-        # TODO: subst-async doesn't work well in a WSL Gnome terminal
-        _agkozak_load_async_lib
-        typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
-      else
-        typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
-      fi
+    # WSL should have BG_NICE disabled, since it does not have a Linux kernel
+    setopt LOCAL_OPTIONS EXTENDED_GLOB 
+    # local version=${(f)"$(</proc/version)"}
+    # [[ -n ${(M)version:#*Microsoft*} ]] && unsetopt BG_NICE
+    [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]] && unsetopt BG_NICE
 
     # Asynchronous methods don't work in Emacs shell mode (but they do in term
     # and ansi-term)
-    elif [[ $TERM == 'dumb' ]]; then
+    if [[ $TERM == 'dumb' ]]; then
       typeset -g AGKOZAK_ASYNC_METHOD='none'
 
     # Otherwise use subst-async

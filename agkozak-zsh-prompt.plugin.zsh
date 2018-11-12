@@ -411,14 +411,14 @@ _agkozak_async_init() {
       _agkozak_zsh_async() {
           async_start_worker agkozak_git_status_worker -n
           async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
-          async_job agkozak_git_status_worker :
+          async_job agkozak_git_status_worker _agkozak_branch_status
       }
 
       ########################################################
       # Set RPROMPT and stop worker
       ########################################################
       _agkozak_zsh_async_callback() {
-        psvar[3]=$(_agkozak_branch_status)
+        psvar[3]=$3
         zle && zle reset-prompt
         async_stop_worker agkozak_git_status_worker -n
       }

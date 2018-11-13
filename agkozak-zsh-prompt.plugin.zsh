@@ -163,10 +163,10 @@ _agkozak_prompt_dirtrim() {
     print -Pnz '%~'
     read -rz zsh_pwd
     case $zsh_pwd in
-      \~) print -Pn $zsh_pwd ;;
-      \~/*) print -Pn "%($(($1 + 2))~|~/.../%${1}~|%~)" ;;
-      \~*) print -Pn "%($(($1 + 2))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
-      *) print -Pn "%($(($1 + 1))/|.../%${1}d|%d)" ;;
+      \~) print -Pnz $zsh_pwd ;;
+      \~/*) print -Pnz "%($(($1 + 2))~|~/.../%${1}~|%~)" ;;
+      \~*) print -Pnz "%($(($1 + 2))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
+      *) print -Pnz "%($(($1 + 1))/|.../%${1}d|%d)" ;;
     esac
   else
     local dir dir_count
@@ -179,9 +179,9 @@ _agkozak_prompt_dirtrim() {
 
     if (( dir_count <= $1 )); then
       case $PWD in
-        ${HOME}) printf '%s' '~' ;;
-        ${HOME}*) printf '~%s' "${dir}" ;;
-        *) print -n "$PWD" ;;
+        ${HOME}) print -nz '~' ;;
+        ${HOME}*) print -nz "~${dir}" ;;
+        *) print -nz "$PWD" ;;
       esac
     else
       local lopped_path i
@@ -193,11 +193,16 @@ _agkozak_prompt_dirtrim() {
       done
 
       case $PWD in
-        ${HOME}*) printf '~/...%s' "${dir#${lopped_path}}" ;;
-        *) printf '...%s' "${PWD#${lopped_path}}" ;;
+        ${HOME}*) print -nz "~/...${dir#${lopped_path}}" ;;
+        *) printf -nz '...%s' "${PWD#${lopped_path}}" ;;
       esac
     fi
   fi
+
+  local output
+  read -rz output
+  print $output
+  psvar[2]=$output
 }
 
 ############################################################
@@ -336,7 +341,7 @@ _agkozak_async_init() {
   else
 
     # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-    setopt LOCAL_OPTIONS EXTENDED_GLOB 
+    setopt LOCAL_OPTIONS EXTENDED_GLOB
     [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]] && unsetopt BG_NICE
 
     # Asynchronous methods don't work in Emacs shell mode (but they do in term
@@ -537,7 +542,7 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
-  psvar[2]=$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")
+  _agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM" &> /dev/null
   psvar[3]=''
   psvar[4]=''
 

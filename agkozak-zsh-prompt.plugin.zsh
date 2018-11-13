@@ -345,8 +345,7 @@ _agkozak_async_init() {
     if [[ -e /proc/version ]]; then
       if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
         unsetopt BG_NICE
-        # Detect if WSL is using X
-        xdpyinfo &> /dev/null && local WSL_X=1
+        local WSL=1
       fi
     fi
 
@@ -368,10 +367,13 @@ _agkozak_async_init() {
       _agkozak_subst_async() {
         typeset -g AGKOZAK_ASYNC_FD=13371
 
-        if [[ $OSTYPE == (msys|cygwin|solaris*) ]] || (( WSL_X )); then
-          # Workaround for buggy behavior in MSYS2, Cygwin, Solaris, and WSL
-          # (the latter only when used with X)
+        # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
+        if [[ $OSTYPE == (msys|cygwin|solaris*) ]]; then
           exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status; command true )
+        # Prevent WSL from locking up when using X
+        elif (( WSL )) && (( $+DISPLAY )); then
+          exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+          command sleep 0.01
         else 
           exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
         fi

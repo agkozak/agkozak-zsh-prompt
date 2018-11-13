@@ -529,8 +529,8 @@ _agkozak_strip_colors() {
 # 3) If AGKOZAK_BLANK_LINES=1, prints blank line between prompts
 #
 # Globals:
-#   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_DIRTRIM
+#   AGKOZAK_OLD_PROMPT_DIRTRIM
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_MULTILINE
 #   AGKOZAK_PROMPT_WHITESPACE
@@ -542,7 +542,14 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
-  _agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM" &> /dev/null
+  # Update displayed directory when $AGKOZAK_PROMPT_DIRTRIM changes or when
+  # first sourcing this script
+  if (( AGKOZAK_PROMPT_DIRTRIM != AGKOZAK_OLD_PROMPT_DIRTRIM )) \
+    || (( ! $+psvar[2] )); then
+    _agkozak_prompt_dirtrim $AGKOZAK_PROMPT_DIRTRIM &> /dev/null
+    typeset -g AGKOZAK_OLD_PROMPT_DIRTRIM=$AGKOZAK_PROMPT_DIRTRIM
+  fi
+
   psvar[3]=''
   psvar[4]=''
 
@@ -615,6 +622,15 @@ _agkozak_precmd() {
   else
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd _agkozak_precmd
+
+    ########################################################
+    # Update the displayed directory when the PWD changes
+    ########################################################
+    _agkozak_chpwd() {
+      _agkozak_prompt_dirtrim $AGKOZAK_PROMPT_DIRTRIM &> /dev/null
+    }
+
+    add-zsh-hook chpwd _agkozak_chpwd
   fi
 
   # Only display the HOSTNAME for an ssh connection or for a superuser

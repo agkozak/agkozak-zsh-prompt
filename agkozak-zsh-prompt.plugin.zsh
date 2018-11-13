@@ -700,6 +700,7 @@ _agkozak_precmd() {
 }
 
 # Clean up environment
-unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_is_ssh
+unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_is_ssh \
+  _agkozak_async_init _agkozak_has_colors _agkozak_strip_colors
 
 # vim: ts=2:et:sts=2:sw=2:

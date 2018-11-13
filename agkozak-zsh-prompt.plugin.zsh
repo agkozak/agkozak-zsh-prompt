@@ -345,6 +345,8 @@ _agkozak_async_init() {
     if [[ -e /proc/version ]]; then
       if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
         unsetopt BG_NICE
+        # Detect if WSL is using X
+        xdpyinfo &> /dev/null && local WSL_X=1
       fi
     fi
 
@@ -365,17 +367,18 @@ _agkozak_async_init() {
 
       _agkozak_subst_async() {
         typeset -g AGKOZAK_ASYNC_FD=13371
-        case $OSTYPE in
-          # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
-          msys|cygwin|solaris*)
-            exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status; command true )
-            ;;
-          *)
-            exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
-            ;;
-        esac
+
+        if [[ $OSTYPE == (msys|cygwin|solaris*) ]] || (( WSL_X )); then
+          # Workaround for buggy behavior in MSYS2, Cygwin, Solaris, and WSL
+          # (the latter only when used with X)
+          exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status; command true )
+        else 
+          exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+        fi
+
         # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
         command true
+
         zle -F "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
       }
 

@@ -605,7 +605,7 @@ _agkozak_precmd() {
   zle -N zle-keymap-select
 
   # Don't use ZSH hooks in Emacs classic shell
-  if [[ -n $INSIDE_EMACS ]] && [[ $TERM == 'dumb' ]]; then
+  if (( $+INSIDE_EMACS )) && [[ $TERM == 'dumb' ]]; then
     :
   else
     autoload -Uz add-zsh-hook
@@ -635,11 +635,11 @@ _agkozak_precmd() {
     PROMPT+='%# '
   else
     # Avoid continuation lines in Emacs term and ansi-term
-    [[ -n $INSIDE_EMACS ]] && ZLE_RPROMPT_INDENT=3
+    (( $+INSIDE_EMACS )) && ZLE_RPROMPT_INDENT=3
 
     # When VSCode is using the DOM renderer, the right prompt overflows off the
     # side of the screen
-    [[ -n $VSCODE_PID ]] && ZLE_RPROMPT_INDENT=6
+    (( $+VSCODE_PID )) && ZLE_RPROMPT_INDENT=6
 
     if (( $+AGKOZAK_CUSTOM_PROMPT )); then
       PROMPT=${AGKOZAK_CUSTOM_PROMPT}

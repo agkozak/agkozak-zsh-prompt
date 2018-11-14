@@ -345,12 +345,21 @@ _agkozak_async_init() {
     if [[ -e /proc/version ]]; then
       if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
         unsetopt BG_NICE
-        local WSL=1
+        local WSL=1   # For later reference
       fi
     fi
 
+    if (( WSL )); then
+      if _agkozak_load_async_lib; then
+        typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
+      elif _agkozak_has_usr1; then
+        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+      else
+        typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
+      fi
+
     # SIGUSR1 method is still much faster on MSYS2 and Cygwin
-    if [[ $OSTYPE == (msys|cygwin) ]]; then
+    elif [[ $OSTYPE == (msys|cygwin) ]]; then
       if _agkozak_has_usr1; then
         typeset -g AGKOZAK_ASYNC_METHOD='usr1'
       else

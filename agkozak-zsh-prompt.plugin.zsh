@@ -158,12 +158,10 @@ _agkozak_is_ssh() {
 #   $1 Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
-  (( $1 < 0 )) && set 2
+  [[ $1 -ge 0 ]] || set 2
   typeset -g AGKOZAK_NAMED_DIRS=${AGKOZAK_NAMED_DIRS:-1}
   if (( AGKOZAK_NAMED_DIRS )); then
     local zsh_pwd
-    # Equivalent to zsh_pwd=$(print -Pn '%~') (but faster)
-    # or print -v zsh_pwd -Pn '%~' (but works before ZSH v5.3)
     print -Pnz '%~'
     if (( $1 )); then # If AGKOZAK_PROMPT_DIRTRIM is not 0, then abbreviate
       read -rz zsh_pwd
@@ -181,7 +179,7 @@ _agkozak_prompt_dirtrim() {
       *) dir=${PWD#$HOME} ;;
     esac
 
-    if (( $1 )); then   # If AGKOZAK_PROMPT_DIRTRIM is not 0, abbreviate
+    if (( $1 > 0 )); then   # If AGKOZAK_PROMPT_DIRTRIM is not 0, abbreviate
       # The number of directory elements is the number of slashes in ${PWD#$HOME}
       dir_count=$((${#dir} - ${#${dir//\//}}))
 

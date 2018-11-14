@@ -146,6 +146,10 @@ _agkozak_is_ssh() {
 #
 #   ~/.../polyglot/img
 #
+# Set AGKOZAK_PROMPT_DIRTRIM to the number of directory
+# elements you want to display, or to 0 to disable
+# abbreviation.
+#
 # Named directories will by default be displayed using their
 # aliases in the prompt. Set AGKOZAK_NAMED_DIRS=0 to have
 # them displayed just like any other directory.
@@ -154,47 +158,58 @@ _agkozak_is_ssh() {
 #   $1 Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
-  [[ $1 -ge 1 ]] || set 2
+  (( $1 < 0 )) && set 2
   typeset -g AGKOZAK_NAMED_DIRS=${AGKOZAK_NAMED_DIRS:-1}
   if (( AGKOZAK_NAMED_DIRS )); then
     local zsh_pwd
     # Equivalent to zsh_pwd=$(print -Pn '%~') (but faster)
     # or print -v zsh_pwd -Pn '%~' (but works before ZSH v5.3)
     print -Pnz '%~'
-    read -rz zsh_pwd
-    case $zsh_pwd in
-      \~) print -Pnz $zsh_pwd ;;
-      \~/*) print -Pnz "%($(($1 + 2))~|~/.../%${1}~|%~)" ;;
-      \~*) print -Pnz "%($(($1 + 2))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
-      *) print -Pnz "%($(($1 + 1))/|.../%${1}d|%d)" ;;
-    esac
+    if (( $1 )); then # If AGKOZAK_PROMPT_DIRTRIM is not 0, then abbreviate
+      read -rz zsh_pwd
+      case $zsh_pwd in
+        \~) print -Pnz $zsh_pwd ;;
+        \~/*) print -Pnz "%($(($1 + 2))~|~/.../%${1}~|%~)" ;;
+        \~*) print -Pnz "%($(($1 + 2))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
+        *) print -Pnz "%($(($1 + 1))/|.../%${1}d|%d)" ;;
+      esac
+    fi
   else
     local dir dir_count
     case $HOME in
       /) dir=${PWD} ;;
       *) dir=${PWD#$HOME} ;;
     esac
-    # The number of directory elements is the number of slashes in ${PWD#$HOME}
-    dir_count=$((${#dir} - ${#${dir//\//}}))
 
-    if (( dir_count <= $1 )); then
+    if (( $1 )); then   # If AGKOZAK_PROMPT_DIRTRIM is not 0, abbreviate
+      # The number of directory elements is the number of slashes in ${PWD#$HOME}
+      dir_count=$((${#dir} - ${#${dir//\//}}))
+
+      if (( dir_count <= $1 )); then
+        case $PWD in
+          ${HOME}) print -nz '~' ;;
+          ${HOME}*) print -nz "~${dir}" ;;
+          *) print -nz "$PWD" ;;
+        esac
+      else
+        local lopped_path i
+        lopped_path=${dir}
+        i=0
+        while (( i != $1 )); do
+          lopped_path=${lopped_path%\/*}
+          (( i++ ))
+        done
+
+        case $PWD in
+          ${HOME}*) print -nz "~/...${dir#${lopped_path}}" ;;
+          *) printf -nz '...%s' "${PWD#${lopped_path}}" ;;
+        esac
+      fi
+    else
       case $PWD in
         ${HOME}) print -nz '~' ;;
         ${HOME}*) print -nz "~${dir}" ;;
         *) print -nz "$PWD" ;;
-      esac
-    else
-      local lopped_path i
-      lopped_path=${dir}
-      i=0
-      while (( i != $1 )); do
-        lopped_path=${lopped_path%\/*}
-        (( i++ ))
-      done
-
-      case $PWD in
-        ${HOME}*) print -nz "~/...${dir#${lopped_path}}" ;;
-        *) printf -nz '...%s' "${PWD#${lopped_path}}" ;;
       esac
     fi
   fi
@@ -571,6 +586,8 @@ _agkozak_strip_colors() {
 # Globals:
 #   AGKOZAK_PROMPT_DIRTRIM
 #   AGKOZAK_OLD_PROMPT_DIRTRIM
+#   AGKOZAK_NAMED_DIRS
+#   AGKOZAK_OLD_NAMED_DIRS
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_MULTILINE
 #   AGKOZAK_PROMPT_WHITESPACE
@@ -582,12 +599,14 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
-  # Update displayed directory when $AGKOZAK_PROMPT_DIRTRIM changes or when
-  # first sourcing this script
+  # Update displayed directory when AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS
+  # changes or when first sourcing this script
   if (( AGKOZAK_PROMPT_DIRTRIM != AGKOZAK_OLD_PROMPT_DIRTRIM )) \
+    || (( AGKOZAK_NAMED_DIRS != AGKOZAK_OLD_NAMED_DIRS )) \
     || (( ! $+psvar[2] )); then
     _agkozak_prompt_dirtrim $AGKOZAK_PROMPT_DIRTRIM &> /dev/null
     typeset -g AGKOZAK_OLD_PROMPT_DIRTRIM=$AGKOZAK_PROMPT_DIRTRIM
+    typeset -g AGKOZAK_OLD_NAMED_DIRS=$AGKOZAK_NAMED_DIRS
   fi
 
   psvar[3]=''

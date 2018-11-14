@@ -351,7 +351,11 @@ _agkozak_async_init() {
 
     # SIGUSR1 method is still much faster on MSYS2 and Cygwin
     if [[ $OSTYPE == (msys|cygwin) ]]; then
-      typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+      if _agkozak_has_usr1; then
+        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
+      else
+        typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
+      fi
 
     # Asynchronous methods don't work in Emacs shell mode (but they do in term
     # and ansi-term)

@@ -377,45 +377,59 @@ _agkozak_async_init() {
     fi
   fi
 
+  ##########################################################
+  # Process substitution async method
+  #
+  # Forks a process to fetch the Git status and feed it
+  # asynchronously to a file descriptor. Installs a callback
+  # handler to process input from the file descriptor.
+  #
+  # Globals:
+  #   AGKOZAK_ASYNC_FD
+  ##########################################################
+  _agkozak_subst_async() {
+    typeset -g AGKOZAK_ASYNC_FD=13371
+
+    # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
+    if [[ $OSTYPE == (msys|cygwin|solaris*) ]]; then
+      exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status; command true )
+    # Prevent WSL from locking up when using X
+    elif (( WSL )) && (( $+DISPLAY )); then
+      exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+      command sleep 0.01
+    else
+      exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+    fi
+
+    # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
+    command true
+
+    zle -F "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
+  }
+
+  ##########################################################
+  # zle callback handler
+  #
+  # Reads Git status from file descriptor and sets psvar[3]
+  #
+  # Parameters:
+  #   $1  File descriptor
+  ##########################################################
+  _agkozak_zsh_subst_async_callback() {
+    local FD="$1" response
+
+    # Read data from $FD descriptor
+    IFS='' builtin read -rs -d $'\0' -u "$FD" response
+
+    # Withdraw callback and close the file descriptor
+    zle -F ${FD}; exec {FD}<&-
+
+    # Make the changes visible
+    psvar[3]="$response"
+    zle && zle reset-prompt
+  }
+
   case $AGKOZAK_ASYNC_METHOD in
-
-    subst-async)
-
-      _agkozak_subst_async() {
-        typeset -g AGKOZAK_ASYNC_FD=13371
-
-        # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
-        if [[ $OSTYPE == (msys|cygwin|solaris*) ]]; then
-          exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status; command true )
-        # Prevent WSL from locking up when using X
-        elif (( WSL )) && (( $+DISPLAY )); then
-          exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
-          command sleep 0.01
-        else 
-          exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
-        fi
-
-        # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
-        command true
-
-        zle -F "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
-      }
-
-      _agkozak_zsh_subst_async_callback() {
-        local FD="$1" response
-
-        # Read data from $FD descriptor
-        IFS='' builtin read -rs -d $'\0' -u "$FD" response
-
-        # Withdraw callback and close the file descriptor
-        zle -F ${FD}; exec {FD}<&-
-
-        # Make the changes visible
-        psvar[3]="$response"
-        zle && zle reset-prompt
-      }
-
-      ;;
 
     zsh-async)
 
@@ -463,8 +477,8 @@ _agkozak_async_init() {
           _agkozak_usr1_async_worker &!
           typeset -g AGKOZAK_USR1_ASYNC_WORKER=$!
         else
-          _agkozak_debug_print 'TRAPUSR1 has been redefined. Disabling asynchronous mode.'
-          typeset -g AGKOZAK_ASYNC_METHOD='none'
+          _agkozak_debug_print 'TRAPUSR1 has been redefined. Switching to subst-async mode.'
+          typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
           psvar[3]="$(_agkozak_branch_status)"
         fi
       }

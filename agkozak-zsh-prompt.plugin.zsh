@@ -76,6 +76,8 @@ if (( AGKOZAK_PROMPT_DEBUG )); then
   fi
 fi
 
+# Set AGKOZAK_PROMPT_DIRTRIM to the desired number of directory elements to
+# display, or set it to 0 for no directory trimming
 typeset -g AGKOZAK_PROMPT_DIRTRIM=${AGKOZAK_PROMPT_DIRTRIM:-2}
 
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
@@ -158,6 +160,13 @@ _agkozak_is_ssh() {
 #
 # Arguments:
 #   $1 Number of directory elements to display (default: 2)
+#
+# TODO: For historical reasons, this function prints to
+# STDOUT AND sets psvar[2] to the same value. Right now that
+# makes particular sense on Windows, where command
+# substitution is costly, but look for a less arcane
+# arrangement; perhaps use a parameter to determine one
+# behavior or another.
 ############################################################
 _agkozak_prompt_dirtrim() {
   [[ $1 -ge 0 ]] || set 2

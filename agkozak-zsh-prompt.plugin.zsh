@@ -202,7 +202,7 @@ _agkozak_prompt_dirtrim() {
 
         case $PWD in
           ${HOME}*) print -nz "~/...${dir#${lopped_path}}" ;;
-          *) printf -nz '...%s' "${PWD#${lopped_path}}" ;;
+          *) print -nz -f '...%s' "${PWD#${lopped_path}}" ;;
         esac
       fi
     else

@@ -5,7 +5,7 @@
 #  \__,_|\__, |_|\_\___/___\__,_|_|\_\
 #        |___/
 #
-# An asynchronous, dynamic color prompt for zsh with Git, vi mode, and exit
+# An asynchronous, dynamic color prompt for ZSH with Git, vi mode, and exit
 # status indicators
 #
 #

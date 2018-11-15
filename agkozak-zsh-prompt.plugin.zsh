@@ -158,17 +158,13 @@ _agkozak_is_ssh() {
 # aliases in the prompt. Set AGKOZAK_NAMED_DIRS=0 to have
 # them displayed just like any other directory.
 #
-# Arguments:
+# Parameters:
+#   -v [Optional] Store the output in psvar[2] instead of
+#      printing it to STDOUT
 #   $1 Number of directory elements to display (default: 2)
-#
-# TODO: For historical reasons, this function prints to
-# STDOUT AND sets psvar[2] to the same value. Right now that
-# makes particular sense on Windows, where command
-# substitution is costly, but look for a less arcane
-# arrangement; perhaps use a parameter to determine one
-# behavior or another.
 ############################################################
 _agkozak_prompt_dirtrim() {
+  [[ $1 == '-v' ]] && local var=1 && shift
   [[ $1 -ge 0 ]] || set 2
   typeset -g AGKOZAK_NAMED_DIRS=${AGKOZAK_NAMED_DIRS:-1}
   if (( AGKOZAK_NAMED_DIRS )); then
@@ -225,8 +221,7 @@ _agkozak_prompt_dirtrim() {
 
   local output
   read -rz output
-  print $output
-  psvar[2]=$output
+  (( var )) && psvar[2]=$output || print $output
 }
 
 ############################################################
@@ -613,7 +608,7 @@ _agkozak_precmd() {
   if (( AGKOZAK_PROMPT_DIRTRIM != AGKOZAK_OLD_PROMPT_DIRTRIM )) \
     || (( AGKOZAK_NAMED_DIRS != AGKOZAK_OLD_NAMED_DIRS )) \
     || (( ! $+psvar[2] )); then
-    _agkozak_prompt_dirtrim $AGKOZAK_PROMPT_DIRTRIM &> /dev/null
+    _agkozak_prompt_dirtrim -v $AGKOZAK_PROMPT_DIRTRIM
     typeset -g AGKOZAK_OLD_PROMPT_DIRTRIM=$AGKOZAK_PROMPT_DIRTRIM
     typeset -g AGKOZAK_OLD_NAMED_DIRS=$AGKOZAK_NAMED_DIRS
   fi
@@ -695,7 +690,7 @@ _agkozak_precmd() {
     # Update the displayed directory when the PWD changes
     ########################################################
     _agkozak_chpwd() {
-      _agkozak_prompt_dirtrim $AGKOZAK_PROMPT_DIRTRIM &> /dev/null
+      _agkozak_prompt_dirtrim -v $AGKOZAK_PROMPT_DIRTRIM
     }
 
     add-zsh-hook chpwd _agkozak_chpwd

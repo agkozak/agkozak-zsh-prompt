@@ -54,11 +54,10 @@
 AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
 
 ############################################################
-# Display a message on STDERR if debug mode is enabled.
+# Display a message on STDERR if debug mode is enabled
 #
 # Globals:
 #   AGKOZAK_PROMPT_DEBUG
-#
 # Arguments:
 #   $1  Message to send to STDERR
 ############################################################
@@ -95,16 +94,16 @@ typeset -g AGKOZAK_COLORS_BRANCH_STATUS=${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
-############################################################
-# BASIC FUNCTIONS
-############################################################
+######################################################################
+# GENERAL FUNCTIONS
+######################################################################
 
-###########################################################
+############################################################
 # Are colors available?
 #
 # Globals:
 #   AGKOZAK_HAS_COLORS
-###########################################################
+############################################################
 _agkozak_has_colors() {
   if (( $+AGKOZAK_HAS_COLORS )); then
     :
@@ -138,11 +137,14 @@ _agkozak_is_ssh() {
 }
 
 ############################################################
-# Emulation of bash's PROMPT_DIRTRIM for zsh
+# Emulation of bash's PROMPT_DIRTRIM for ZSH
 #
-# In PWD, substitute HOME with ~; if the remainder of the
-# PWD has more than a certain number of directory elements
-# to display (default: 2), abbreviate it with '...', e.g.
+# Take PWD and substitute HOME with `~'. If the rest of PWD
+# has more than a certain number of elements in its
+# directory tree, keep the number specified by
+# AGKOZAK_PROMPT_DIRTRIM (default: 2) and abbreviate the
+# rest with `...'. (Set AGKOZAK_PROMPT_DIRTRIM=0 to disable
+# directory trimming). For example,
 #
 #   $HOME/dotfiles/polyglot/img
 #
@@ -150,18 +152,19 @@ _agkozak_is_ssh() {
 #
 #   ~/.../polyglot/img
 #
-# Set AGKOZAK_PROMPT_DIRTRIM to the number of directory
-# elements you want to display, or to 0 to disable
-# abbreviation.
-#
 # Named directories will by default be displayed using their
-# aliases in the prompt. Set AGKOZAK_NAMED_DIRS=0 to have
-# them displayed just like any other directory.
+# aliases in the prompt (e.g. `~project'). Set
+# AGKOZAK_NAMED_DIRS=0 to have them displayed just like any
+# other directory.
 #
+# Globals:
+#   AGKOZAK_NAMED_DIRS
 # Arguments:
-#   -v [Optional] Store the output in psvar[2] instead of
-#      printing it to STDOUT
-#   $1 Number of directory elements to display (default: 2)
+#   $@ [Optional] If `-v', store the function's output in
+#        psvar[2] instead of printing it to STDOUT
+#      Number of directory elements to display (default: 2)
+#
+# TODO: Make the order of the arguments not matter
 ############################################################
 _agkozak_prompt_dirtrim() {
   [[ $1 == '-v' ]] && local var=1 && shift
@@ -285,23 +288,22 @@ TRAPWINCH() {
   zle && zle -R
 }
 
-###########################################################
+######################################################################
 # ASYNCHRONOUS FUNCTIONS
-###########################################################
+######################################################################
 
-# Standarized $0 handling, follows:
-# https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc
+# Standarized $0 handling
+# (See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc)
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 typeset -g AGKOZAK_PROMPT_DIR="${0:A:h}"
 
-###########################################################
-# If zsh-async has not already been loaded, try to load it;
-# the exit code should indicate success or failure
+############################################################
+# If zsh-async has not already been loaded, try to load it
 #
 # Globals:
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_DIR
-###########################################################
+############################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
     if (( AGKOZAK_PROMPT_DEBUG )); then
@@ -314,10 +316,10 @@ _agkozak_load_async_lib() {
   fi
 }
 
-###########################################################
-# If SIGUSR1 is available and not already in use by
-# zsh, use it; otherwise disable asynchronous mode
-###########################################################
+############################################################
+# If SIGUSR1 is available and not already in use by ZSH, use
+# it; otherwise disable asynchronous mode
+############################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
     _agkozak_debug_print 'TRAPUSR1 already defined.'
@@ -333,19 +335,22 @@ _agkozak_has_usr1() {
   fi
 }
 
-###########################################################
-# Force the async method, if set in AGKOZAK_FORCE_ASYNC_METHOD.
-# Otherwise, determine the async method from the environment,
-# whether or not zsh-async will load successfully, and whether
-# or not SIGUSR1 is already taken
+############################################################
+# If AGKOZAK_FORCE_ASYNC_METHOD is set to a valid value,
+# set AGKOZAK_ASYNC_METHOD to that; otherwise, determine
+# the optimal asynchronous method from the environment (usr1
+# for MSYS2/Cygwin, zsh-async for WSL, subst-async for
+# everything else), with fallbacks being available. Define
+# the necessary asynchronous functions (loading async.zsh
+# when necessary).
 #
 # Globals:
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_FORCE_ASYNC_METHOD
 #   AGKOZAK_TRAPUSR1_FUNCTION
-###########################################################
+############################################################
 _agkozak_async_init() {
-    
+
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
   setopt LOCAL_OPTIONS EXTENDED_GLOB
   if [[ -e /proc/version ]]; then
@@ -391,16 +396,16 @@ _agkozak_async_init() {
     fi
   fi
 
-  ##########################################################
+  ############################################################
   # Process substitution async method
   #
-  # Forks a process to fetch the Git status and feed it
-  # asynchronously to a file descriptor. Installs a callback
+  # Fork a process to fetch the Git status and feed it
+  # asynchronously to a file descriptor. Install a callback
   # handler to process input from the file descriptor.
   #
   # Globals:
   #   AGKOZAK_ASYNC_FD
-  ##########################################################
+  ############################################################
   _agkozak_subst_async() {
     typeset -g AGKOZAK_ASYNC_FD=13371
 
@@ -421,14 +426,14 @@ _agkozak_async_init() {
     zle -F "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
   }
 
-  ##########################################################
-  # zle callback handler
+  ############################################################
+  # ZLE callback handler
   #
-  # Reads Git status from file descriptor and sets psvar[3]
+  # Read Git status from file descriptor and set psvar[3]
   #
   # Arguments:
   #   $1  File descriptor
-  ##########################################################
+  ############################################################
   _agkozak_zsh_subst_async_callback() {
     local FD="$1" response
 
@@ -447,18 +452,18 @@ _agkozak_async_init() {
 
     zsh-async)
 
-      ########################################################
+      ############################################################
       # Create zsh-async worker
-      ########################################################
+      ############################################################
       _agkozak_zsh_async() {
           async_start_worker agkozak_git_status_worker -n
           async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
           async_job agkozak_git_status_worker _agkozak_branch_status
       }
 
-      ########################################################
+      ############################################################
       # Set RPROMPT and stop worker
-      ########################################################
+      ############################################################
       _agkozak_zsh_async_callback() {
         psvar[3]=$3
         zle && zle reset-prompt
@@ -468,18 +473,18 @@ _agkozak_async_init() {
 
     usr1)
 
-      ########################################################
-      # precmd uses this function to launch async workers to
-      # calculate the Git status. It can tell if anything has
-      # redefined the TRAPUSR1 function that actually
-      # displays the status; if so, it will drop the prompt
-      # down into non-asynchronous mode.
+      ############################################################
+      # Launch async workers to calculate Git status. TRAPUSR1
+      # actually displays the status; if some other script
+      # redefines TRAPUSR1, drop the prompt into synchronous mode.
+      #
+      # TODO: Make subst-async the fallback
       #
       # Globals:
       #   AGKOZAK_TRAPUSR1_FUNCTION
       #   AGKOZAK_USR1_ASYNC_WORKER
       #   AGKOZAK_ASYNC_METHOD
-      ########################################################
+      ############################################################
       _agkozak_usr1_async() {
         if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
@@ -497,12 +502,13 @@ _agkozak_async_init() {
         fi
       }
 
-      ########################################################
-      # Asynchronous Git branch status using SIGUSR1
+      ############################################################
+      # Calculate Git status and store it in a temporary file;
+      # then kill own process, sending SIGUSR1
       #
       # Globals:
       #   AGKOZAK_PROMPT_DEBUG
-      ########################################################
+      ############################################################
       _agkozak_usr1_async_worker() {
         # Save Git branch status to temporary file
         setopt LOCAL_OPTIONS CLOBBER
@@ -516,12 +522,16 @@ _agkozak_async_init() {
         fi
       }
 
-      ########################################################
-      # On SIGUSR1, redraw prompt
+      ############################################################
+      # On SIGUSR1, fetch Git status from temprary file and store
+      # it in psvar[3]. This function caches its own code in
+      # AGKOZAK_TRAPUSR1_FUNCTION so that it can tell if it has
+      # been redefined by another script.
       #
       # Globals:
       #   AGKOZAK_USR1_ASYNC_WORKER
-      ########################################################
+      #   AGKOZAK_TRAPUSR1_FUNCTION
+      ############################################################
       TRAPUSR1() {
         # read from temp file
         psvar[3]=$(cat /tmp/agkozak_zsh_prompt_$$)
@@ -538,16 +548,16 @@ _agkozak_async_init() {
   esac
 }
 
-############################################################
+######################################################################
 # THE PROMPT
-############################################################
+######################################################################
 
-#########################################################
+############################################################
 # Strip color codes from a prompt string
 #
 # Arguments:
 #   $1 The prompt string
-#########################################################
+############################################################
 _agkozak_strip_colors() {
 
   local prompt=$1
@@ -576,11 +586,22 @@ _agkozak_strip_colors() {
 }
 
 ############################################################
-# Runs right before the prompt is displayed
+# Runs right before each prompt is displayed; hooks into
+# precmd
 #
-# 1) Imitates bash's PROMPT_DIRTRIM behavior
-# 2) Calculates working branch and working copy status
-# 3) If AGKOZAK_BLANK_LINES=1, prints blank line between prompts
+# 1) Redisplays path ($psvar[2]) whenever the value of
+#      AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS changes
+# 2) Resets Git status and vi mode display
+# 3) Begins to calculate Git status
+# 4) Sets AGKOZAK_PROMPT_WHITESPACE based on value of
+#      AGKOZAK_MULTILINE
+# 5) Optionally display a blank line (AGKOZAK_BLANK_LINES),
+#      while avoiding a blank line when the shell is first
+#      loaded
+# 6) If custom prompts are defined, update the prompt
+#      strings
+#
+# TODO: Consider making AGKOZAK_PROMPT_WHITESPACE a psvar
 #
 # Globals:
 #   AGKOZAK_PROMPT_DIRTRIM
@@ -681,9 +702,9 @@ _agkozak_precmd() {
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd _agkozak_precmd
 
-    ########################################################
+    ############################################################
     # Update the displayed directory when the PWD changes
-    ########################################################
+    ############################################################
     _agkozak_chpwd() {
       _agkozak_prompt_dirtrim -v $AGKOZAK_PROMPT_DIRTRIM
     }
@@ -691,7 +712,7 @@ _agkozak_precmd() {
     add-zsh-hook chpwd _agkozak_chpwd
   fi
 
-  # Only display the HOSTNAME for an ssh connection or for a superuser
+  # Only display the HOSTNAME for an SSH connection or for a superuser
   if _agkozak_is_ssh || (( EUID == 0 )); then
     psvar[1]="@${HOST%%.*}"
   else
@@ -699,12 +720,12 @@ _agkozak_precmd() {
   fi
 
   # The DragonFly BSD console and Emacs shell can't handle bracketed paste.
-  # Let's avoid the ugly ^[[?2004 control sequence.
+  # Avoid the ugly ^[[?2004 control sequence.
   if [[ $TERM == 'cons25' ]] || [[ $TERM == 'dumb' ]]; then
     unset zle_bracketed_paste
   fi
 
-  # The Emacs shell has only limited support for some ZSH features, so we use a
+  # The Emacs shell has only limited support for some ZSH features, so use a
   # more limited prompt.
   if [[ $TERM == 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'

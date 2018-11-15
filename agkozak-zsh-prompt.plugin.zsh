@@ -493,8 +493,6 @@ _agkozak_async_init() {
       # actually displays the status; if some other script
       # redefines TRAPUSR1, drop the prompt into synchronous mode.
       #
-      # TODO: Make subst-async the fallback
-      #
       # Globals:
       #   AGKOZAK_TRAPUSR1_FUNCTION
       #   AGKOZAK_USR1_ASYNC_WORKER

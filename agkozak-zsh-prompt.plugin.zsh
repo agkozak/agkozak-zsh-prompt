@@ -239,37 +239,32 @@ _agkozak_branch_status() {
   esac
   branch=${ref#refs/heads/}
 
-  [[ -n $branch ]] && printf ' (%s%s)' "$branch" "$(_agkozak_branch_changes)"
-}
+  if [[ -n $branch ]]; then
+    local git_status symbols k
+    git_status="$(LC_ALL=C command git status 2>&1)"
 
-############################################################
-# Display symbols representing changes to the working copy
-############################################################
-_agkozak_branch_changes() {
-  local git_status symbols k
+    typeset -A messages
+    messages=(
+                '&*'  'diverged'
+                '&'   'behind'
+                '*'   'Your branch is ahead of'
+                '+'   'new file:'
+                'x'   'deleted'
+                '!'   'modified:'
+                '>'   'renamed:'
+                '?'   'Untracked files'
+             )
 
-  git_status="$(LC_ALL=C command git status 2>&1)"
+    for k in '&*' '&' '*' '+' 'x' '!' '>' '?'; do
+      case $git_status in
+        *${messages[$k]}*) symbols+="$k" ;;
+      esac
+    done
 
-  typeset -A messages
+    [[ -n $symbols ]] && symbols=" ${symbols}"
 
-  messages=(
-              '&*'  'diverged'
-              '&'   'behind'
-              '*'   'Your branch is ahead of'
-              '+'   'new file:'
-              'x'   'deleted'
-              '!'   'modified:'
-              '>'   'renamed:'
-              '?'   'Untracked files'
-           )
-
-  for k in '&*' '&' '*' '+' 'x' '!' '>' '?'; do
-    case $git_status in
-      *${messages[$k]}*) symbols+="$k" ;;
-    esac
-  done
-
-  [[ -n $symbols ]] && printf ' %s' "${symbols}"
+    printf ' (%s%s)' "$branch" "$symbols"
+  fi
 }
 
 ############################################################

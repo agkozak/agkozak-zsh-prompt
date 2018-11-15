@@ -59,7 +59,7 @@ AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
 # Globals:
 #   AGKOZAK_PROMPT_DEBUG
 #
-# Parameters:
+# Arguments:
 #   $1  Message to send to STDERR
 ############################################################
 _agkozak_debug_print() {
@@ -158,7 +158,7 @@ _agkozak_is_ssh() {
 # aliases in the prompt. Set AGKOZAK_NAMED_DIRS=0 to have
 # them displayed just like any other directory.
 #
-# Parameters:
+# Arguments:
 #   -v [Optional] Store the output in psvar[2] instead of
 #      printing it to STDOUT
 #   $1 Number of directory elements to display (default: 2)
@@ -431,7 +431,7 @@ _agkozak_async_init() {
   #
   # Reads Git status from file descriptor and sets psvar[3]
   #
-  # Parameters:
+  # Arguments:
   #   $1  File descriptor
   ##########################################################
   _agkozak_zsh_subst_async_callback() {

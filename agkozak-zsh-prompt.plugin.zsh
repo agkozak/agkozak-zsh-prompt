@@ -162,18 +162,27 @@ _agkozak_is_ssh() {
 # Arguments:
 #   $@ [Optional] If `-v', store the function's output in
 #        psvar[2] instead of printing it to STDOUT
-#      Number of directory elements to display (default: 2)
-#
-# TODO: Make the order of the arguments not matter
+#   $@ Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
-  [[ $1 == '-v' ]] && local var=1 && shift
+  # Process arguments
+  local argument
+  for argument in $@; do
+    [[ $argument == '-v' ]] && local var=1
+  done
+  until [[ $1 != '-v' ]]; do
+    shift
+  done
   [[ $1 -ge 0 ]] || set 2
+
+  # Default behavior (when AGKOZAK_NAMED_DIRS is 1)
   typeset -g AGKOZAK_NAMED_DIRS=${AGKOZAK_NAMED_DIRS:-1}
   if (( AGKOZAK_NAMED_DIRS )); then
     local zsh_pwd
     print -Pnz '%~'
-    if (( $1 )); then # If AGKOZAK_PROMPT_DIRTRIM is not 0, then abbreviate
+
+    # IF AGKOZAK_PROMPT_DIRTRIM is not 0, trim directory
+    if (( $1 )); then
       read -rz zsh_pwd
       case $zsh_pwd in
         \~) print -Pnz $zsh_pwd ;;
@@ -182,6 +191,8 @@ _agkozak_prompt_dirtrim() {
         *) print -Pnz "%($(($1 + 1))/|.../%${1}d|%d)" ;;
       esac
     fi
+
+  # If AGKOZAK_NAMED_DIRS is 0
   else
     local dir dir_count
     case $HOME in
@@ -189,10 +200,11 @@ _agkozak_prompt_dirtrim() {
       *) dir=${PWD#$HOME} ;;
     esac
 
-    if (( $1 > 0 )); then   # If AGKOZAK_PROMPT_DIRTRIM is not 0, abbreviate
+    # If AGKOZAK_PROMPT_DIRTRIM is not 0, trim the directory
+    if (( $1 > 0 )); then
+
       # The number of directory elements is the number of slashes in ${PWD#$HOME}
       dir_count=$((${#dir} - ${#${dir//\//}}))
-
       if (( dir_count <= $1 )); then
         case $PWD in
           ${HOME}) print -nz '~' ;;
@@ -207,12 +219,13 @@ _agkozak_prompt_dirtrim() {
           lopped_path=${lopped_path%\/*}
           (( i++ ))
         done
-
         case $PWD in
           ${HOME}*) print -nz "~/...${dir#${lopped_path}}" ;;
           *) print -nz -f '...%s' "${PWD#${lopped_path}}" ;;
         esac
       fi
+
+    # If AGKOZAK_PROMPT_DIRTRIM is 0
     else
       case $PWD in
         ${HOME}) print -nz '~' ;;
@@ -224,6 +237,8 @@ _agkozak_prompt_dirtrim() {
 
   local output
   read -rz output
+
+  # Argument -v stores the output to psvar[2]; otherwise send to STDOUT
   (( var )) && psvar[2]=$output || print $output
 }
 

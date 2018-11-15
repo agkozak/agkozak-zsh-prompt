@@ -345,6 +345,15 @@ _agkozak_has_usr1() {
 #   AGKOZAK_TRAPUSR1_FUNCTION
 ###########################################################
 _agkozak_async_init() {
+    
+  # WSL should have BG_NICE disabled, since it does not have a Linux kernel
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
+  if [[ -e /proc/version ]]; then
+    if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
+      unsetopt BG_NICE
+      local WSL=1   # For later reference
+    fi
+  fi
 
   # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
   [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
@@ -353,15 +362,6 @@ _agkozak_async_init() {
 
   # Otherwise, first provide for certain quirky systems
   else
-
-    # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-    setopt LOCAL_OPTIONS EXTENDED_GLOB
-    if [[ -e /proc/version ]]; then
-      if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
-        unsetopt BG_NICE
-        local WSL=1   # For later reference
-      fi
-    fi
 
     if (( WSL )); then
       if _agkozak_load_async_lib; then

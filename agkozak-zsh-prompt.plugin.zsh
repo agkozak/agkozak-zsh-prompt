@@ -82,6 +82,9 @@ typeset -g AGKOZAK_PROMPT_DIRTRIM=${AGKOZAK_PROMPT_DIRTRIM:-2}
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
 typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
 
+# Set AGKOZAK_LEFT_PROMPT_ONLY to have the Git status appear in the left prompt
+typeset -g AGKOZAK_LEFT_PROMPT_ONLY=${AGKOZAK_LEFT_PROMPT_ONLY:-0}
+
 # Set AGKOZAK_COLORS_* variables to any valid color
 #   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color     (default: red)
 #   AGKOZAK_COLORS_USER_HOST changes the username/hostname color (default: green)
@@ -621,6 +624,8 @@ _agkozak_strip_colors() {
 #   AGKOZAK_OLD_PROMPT_DIRTRIM
 #   AGKOZAK_NAMED_DIRS
 #   AGKOZAK_OLD_NAMED_DIRS
+#   AGKOZAK_LEFT_PROMPT_ONLY
+#   AGKOZAK_OLD_LEFT_PROMPT_ONLY
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_MULTILINE
 #   AGKOZAK_PROMPT_WHITESPACE
@@ -641,6 +646,12 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_OLD_PROMPT_DIRTRIM=$AGKOZAK_PROMPT_DIRTRIM
     typeset -g AGKOZAK_OLD_NAMED_DIRS=$AGKOZAK_NAMED_DIRS
   fi
+  
+  if (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK_OLD_LEFT_PROMPT_ONLY )); then
+    unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
+    typeset -g AGKOZAK_OLD_LEFT_PROMPT_ONLY=$AGKOZAK_LEFT_PROMPT_ONLY
+    _agkozak_prompt_string
+  fi
 
   psvar[3]=''
   psvar[4]=''
@@ -652,7 +663,8 @@ _agkozak_precmd() {
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
-  if (( AGKOZAK_MULTILINE == 0 )) && [[ -z $INSIDE_EMACS ]]; then
+  if (( AGKOZAK_MULTILINE == 0 )) && (( ! AGKOZAK_LEFT_PROMPT_ONLY )) \
+    && [[ -z $INSIDE_EMACS ]]; then
     typeset -g AGKOZAK_PROMPT_WHITESPACE=' '
   else
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
@@ -686,15 +698,64 @@ _agkozak_precmd() {
 }
 
 ############################################################
+# Set the prompt strings
+#
+# Globals:
+#   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_COLORS_EXIT_STATUS
+#   AGKOZAK_COLORS_USER_HOST
+#   AGKOZAK_COLORS_PATH
+#   AGKOZAK_PROMPT_WHITESPACE
+#   AGKOZAK_CURRENT_CUSTOM_PROMPT
+#   AGKOZAK_CUSTOM_RPROMPT
+#   AGKOZAK_COLORS_BRANCH_STATUS
+#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
+############################################################
+_agkozak_prompt_string () {
+  if (( $+AGKOZAK_CUSTOM_PROMPT )); then
+    PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+  else
+    # The color left prompt
+    PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+    PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+    PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
+    if (( AGKOZAK_LEFT_PROMPT_ONLY )); then
+      PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
+    fi
+    PROMPT+='${AGKOZAK_PROMPT_WHITESPACE}'
+    PROMPT+='%(4V.:.%#) '
+
+    typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
+    typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+  fi
+
+  if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
+    RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
+  else
+    # The color right prompt
+    if (( ! AGKOZAK_LEFT_PROMPT_ONLY )); then
+      typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
+    else
+      typeset -g RPROMPT=''
+    fi
+
+    typeset -g AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
+    typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${RPROMPT}
+  fi
+
+  if ! _agkozak_has_colors; then
+    PROMPT=$(_agkozak_strip_colors "$PROMPT")
+    RPROMPT=$(_agkozak_strip_colors "$RPROMPT")
+  fi
+}
+
+############################################################
 # Prompt setup
 #
 # Globals:
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_USR1_ASYNC_WORKER
-#   AGKOZAK_CUSTOM_PROMPT
-#   AGKOZAK_CURRENT_CUSTOM_PROMPT
-#   AGKOZAK_CUSTOM_RPROMPT
-#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
+#   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
 () {
 
@@ -754,33 +815,7 @@ _agkozak_precmd() {
     # side of the screen
     (( $+VSCODE_PID )) && ZLE_RPROMPT_INDENT=6
 
-    if (( $+AGKOZAK_CUSTOM_PROMPT )); then
-      PROMPT=${AGKOZAK_CUSTOM_PROMPT}
-    else
-      # The color left prompt
-      PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-      PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
-      PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
-      PROMPT+='%(4V.:.%#) '
-
-      typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
-      typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
-    fi
-
-    if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
-      RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
-    else
-      # The color right prompt
-      typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
-
-      typeset -g AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
-      typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${RPROMPT}
-    fi
-
-    if ! _agkozak_has_colors; then
-      PROMPT=$(_agkozak_strip_colors "$PROMPT")
-      RPROMPT=$(_agkozak_strip_colors "$RPROMPT")
-    fi
+    _agkozak_prompt_string
 
   fi
 

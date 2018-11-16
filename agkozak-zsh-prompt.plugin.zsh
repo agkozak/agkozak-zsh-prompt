@@ -607,14 +607,18 @@ _agkozak_strip_colors() {
 #
 # 1) Redisplays path ($psvar[2]) whenever the value of
 #      AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS changes
-# 2) Resets Git status and vi mode display
-# 3) Begins to calculate Git status
-# 4) Sets AGKOZAK_PROMPT_WHITESPACE based on value of
+# 2) If AGKOZAK_MULTILINE is changed to 0, set
+#      AGKOZAK_LEFT_PROMPT_ONLY=0
+# 3) If AGKOZAK_LEFT_PROMPT_ONLY is changed, updated both
+#      prompt strings
+# 4) Resets Git status and vi mode display
+# 5) Begins to calculate Git status
+# 6) Sets AGKOZAK_PROMPT_WHITESPACE based on value of
 #      AGKOZAK_MULTILINE
-# 5) Optionally display a blank line (AGKOZAK_BLANK_LINES),
+# 7) Optionally display a blank line (AGKOZAK_BLANK_LINES),
 #      while avoiding a blank line when the shell is first
 #      loaded
-# 6) If custom prompts are defined, update the prompt
+# 8) If custom prompts are defined, update the prompt
 #      strings
 #
 # TODO: Consider making AGKOZAK_PROMPT_WHITESPACE a psvar
@@ -624,10 +628,11 @@ _agkozak_strip_colors() {
 #   AGKOZAK_OLD_PROMPT_DIRTRIM
 #   AGKOZAK_NAMED_DIRS
 #   AGKOZAK_OLD_NAMED_DIRS
+#   AGKOZAK_MULTILINE
+#   AGKOZAK_OLD_MULTILINE
 #   AGKOZAK_LEFT_PROMPT_ONLY
 #   AGKOZAK_OLD_LEFT_PROMPT_ONLY
 #   AGKOZAK_ASYNC_METHOD
-#   AGKOZAK_MULTILINE
 #   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_FIRST_PROMPT_PRINTED
@@ -647,6 +652,11 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_OLD_NAMED_DIRS=$AGKOZAK_NAMED_DIRS
   fi
   
+  if (( AGKOZAK_MULTILINE != AGKOZAK_OLD_MULTILINE )); then
+    (( AGKOZAK_MULTILINE == 0 )) && AGKOZAK_LEFT_PROMPT_ONLY=0
+    typeset -g AGKOZAK_OLD_MULTILINE=$AGKOZAK_MULTILINE
+  fi
+
   if (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK_OLD_LEFT_PROMPT_ONLY )); then
     unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
     typeset -g AGKOZAK_OLD_LEFT_PROMPT_ONLY=$AGKOZAK_LEFT_PROMPT_ONLY

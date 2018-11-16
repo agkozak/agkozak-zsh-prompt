@@ -28,6 +28,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - [`vi` Editing Mode](#vi-editing-mode)
 - [Blank Lines Between Prompts](#blank-lines-between-prompts)
 - [Optional Single-Line Prompt](#optional-single-line-prompt)
+- [Optional Left-Prompt-Only Mode](#optional-left-prompt-only-mode)
 - [Custom Colors](#custom-colors)
 - [Custom Prompts](#custom-prompts)
 - [Asynchronous Methods](#asynchronous-methods)
@@ -183,6 +184,14 @@ in your `.zshrc` before you source agkozak-zsh-prompt.
 Demo:
 
 [![agkozak ZSH Prompt (Singe-Line)](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)
+
+**UPDATE: These prompt-drawing issues seem to have been fixed in ZSH 5.6.**
+
+## Optional Left-Prompt-Only Mode
+
+If you would like to have the Git status displayed in the left prompt, set
+
+    AGKOZAK_LEFT_PROMPT_ONLY=1
 
 ## Custom Colors
 If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:

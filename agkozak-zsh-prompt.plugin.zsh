@@ -242,7 +242,11 @@ _agkozak_prompt_dirtrim() {
   read -rz output
 
   # Argument -v stores the output to psvar[2]; otherwise send to STDOUT
-  (( var )) && psvar[2]=$output || print $output
+  if (( var )); then
+    psvar[2]=$output
+  else
+    print $output
+  fi
 }
 
 ############################################################

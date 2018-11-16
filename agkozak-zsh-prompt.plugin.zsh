@@ -760,7 +760,7 @@ _agkozak_precmd() {
       # The color left prompt
       PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
       PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
-      PROMPT+=$'%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
+      PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b${AGKOZAK_PROMPT_WHITESPACE}'
       PROMPT+='%(4V.:.%#) '
 
       typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
@@ -789,6 +789,6 @@ _agkozak_precmd() {
 
 # Clean up environment
 unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_is_ssh \
-  _agkozak_async_init _agkozak_has_colors _agkozak_strip_colors
+  _agkozak_async_init
 
 # vim: ts=2:et:sts=2:sw=2:

@@ -28,7 +28,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - [`vi` Editing Mode](#vi-editing-mode)
 - [Blank Lines Between Prompts](#blank-lines-between-prompts)
 - [Optional Single-Line Prompt](#optional-single-line-prompt)
-- [Optional Left-Prompt-Only Mode (#optional-left-prompt-only-mode)
+- [Optional Left-Prompt-Only Mode] (#optional-left-prompt-only-mode)
 - [Custom Colors](#custom-colors)
 - [Custom Prompts](#custom-prompts)
 - [Asynchronous Methods](#asynchronous-methods)

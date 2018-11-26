@@ -5,21 +5,22 @@
 ![zsh version 4.3.11 and higher](img/zsh_4.3.11_plus.svg)
 [![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-prompt.svg)](https://github.com/agkozak/agkozak-zsh-prompt/stargazers)
 
-The agkozak ZSH Prompt is an asynchronous, dynamic color Git prompt for `zsh` that uses basic ASCII symbols to show:
+The agkozak ZSH Prompt is an asynchronous color Git prompt for ZSH that uses basic ASCII symbols to show:
 
-* the username
-* whether a session is local or remote over SSH
+* username
+* whether a session is local, or remote over SSH or `mosh`
 * an abbreviated path
-* the Git branch and status
+* Git branch and status
 * the exit status of the last command, if it was not zero
 * if `vi` line editing is enabled, whether insert or command mode is active
 
-This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris 11. It also has full asynchronous functionality in Windows environments such as MSYS2, Cygwin, and WSL.
+This prompt has been tested on numerous Linux and BSD distributions, as well ass on Solaris 11. It is also fully asynchronous in Windows environments such as MSYS2, Cygwin, and WSL.
 
 ![The agkozak ZSH Prompt](img/demo.gif)
 
 ## Table of Contents
 
+- [News](#news)
 - [Installation](#installation)
 - [Local and Remote Sessions](#local-and-remote-sessions)
 - [Abbreviated Paths](#abbreviated-paths)
@@ -33,6 +34,14 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - [Custom Colors](#custom-colors)
     - [Custom Prompts](#custom-prompts)
 - [Asynchronous Methods](#asynchronous-methods)
+
+## News
+
+- v3.0.0 (November 26, 2018)
+    - Asynchronous Git status now available via process substitution in all supported versions of ZSH and on all supported systems (props to @psprint). For reasons of speed, `zsh-async` remains the default asynchronous method in WSL and Solaris, and `usr1` is default in MSYS2/Cygwin.
+    - When `AGKOZAK_LEFT_PROMPT_ONLY` is set to `1`, the Git status is displayed in the left prompt, and the right prompt is left blank.
+    - The prompt script loads up to 4x faster.
+    - The left prompt is displayed ~2x faster.
 
 ## Installation
 

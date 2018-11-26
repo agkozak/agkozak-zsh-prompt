@@ -172,7 +172,7 @@ This prompt will work perfectly if you use the default ZSH Emacs editing mode; i
 
 ## Customization
 
-In addition to setting `AGKOZAK_PROMPT_DIRTRIM` and `AGKOZAK_NAMED_DIRS` to alter how the working directory is displayed ([see above](#abbreviated-paths)), you may use other settings to alter how the prompt is displayed.
+In addition to setting `AGKOZAK_PROMPT_DIRTRIM` and `AGKOZAK_NAMED_DIRS` to change how the working directory is displayed ([see above](#abbreviated-paths)), you may use other settings to alter how the prompt is displayed.
 
 ### Blank Lines Between Prompts
 

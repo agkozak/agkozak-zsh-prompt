@@ -390,7 +390,7 @@ _agkozak_async_init() {
   # Otherwise, first provide for certain quirky systems
   else
 
-    if (( WSL )); then
+    if (( WSL )) || [[ $OSTYPE == solaris* ]]; then
       if _agkozak_load_async_lib; then
         typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
       elif _agkozak_has_usr1; then

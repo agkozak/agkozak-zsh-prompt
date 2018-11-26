@@ -26,11 +26,12 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - [Git Branch and Status](#git-branch-and-status)
 - [Exit Status](#exit-status)
 - [`vi` Editing Mode](#vi-editing-mode)
-- [Blank Lines Between Prompts](#blank-lines-between-prompts)
-- [Optional Single-Line Prompt](#optional-single-line-prompt)
-- [Optional Left-Prompt-Only Mode](#optional-left-prompt-only-mode)
-- [Custom Colors](#custom-colors)
-- [Custom Prompts](#custom-prompts)
+- [Customization](#customization)
+    - [Blank Lines Between Prompts](#blank-lines-between-prompts)
+    - [Optional Single-Line Prompt](#optional-single-line-prompt)
+    - [Optional Left-Prompt-Only Mode](#optional-left-prompt-only-mode)
+    - [Custom Colors](#custom-colors)
+    - [Custom Prompts](#custom-prompts)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## Installation
@@ -167,33 +168,35 @@ agkozak does not enable `vi` editing mode for you. To do so, add
 
 to your `.zshrc`.
 
-## Blank Lines Between Prompts
+## Customization
+
+In addition to setting `AGKOZAK_PROMPT_DIRTRIM` and `AGKOZAK_NAMED_DIRS` to alter how the working directory is displayed ([see above](#abbreviated-paths)), you may use other settings to alter how the prompt is displayed.
+
+### Blank Lines Between Prompts
 
 If you prefer to have a little space between instances of the prompt, put `AGKOZAK_BLANK_LINES=1` in your `.zshrc`:
 
 ![AGKOZAK_BLANK_LINES](img/blank_lines.png)
 
-## Optional Single-Line Prompt
+### Optional Single-Line Prompt
 
-Older versions of the agkozak ZSH Prompt provided a single-line prompt. [Because of changes made in ZSH 5.5](https://github.com/agkozak/agkozak-zsh-prompt/issues/6) that affect the calculation of cursor position when the prompt wraps, it has become difficult to ensure that in that situation the cursor will land where it is supposed to, i.e. two positions after the `%` or `#` and not on top of the left prompt or after the right prompt. I have made the default prompt two-line, which fixes the problem entirely, but if you prefer a single-line prompt and are willing to put up with the occasional glitch, put
+If you prefer a single-line prompt with a right prompt that disappears when it is typed over, put
 
     AGKOZAK_MULTILINE=0
 
-in your `.zshrc` before you source agkozak-zsh-prompt.
+in your `.zshrc`.
 
 Demo:
 
 [![agkozak ZSH Prompt (Singe-Line)](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)
 
-**UPDATE: These prompt-drawing issues seem to have been fixed in ZSH 5.6.**
+### Optional Left-Prompt-Only Mode
 
-## Optional Left-Prompt-Only Mode
-
-If you would like to have the Git status displayed in the left prompt, set
+If you would like to have the Git status displayed in the left prompt (with no right prompt -- this is how [`pure`](https://github.com/sindresorhus/pure) does it), set
 
     AGKOZAK_LEFT_PROMPT_ONLY=1
 
-## Custom Colors
+### Custom Colors
 If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
 
     AGKOZAK_COLORS_EXIT_STATUS=red
@@ -201,7 +204,7 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
     AGKOZAK_COLORS_PATH=blue
     AGKOZAK_COLORS_BRANCH_STATUS=yellow
 
-## Custom Prompts
+### Custom Prompts
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, are
 
     PROMPT='%(?..%B%F{red}(%?%)%f%b )'
@@ -211,7 +214,14 @@ If you would like to make further customizations to your prompt, you may use the
 
     RPROMPT='%(3V.%F{yellow}%3v%f.)'
 
-If, for example, you would like to move the Git information into the left prompt (eliminating the right prompt entirely) and to make the Git information your favorite shade of grey, you may include the following in your `.zshrc`:
+If, for example, you would like to move the Git information into the left prompt (eliminating the right prompt entirely) and to make the Git information your favorite shade of grey, with an `sh`/`ksh`/`bash`-style `$` prompt replacing ZSH's native `%` prompt, you may include the following in your `.zshrc`:
+
+    _agkozak_vi_mode_indicator() {
+      case $KEYMAP in
+        vicmd) print -n ':' ;;
+        *) (( EUID )) && print -n '$' || print -n '#' ;;
+      esac
+    }
 
     AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
     AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '

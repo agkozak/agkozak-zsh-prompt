@@ -421,8 +421,8 @@ _agkozak_async_init() {
   ############################################################
   # Process substitution async method
   #
-  # Fork a process to fetch the Git status and feed it
-  # asynchronously to a file descriptor. Install a callback
+  # Fork a background process to fetch the Git status and feed
+  # it asynchronously to a file descriptor. Install a callback
   # handler to process input from the file descriptor.
   #
   # Globals:

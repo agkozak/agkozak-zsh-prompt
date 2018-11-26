@@ -210,7 +210,7 @@ If you would like to make further customizations to your prompt, you may use the
     PROMPT='%(?..%B%F{red}(%?%)%f%b )'
     PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
     PROMPT+=$'%B%F{blue}%2v%f%b\n'
-    PROMPT+='$(_agkozak_vi_mode_indicator) '
+    PROMPT+='%(4V.:.%#) '
 
     RPROMPT='%(3V.%F{yellow}%3v%f.)'
 

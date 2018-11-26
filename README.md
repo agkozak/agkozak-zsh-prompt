@@ -168,6 +168,8 @@ agkozak does not enable `vi` editing mode for you. To do so, add
 
 to your `.zshrc`.
 
+This prompt will work perfectly if you use the default ZSH Emacs editing mode; in that case, the prompt character will not change.
+
 ## Customization
 
 In addition to setting `AGKOZAK_PROMPT_DIRTRIM` and `AGKOZAK_NAMED_DIRS` to alter how the working directory is displayed ([see above](#abbreviated-paths)), you may use other settings to alter how the prompt is displayed.
@@ -186,15 +188,15 @@ If you prefer a single-line prompt with a right prompt that disappears when it i
 
 in your `.zshrc`.
 
-Demo:
-
-[![agkozak ZSH Prompt (Singe-Line)](https://asciinema.org/a/155904.png)](https://asciinema.org/a/155904)
+![Single-Line Prompt](img/single-line_prompt.gif)
 
 ### Optional Left-Prompt-Only Mode
 
 If you would like to have the Git status displayed in the left prompt (with no right prompt -- this is how [`pure`](https://github.com/sindresorhus/pure) does it), set
 
     AGKOZAK_LEFT_PROMPT_ONLY=1
+
+![Left-Prompt-Only Mode](img/AGKOZAK_LEFT_PROMPT_ONLY.gif)
 
 ### Custom Colors
 If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
@@ -203,6 +205,8 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
     AGKOZAK_COLORS_USER_HOST=green
     AGKOZAK_COLORS_PATH=blue
     AGKOZAK_COLORS_BRANCH_STATUS=yellow
+
+![Custom Colors](img/colors.gif)
 
 ### Custom Prompts
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, are

@@ -219,7 +219,7 @@ If, for example, you would like to move the Git information into the left prompt
     _agkozak_vi_mode_indicator() {
       case $KEYMAP in
         vicmd) print -n ':' ;;
-        *) (( EUID )) && print -n '$' || print -n '#' ;;
+        *) print -Pn '%(!.#.$)' ;;
       esac
     }
 

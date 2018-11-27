@@ -61,9 +61,7 @@ Add the line
 
     antigen bundle agkozak/agkozak-zsh-prompt
 
-to your `.zshrc`, somewhere before the line that says `antigen apply`.
-
-*Note: use `antigen bundle`, not `antigen theme`; the latter can result in a broken prompt when `.zshrc` is sourced a second time or whenever `antigen theme` is run again. [This problem is expected to be fixed in antigen version 2.2.3.](https://github.com/zsh-users/antigen/issues/652)*
+to your `.zshrc`, somewhere before the line that says `antigen apply`. Be sure to use `antigen bundle` and not `antigen theme`.
 
 ### For [oh-my-zsh](http://ohmyz.sh) users
 
@@ -169,7 +167,7 @@ If the exit status of the most recently executed command is other than zero (zer
 
 The agkozak ZSH Prompt indicates when the user has switched from `vi` insert mode to command mode by turning the `%` or `#` of the prompt into a colon:
 
-![`zsh` line editing](img/zsh-line-editing.png)
+![ZSH line editing](img/zsh-line-editing.png)
 
 agkozak does not enable `vi` editing mode for you. To do so, add
 

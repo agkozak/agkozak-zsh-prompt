@@ -29,8 +29,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well ass
 - [`vi` Editing Mode](#vi-editing-mode)
 - [Customization](#customization)
     - [Blank Lines Between Prompts](#blank-lines-between-prompts)
-    - [Optional Single-Line Prompt](#optional-single-line-prompt)
-    - [Optional Left-Prompt-Only Mode](#optional-left-prompt-only-mode)
+    - [Optional Single-line Prompt](#optional-single-line-prompt)
+    - [Optional Left-prompt-only Mode](#optional-left-prompt-only-mode)
     - [Custom Colors](#custom-colors)
     - [Custom Prompts](#custom-prompts)
 - [Asynchronous Methods](#asynchronous-methods)
@@ -38,7 +38,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well ass
 ## News
 
 - v3.0.0 (November 26, 2018)
-    - Asynchronous Git status now available via process substitution in all supported versions of ZSH and on all supported systems (props to @psprint). For reasons of speed, `zsh-async` remains the default asynchronous method in WSL and Solaris, and `usr1` is default in MSYS2/Cygwin.
+    - The asynchronous Git status is now available via process substitution in all supported versions of ZSH and on all supported systems (props to @psprint). For reasons of speed, `zsh-async` remains the default asynchronous method in WSL and Solaris, and `usr1` is default in MSYS2/Cygwin.
     - When `AGKOZAK_LEFT_PROMPT_ONLY` is set to `1`, the Git status is displayed in the left prompt, and the right prompt is left blank.
     - The prompt script loads up to 4x faster.
     - The left prompt is displayed ~2x faster.
@@ -189,7 +189,7 @@ If you prefer to have a little space between instances of the prompt, put `AGKOZ
 
 ![AGKOZAK_BLANK_LINES](img/blank_lines.png)
 
-### Optional Single-Line Prompt
+### Optional Single-line Prompt
 
 If you prefer a single-line prompt with a right prompt that disappears when it is typed over, put
 
@@ -199,7 +199,7 @@ in your `.zshrc`.
 
 ![Single-Line Prompt](img/single-line_prompt.gif)
 
-### Optional Left-Prompt-Only Mode
+### Optional Left-prompt-only Mode
 
 If you would like to have the Git status displayed in the left prompt (with no right prompt -- this is how [`pure`](https://github.com/sindresorhus/pure) does it), set
 

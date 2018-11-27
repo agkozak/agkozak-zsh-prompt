@@ -32,7 +32,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well ass
     - [Optional Single-line Prompt](#optional-single-line-prompt)
     - [Optional Left-prompt-only Mode](#optional-left-prompt-only-mode)
     - [Custom Colors](#custom-colors)
-    - [Custom Prompts](#custom-prompts)
+    - [Advanced Customization](#advanced-customization)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## News
@@ -217,7 +217,7 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
 
 ![Custom colors](img/colors.gif)
 
-### Custom Prompts
+### Advanced Customization
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as
 
     AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'

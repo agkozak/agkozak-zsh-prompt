@@ -14,7 +14,7 @@ The agkozak ZSH Prompt is an asynchronous color Git prompt for ZSH that uses bas
 * the exit status of the last command, if it was not zero
 * if `vi` line editing is enabled, whether insert or command mode is active
 
-This prompt has been tested on numerous Linux and BSD distributions, as well ass on Solaris 11. It is also fully asynchronous in Windows environments such as MSYS2, Cygwin, and WSL.
+This prompt has been tested on numerous Linux and BSD distributions, as well ass on Solaris. It is also fully asynchronous in Windows environments such as MSYS2, Cygwin, and WSL.
 
 ![The agkozak ZSH Prompt](img/demo.gif)
 
@@ -247,7 +247,7 @@ If, for example, you would like to move the Git information into the left prompt
 
 The agkozak ZSH Prompt has three different methods for displaying the Git status asynchronously, thus keeping the prompt swift. One asynchronous method that works on all known platforms and with all supported versions of ZSH is [@psprint](https://github.com/psprint)'s `subst-async` technique, which uses process substitution (`<()`) to fork a background process that fetches the Git status and feeds it to a file descriptor. A `zle -F` callback handler then processes the input from the file descriptor and uses it to update the prompt.
 
-`subst-async` works on Windows environments such as Cygwin, MSYS2, and WSL and on Solaris 11, but it is comparatively slow. On WSL and Solaris, the default asynchronous method relies on the [`zsh-async`](https://github.com/mafredri/zsh-async) library, which uses the `zsh/zpty` module to spin off pseudo-terminals that can calculate the Git status without blocking the user from continuing to use the terminal.
+`subst-async` works on Windows environments such as Cygwin, MSYS2, and WSL and on Solaris, but it is comparatively slow. On WSL and Solaris, the default asynchronous method relies on the [`zsh-async`](https://github.com/mafredri/zsh-async) library, which uses the `zsh/zpty` module to spin off pseudo-terminals that can calculate the Git status without blocking the user from continuing to use the terminal.
 
 `zsh/zpty` does not work well with Cygwin or MSYS2. For these environments, the agkozak ZSH Prompt uses a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/). This `usr1` method creates and disowns child processes that calculate the Git status and then kill themselves off, triggering SIGUSR1 in the process. The ZSH `TRAPUSR1` trap function then displays that Git status. Since other scripts or the user could conceivably define `TRAPUSR1` either before or after this prompt is loaded, it regularly checks to see if that is the case and, if so, falls back to the slower but entirely reliable `subst-async` method.
 

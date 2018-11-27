@@ -242,7 +242,7 @@ Both prompts, thus altered, could be expressed as
 
     AGKOZAK_CUSTOM_RPROMPT='%*'
 
-Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` are set, they may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.
+Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, they may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.
 
 ## Asynchronous Methods
 

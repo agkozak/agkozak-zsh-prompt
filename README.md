@@ -2,8 +2,8 @@
 
 [![MIT License](img/mit_license.svg)](https://opensource.org/licenses/MIT)
 [![GitHub tag](https://img.shields.io/github/tag/agkozak/agkozak-zsh-prompt.svg)](https://GitHub.com/agkozak/agkozak-zsh-prompt/tags/)
-![zsh version 4.3.11 and higher](img/zsh_4.3.11_plus.svg)
-[![GitHub Stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-prompt.svg)](https://github.com/agkozak/agkozak-zsh-prompt/stargazers)
+![ZSH version 4.3.11 and higher](img/zsh_4.3.11_plus.svg)
+[![GitHub stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-prompt.svg)](https://github.com/agkozak/agkozak-zsh-prompt/stargazers)
 
 The agkozak ZSH Prompt is an asynchronous color Git prompt for ZSH that uses basic ASCII symbols to show:
 
@@ -195,7 +195,7 @@ If you prefer a single-line prompt with a right prompt that disappears when it i
 
 in your `.zshrc`.
 
-![Single-Line Prompt](img/single-line_prompt.gif)
+![Single-line prompt](img/single-line_prompt.gif)
 
 ### Optional Left-prompt-only Mode
 
@@ -203,7 +203,7 @@ If you would like to have the Git status displayed in the left prompt (with no r
 
     AGKOZAK_LEFT_PROMPT_ONLY=1
 
-![Left-Prompt-Only Mode](img/AGKOZAK_LEFT_PROMPT_ONLY.gif)
+![Left-prompt-only mode](img/AGKOZAK_LEFT_PROMPT_ONLY.gif)
 
 ### Custom Colors
 If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
@@ -213,7 +213,7 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
     AGKOZAK_COLORS_PATH=blue
     AGKOZAK_COLORS_BRANCH_STATUS=yellow
 
-![Custom Colors](img/colors.gif)
+![Custom colors](img/colors.gif)
 
 ### Custom Prompts
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, are

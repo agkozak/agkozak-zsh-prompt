@@ -32,7 +32,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well ass
     - [Optional Single-line Prompt](#optional-single-line-prompt)
     - [Optional Left-prompt-only Mode](#optional-left-prompt-only-mode)
     - [Custom Colors](#custom-colors)
-    - [Custom Prompts](#custom-prompts)
+    - [Advanced Customization](#advanced-customization)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## News
@@ -217,31 +217,32 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
 
 ![Custom colors](img/colors.gif)
 
-### Custom Prompts
-If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, are
+### Advanced Customization
+If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as
 
-    PROMPT='%(?..%B%F{red}(%?%)%f%b )'
-    PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
-    PROMPT+=$'%B%F{blue}%2v%f%b\n'
-    PROMPT+='%(4V.:.%#) '
+    AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
+    AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
+    AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b\n'
+    AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
-    RPROMPT='%(3V.%F{yellow}%3v%f.)'
+    AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.)'
 
-If, for example, you would like to move the Git information into the left prompt (eliminating the right prompt entirely) and to make the Git information your favorite shade of grey, with an `sh`/`ksh`/`bash`-style `$` prompt replacing ZSH's native `%` prompt, you may include the following in your `.zshrc`:
+In general, you will not need to change these settings to achieve a custom prompt. If, for example, you would like to move the Git status into the left prompt, you may do so simply with `AGKOZAK_LEFT_PROMPT_ONLY=1`. If you want to make it your favorite shade of grey, you may add `AGKOZAK_COLORS_BRANCH_STATUS=243`.
 
-    _agkozak_vi_mode_indicator() {
-      case $KEYMAP in
-        vicmd) print -n ':' ;;
-        *) print -Pn '%(!.#.$)' ;;
-      esac
-    }
+But if you then wanted to have the (now empty) right prompt display the time, you should add
+
+     AGKOZAK_CUSTOM_RPROMPT='%*'
+
+Both prompts, thus altered, could be expressed as
 
     AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
     AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
     AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b%(3V.%F{243}%3v%f.)\n'
-    AGKOZAK_CUSTOM_PROMPT+='$(_agkozak_vi_mode_indicator) '
+    AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
-    AGKOZAK_CUSTOM_RPROMPT=''
+    AGKOZAK_CUSTOM_RPROMPT='%*'
+
+Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, they may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.
 
 ## Asynchronous Methods
 

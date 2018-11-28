@@ -439,6 +439,7 @@ _agkozak_async_init() {
   #   AGKOZAK_ASYNC_FD
   ############################################################
   _agkozak_subst_async() {
+    setopt LOCAL_OPTIONS NO_IGNORE_BRACES
     typeset -g AGKOZAK_ASYNC_FD=13371
 
     # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
@@ -467,6 +468,8 @@ _agkozak_async_init() {
   #   $1  File descriptor
   ############################################################
   _agkozak_zsh_subst_async_callback() {
+    setopt LOCAL_OPTIONS NO_IGNORE_BRACES
+
     local FD="$1" response
 
     # Read data from $FD descriptor
@@ -665,7 +668,7 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_OLD_PROMPT_DIRTRIM=$AGKOZAK_PROMPT_DIRTRIM
     typeset -g AGKOZAK_OLD_NAMED_DIRS=$AGKOZAK_NAMED_DIRS
   fi
-  
+
   if (( AGKOZAK_MULTILINE != AGKOZAK_OLD_MULTILINE )); then
     (( AGKOZAK_MULTILINE == 0 )) && AGKOZAK_LEFT_PROMPT_ONLY=0
     typeset -g AGKOZAK_OLD_MULTILINE=$AGKOZAK_MULTILINE

@@ -15,7 +15,7 @@ The agkozak ZSH Prompt is an asynchronous color Git prompt for ZSH that uses bas
 * the exit status of the last command, if it was not zero
 * if `vi` line editing is enabled, whether insert or command mode is active
 
-This prompt has been tested on numerous Linux and BSD distributions, as well ass on Solaris. It is also fully asynchronous in Windows environments such as MSYS2, Cygwin, and WSL.
+This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris. It is also fully asynchronous in Windows environments such as MSYS2, Cygwin, and WSL.
 
 ![The agkozak ZSH Prompt](img/demo.gif)
 

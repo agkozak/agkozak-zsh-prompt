@@ -189,9 +189,9 @@ _agkozak_prompt_dirtrim() {
       read -rz zsh_pwd
       case $zsh_pwd in
         \~) print -Pnz $zsh_pwd ;;
-        \~/*) print -Pnz "%($(($1 + 2))~|~/.../%${1}~|%~)" ;;
-        \~*) print -Pnz "%($(($1 + 2))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
-        *) print -Pnz "%($(($1 + 1))/|.../%${1}d|%d)" ;;
+        \~/*) print -Pnz "%($(( $1 + 2 ))~|~/.../%${1}~|%~)" ;;
+        \~*) print -Pnz "%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
+        *) print -Pnz "%($(( $1 + 1 ))/|.../%${1}d|%d)" ;;
       esac
     fi
 
@@ -207,7 +207,7 @@ _agkozak_prompt_dirtrim() {
     if (( $1 > 0 )); then
 
       # The number of directory elements is the number of slashes in ${PWD#$HOME}
-      dir_count=$((${#dir} - ${#${dir//\//}}))
+      dir_count=$(( ${#dir} - ${#${dir//\//}} ))
       if (( dir_count <= $1 )); then
         case $PWD in
           ${HOME}) print -nz '~' ;;
@@ -444,13 +444,13 @@ _agkozak_async_init() {
 
     # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
     if [[ $OSTYPE == (msys|cygwin|solaris*) ]]; then
-      exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status; command true )
+      exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status; command true)
     # Prevent WSL from locking up when using X
     elif (( WSL )) && (( $+DISPLAY )); then
-      exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+      exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
     else
-      exec {AGKOZAK_ASYNC_FD}< <( _agkozak_branch_status )
+      exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
     fi
 
     # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html

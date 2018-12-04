@@ -683,12 +683,14 @@ _agkozak_precmd() {
   psvar[3]=''
   psvar[4]=''
 
-  case $AGKOZAK_ASYNC_METHOD in
-    'subst-async') _agkozak_subst_async ;;
-    'zsh-async') _agkozak_zsh_async ;;
-    'usr1') _agkozak_usr1_async ;;
-    *) psvar[3]="$(_agkozak_branch_status)" ;;
-  esac
+  if [[ -d ${PWD}/.git ]]; then
+    case $AGKOZAK_ASYNC_METHOD in
+      'subst-async') _agkozak_subst_async ;;
+      'zsh-async') _agkozak_zsh_async ;;
+      'usr1') _agkozak_usr1_async ;;
+      *) psvar[3]="$(_agkozak_branch_status)" ;;
+    esac
+  fi
 
   if (( AGKOZAK_MULTILINE == 0 )) && (( ! AGKOZAK_LEFT_PROMPT_ONLY )) \
     && [[ -z $INSIDE_EMACS ]]; then

@@ -565,8 +565,8 @@ _agkozak_async_init() {
       #   AGKOZAK_TRAPUSR1_FUNCTION
       ############################################################
       TRAPUSR1() {
-        # read from temp file
-        psvar[3]=$(cat /tmp/agkozak_zsh_prompt_$$)
+        # Set prompt from contents of temporary file
+        psvar[3]=$(print -n "$(< /tmp/agkozak_zsh_prompt_$$)")
 
         # Reset asynchronous process number
         typeset -g AGKOZAK_USR1_ASYNC_WORKER=0

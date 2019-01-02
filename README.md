@@ -38,6 +38,9 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 ## News
 
+- v3.0.2 (December 26, 2018)
+    - The external command `cat` is no longer used.
+    - The prompt now uses [the latest commit](https://github.com/mafredri/zsh-async/commit/43de5e0738eaf366dfde4d0a204de655de16f18b) of `zsh-async`.
 - v3.0.1 (November 26, 2018)
     - I have restored the `_agkozak_vi_mode_indicator` function as a legacy feature, as many people people use it in custom prompts. The default indicator can be expressed as `'%(4V.:.%#)'`, though, and variations on this will be preferable to `'$(_agkozak_vi_mode_indicator)'`, which entails a subshell.
 - v3.0.0 (November 26, 2018)

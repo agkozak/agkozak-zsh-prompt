@@ -265,7 +265,7 @@ _agkozak_branch_status() {
   branch=${ref#refs/heads/}
 
   if [[ -n $branch ]]; then
-    local git_status symbols k
+    local git_status symbols i k
     git_status="$(LC_ALL=C command git status 2>&1)"
 
     typeset -A messages
@@ -280,10 +280,12 @@ _agkozak_branch_status() {
                 '?'   'Untracked files'
              )
 
+    i=1
     for k in '&*' '&' '*' '+' 'x' '!' '>' '?'; do
       case $git_status in
-        *${messages[$k]}*) symbols+="$k" ;;
+        *${messages[$k]}*) symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-$k}" ;;
       esac
+      (( i++ ))
     done
 
     [[ -n $symbols ]] && symbols=" ${symbols}"

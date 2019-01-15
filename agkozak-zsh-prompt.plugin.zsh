@@ -749,7 +749,7 @@ _agkozak_prompt_string () {
       PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
     fi
     PROMPT+='${AGKOZAK_PROMPT_WHITESPACE}'
-    PROMPT+='%(4V.:.%#) '
+    PROMPT+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#})) '
 
     typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}

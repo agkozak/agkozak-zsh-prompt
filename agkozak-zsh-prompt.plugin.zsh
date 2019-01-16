@@ -270,18 +270,18 @@ _agkozak_branch_status() {
 
     typeset -A messages
     messages=(
-                '&*'  'diverged'
-                '&'   'behind'
-                '*'   'Your branch is ahead of'
-                '+'   'new file:'
-                'x'   'deleted'
-                '!'   'modified:'
-                '>'   'renamed:'
-                '?'   'Untracked files'
+                '&*'  ' have diverged,'
+                '&'   'Your branch is behind '
+                '*'   'Your branch is ahead of '
+                '>'   'renamed:    '
+                '+'   'new file:   '
+                'x'   'deleted:    '
+                '!'   'modified:   '
+                '?'   'Untracked files:'
              )
 
     i=1
-    for k in '&*' '&' '*' '+' 'x' '!' '>' '?'; do
+    for k in '&*' '&' '*' '>' '+' 'x' '!' '?'; do
       case $git_status in
         *${messages[$k]}*) symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-$k}" ;;
       esac

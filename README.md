@@ -32,6 +32,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - [Blank Lines Between Prompts](#blank-lines-between-prompts)
     - [Optional Single-line Prompt](#optional-single-line-prompt)
     - [Optional Left-prompt-only Mode](#optional-left-prompt-only-mode)
+    - [Custom Prompt Character](#custom-prompt-character)
     - [Custom Colors](#custom-colors)
     - [Advanced Customization](#advanced-customization)
 - [Asynchronous Methods](#asynchronous-methods)
@@ -210,6 +211,26 @@ If you would like to have the Git status displayed in the left prompt (with no r
     AGKOZAK_LEFT_PROMPT_ONLY=1
 
 ![Left-prompt-only mode](img/AGKOZAK_LEFT_PROMPT_ONLY.gif)
+
+### Custom Prompt Character
+
+The classic prompt for Bourne-style shells is `$`; for `csh` it is `%`, and ZSH borrows the latter because it inherits features from both sorts of shell. agkozak-zsh-prompt uses `%` to show where the prompt ends and where input should begin, although a superuser will see `#`, and either sort of user will see `:` when `vi` command mode is active. If you wish to change any or all of these symbols, you may do so using the array `$AGKOZAK_PROMPT_CHAR`, whose three elements are 1) the normal prompt character; 2) the superuser prompt character; and 3) the `vi` command mode character. The default behavior of the prompt can be represented as
+
+    AGKOZAK_PROMPT_CHAR=( %# %# : )
+
+If you would like your prompt to look more like a `bash` prompt (i.e. terminating in `$`), you can simply put the following in your `.zshrc`:
+
+    AGKOZAK_PROMPT_CHAR=( $ %# : )
+
+Some people prefer to spruce up their prompts with unicode characters. You could approximate the appearance of the popular [pure](https://github.com/sindresorhus/pure) prompt by using
+
+    AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
+
+Closer still to pure would be
+
+    AGKOZAK_PROMPT_CHAR=( '%F{magenta}❯%f' '%F{magenta}❯%f' '%F{magenta}❮%f' )
+
+Note that you could change one of those `%F{magenta}` strings to another foreground color for a more striking visual reminder of what you are doing at any given moment.
 
 ### Custom Colors
 If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:

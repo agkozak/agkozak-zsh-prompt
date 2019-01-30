@@ -228,9 +228,18 @@ Some people prefer to spruce up their prompts with unicode characters. You could
 
 Closer still to pure would be
 
+    AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
+    AGKOZAK_COLORS_PROMPT_CHAR='magenta'
+
+which would be the equivalent of
+
     AGKOZAK_PROMPT_CHAR=( '%F{magenta}❯%f' '%F{magenta}❯%f' '%F{magenta}❮%f' )
 
 Note that you could change one of those `%F{magenta}` strings to another foreground color for a more striking visual reminder of what you are doing at any given moment.
+
+### Custom Git Symbols
+
+
 
 ### Custom Colors
 If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
@@ -239,6 +248,7 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
     AGKOZAK_COLORS_USER_HOST=green
     AGKOZAK_COLORS_PATH=blue
     AGKOZAK_COLORS_BRANCH_STATUS=yellow
+    AGKOZAK_COLORS_PROMPT_CHAR=white
 
 ![Custom colors](img/colors.gif)
 

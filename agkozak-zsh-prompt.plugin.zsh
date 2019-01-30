@@ -86,14 +86,16 @@ typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
 typeset -g AGKOZAK_LEFT_PROMPT_ONLY=${AGKOZAK_LEFT_PROMPT_ONLY:-0}
 
 # Set AGKOZAK_COLORS_* variables to any valid color
-#   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color     (default: red)
-#   AGKOZAK_COLORS_USER_HOST changes the username/hostname color (default: green)
-#   AGKOZAK_COLORS_PATH changes the path color                   (default: blue)
-#   AGKOZAK_COLORS_BRANCH_STATUS changes the branch status color (default: yellow)
+#   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color      (default: red)
+#   AGKOZAK_COLORS_USER_HOST changes the username/hostname color  (default: green)
+#   AGKOZAK_COLORS_PATH changes the path color                    (default: blue)
+#   AGKOZAK_COLORS_BRANCH_STATUS changes the branch status color  (default: yellow)
+#   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: white)
 typeset -g AGKOZAK_COLORS_EXIT_STATUS=${AGKOZAK_COLORS_EXIT_STATUS:-red}
 typeset -g AGKOZAK_COLORS_USER_HOST=${AGKOZAK_COLORS_USER_HOST:-green}
 typeset -g AGKOZAK_COLORS_PATH=${AGKOZAK_COLORS_PATH:-blue}
 typeset -g AGKOZAK_COLORS_BRANCH_STATUS=${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}
+typeset -g AGKOZAK_COLORS_PROMPT_CHAR=${AGKOZAK_COLORS_PROMPT_CHAR:-white}
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -733,6 +735,7 @@ _agkozak_precmd() {
 #   AGKOZAK_COLORS_USER_HOST
 #   AGKOZAK_COLORS_PATH
 #   AGKOZAK_PROMPT_WHITESPACE
+#   AGKOZAK_COLORS_PROMPT_CHAR
 #   AGKOZAK_PROMPT_CHAR
 #   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
@@ -751,7 +754,9 @@ _agkozak_prompt_string () {
       PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
     fi
     PROMPT+='${AGKOZAK_PROMPT_WHITESPACE}'
-    PROMPT+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#})) '
+    PROMPT+='%F{${AGKOZAK_COLORS_PROMPT_CHAR}}'
+    PROMPT+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
+    PROMPT+='%f '
 
     typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}

@@ -29,16 +29,21 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - [Exit Status](#exit-status)
 - [`vi` Editing Mode](#vi-editing-mode)
 - [Customization](#customization)
+    - [Custom Colors](#custom-colors)
     - [Blank Lines Between Prompts](#blank-lines-between-prompts)
     - [Optional Single-line Prompt](#optional-single-line-prompt)
     - [Optional Left-prompt-only Mode](#optional-left-prompt-only-mode)
     - [Custom Prompt Character](#custom-prompt-character)
-    - [Custom Colors](#custom-colors)
+    - [Custom Git Symbols](#custom-git-symbols)
     - [Advanced Customization](#advanced-customization)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## News
 
+- v3.1 (February 5, 2019)
+    - The array `AGKOZAK_PROMPT_CHAR` allows the user to specify prompt characters for regular user, superuser, and `vi` command mode.
+    - Setting `AGKOZAK_COLORS_PROMPT_CHAR` can change the color of the prompt character.
+    - The array `AGKOZAK_CUSTOM_SYMBOLS` contains user-specified symbols for displaying the Git status.
 - v3.0.2 (December 26, 2018)
     - The external command `cat` is no longer used.
     - The prompt now uses [the latest commit](https://github.com/mafredri/zsh-async/commit/43de5e0738eaf366dfde4d0a204de655de16f18b) of `zsh-async`.
@@ -188,6 +193,17 @@ This prompt will work perfectly if you use the default ZSH Emacs editing mode; i
 
 In addition to setting `AGKOZAK_PROMPT_DIRTRIM` and `AGKOZAK_NAMED_DIRS` to change how the working directory is displayed ([see above](#abbreviated-paths)), you may use other settings to alter how the prompt is displayed.
 
+### Custom Colors
+If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
+
+    AGKOZAK_COLORS_EXIT_STATUS=red
+    AGKOZAK_COLORS_USER_HOST=green
+    AGKOZAK_COLORS_PATH=blue
+    AGKOZAK_COLORS_BRANCH_STATUS=yellow
+    AGKOZAK_COLORS_PROMPT_CHAR=white
+
+![Custom colors](img/colors.gif)
+
 ### Blank Lines Between Prompts
 
 If you prefer to have a little space between instances of the prompt, put `AGKOZAK_BLANK_LINES=1` in your `.zshrc`:
@@ -214,7 +230,7 @@ If you would like to have the Git status displayed in the left prompt (with no r
 
 ### Custom Prompt Character
 
-The classic prompt for Bourne-style shells is `$`; for `csh` it is `%`, and ZSH borrows the latter because it inherits features from both sorts of shell. agkozak-zsh-prompt uses `%` to show where the prompt ends and where input should begin, although a superuser will see `#`, and either sort of user will see `:` when `vi` command mode is active. If you wish to change any or all of these symbols, you may do so using the array `$AGKOZAK_PROMPT_CHAR`, whose three elements are 1) the normal prompt character; 2) the superuser prompt character; and 3) the `vi` command mode character. The default behavior of the prompt can be represented as
+The classic prompt for Bourne-style shells is `$`; for `csh` it is `%`, and ZSH borrows the latter because it inherits features from both types of shell. agkozak-zsh-prompt uses `%` to show where the prompt ends and where input should begin, although a superuser will see `#`, and either sort of user will see `:` when `vi` command mode is active. If you wish to change any or all of these symbols, you may do so using the array `AGKOZAK_PROMPT_CHAR`, whose three elements are 1) the normal prompt character; 2) the superuser prompt character; and 3) the `vi` command mode character. The default behavior of the prompt can be represented as
 
     AGKOZAK_PROMPT_CHAR=( %# %# : )
 
@@ -235,22 +251,19 @@ which would be the equivalent of
 
     AGKOZAK_PROMPT_CHAR=( '%F{magenta}❯%f' '%F{magenta}❯%f' '%F{magenta}❮%f' )
 
-Note that you could change one of those `%F{magenta}` strings to another foreground color for a more striking visual reminder of what you are doing at any given moment.
+Note that you could change one of those `%F{magenta}...%f` strings to another foreground color for a more striking visual reminder of what you are doing at any given moment.
+
+![AGKOZAK_PROMPT_CHAR demo](img/AGKOZAK_PROMPT_CHAR.gif)
 
 ### Custom Git Symbols
 
+If, through the use of another prompt, your muscle memory has been trained to react immediately to a particular set of Git status symbols, or if you have an aesthetic preference for symbols other than the default ASCII ones, you may specify them in the array `AGKOZAK_CUSTOM_SYMBOLS`. The default set is
 
+    AGKOZAK_CUSTOM_SYMBOLS=( '&*' '&' '*' '+' 'x' '!' '>' '?' )
 
-### Custom Colors
-If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
+If you prefer the [pure](https://github.com/sindresorhus/pure) symbols for the "diverged," "behind," and "ahead" states, you could use the following settings:
 
-    AGKOZAK_COLORS_EXIT_STATUS=red
-    AGKOZAK_COLORS_USER_HOST=green
-    AGKOZAK_COLORS_PATH=blue
-    AGKOZAK_COLORS_BRANCH_STATUS=yellow
-    AGKOZAK_COLORS_PROMPT_CHAR=white
-
-![Custom colors](img/colors.gif)
+    AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
 
 ### Advanced Customization
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as

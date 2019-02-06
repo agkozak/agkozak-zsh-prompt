@@ -166,7 +166,7 @@ fi
 : ${AGKOZAK_COLORS_USER_HOST:=green}
 : ${AGKOZAK_COLORS_PATH:=blue}
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
-: ${AGKOZAK_COLORS_PROMPT_CHAR:=}
+: ${AGKOZAK_COLORS_PROMPT_CHAR:=default}
 
 # Whether or not to work around ZSH's deleting lines of previous output when
 # there is a multiline prompt and the screen is redrawn (default: off)

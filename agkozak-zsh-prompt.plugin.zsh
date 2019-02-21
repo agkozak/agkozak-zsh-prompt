@@ -62,7 +62,7 @@ AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
 #   $1  Message to send to STDERR
 ############################################################
 _agkozak_debug_print() {
-  (( AGKOZAK_PROMPT_DEBUG )) && print "agkozak-zsh-prompt: $1" >&2
+  (( AGKOZAK_PROMPT_DEBUG )) && print -- "agkozak-zsh-prompt: $1" >&2
 }
 
 if (( AGKOZAK_PROMPT_DEBUG )); then
@@ -290,7 +290,7 @@ _agkozak_branch_status() {
 
     [[ -n $symbols ]] && symbols=" ${symbols}"
 
-    printf ' (%s%s)' "$branch" "$symbols"
+    printf '%s(%s%s)' "${AGKOZAK_BRANCH_STATUS_SEPARATOR- }" "$branch" "$symbols"
   fi
 }
 
@@ -568,7 +568,7 @@ _agkozak_async_init() {
       ############################################################
       TRAPUSR1() {
         # Set prompt from contents of temporary file
-        psvar[3]=$(print -n "$(< /tmp/agkozak_zsh_prompt_$$)")
+        psvar[3]=$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")
 
         # Reset asynchronous process number
         typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
@@ -612,7 +612,7 @@ _agkozak_strip_colors() {
         ;;
       %f*|%k*) prompt=${prompt#%[fk]} ;;
       *)
-        print -n "${prompt:0:1}"
+        print -n -- "${prompt:0:1}"
         prompt=${prompt#?}
         ;;
     esac

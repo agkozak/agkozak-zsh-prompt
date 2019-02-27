@@ -161,12 +161,12 @@ fi
 #   AGKOZAK_COLORS_USER_HOST changes the username/hostname color  (default: green)
 #   AGKOZAK_COLORS_PATH changes the path color                    (default: blue)
 #   AGKOZAK_COLORS_BRANCH_STATUS changes the branch status color  (default: yellow)
-#   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: white)
+#   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: default text color)
 : ${AGKOZAK_COLORS_EXIT_STATUS:=red}
 : ${AGKOZAK_COLORS_USER_HOST:=green}
 : ${AGKOZAK_COLORS_PATH:=blue}
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
-: ${AGKOZAK_COLORS_PROMPT_CHAR:=white}
+: ${AGKOZAK_COLORS_PROMPT_CHAR:=}
 
 # Whether or not to work around ZSH's deleting lines of previous output when
 # there is a multiline prompt and the screen is redrawn (default: off)

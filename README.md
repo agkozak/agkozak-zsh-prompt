@@ -35,12 +35,15 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - [Optional Left-prompt-only Mode](#optional-left-prompt-only-mode)
     - [Custom Prompt Character](#custom-prompt-character)
     - [Custom Git Symbols](#custom-git-symbols)
+    - [Other Settings](#other-settings)
     - [Advanced Customization](#advanced-customization)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## News
 
-- v3.1 (February 5, 2019)
+- v3.2.0 (February 28, 2019)
+    - By default, a space precedes the Git branch status indicator. The space can now be eliminated by setting `AGKOZAK_BRANCH_STATUS_SEPARATOR=''`, or changed to another character or characters (e.g. `AGKOZAK_BRANCH_STATUS_SEPARATOR='--'`).
+- v3.1.0 (February 5, 2019)
     - The array `AGKOZAK_PROMPT_CHAR` allows the user to specify prompt characters for regular user, superuser, and `vi` command mode.
     - Setting `AGKOZAK_COLORS_PROMPT_CHAR` can change the color of the prompt character.
     - The array `AGKOZAK_CUSTOM_SYMBOLS` contains user-specified symbols for displaying the Git status.
@@ -264,6 +267,14 @@ If, through the use of another prompt, your muscle memory has been trained to re
 If you prefer the [pure](https://github.com/sindresorhus/pure) symbols for the "diverged," "behind," and "ahead" states, you could use the following settings:
 
     AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
+
+### Other Settings
+
+By default, a space precedes the Git branch status indicator, typically right between it and the directory. You may eliminate the space by setting
+
+    AGKOZAK_BRANCH_STATUS_SEPARATOR=''
+
+Alternatively, you may set `AGKOZAK_BRANCH_STATUS_SEPARATOR` to any other character or characters that you prefer.
 
 ### Advanced Customization
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as

@@ -379,8 +379,6 @@ _agkozak_has_usr1() {
 # when necessary).
 #
 # Globals:
-#   AGKOZAK_IS_WSL
-#   AGKOZAK_IS_CENTOS
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_FORCE_ASYNC_METHOD
 #   AGKOZAK_TRAPUSR1_FUNCTION
@@ -392,9 +390,7 @@ _agkozak_async_init() {
   if [[ -e /proc/version ]]; then
     if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
       unsetopt BG_NICE
-      typeset -g AGKOZAK_IS_WSL=1   # For later reference
-    elif [[ -n ${(M)${(f)"$(</proc/version)"}:#*centos*} ]]; then
-      typeset -g AGKOZAK_IS_CENTOS=1
+      local WSL=1   # For later reference
     fi
   fi
 
@@ -406,9 +402,8 @@ _agkozak_async_init() {
   # Otherwise, first provide for certain quirky systems
   else
 
-    if (( AGKOZAK_IS_WSL )) || (( AGKOZAK_IS_CENTOS )) \
-      || [[ $OSTYPE == solaris* ]]; then
-      if [[ $ZSH_VERSION != '5.0.2' ]] && _agkozak_load_async_lib; then
+    if (( WSL )) || [[ $OSTYPE == solaris* ]]; then
+      if [[ $ZSH_VERSION != '5.0.2' ]] &&_agkozak_load_async_lib; then
         typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
       elif _agkozak_has_usr1; then
         typeset -g AGKOZAK_ASYNC_METHOD='usr1'
@@ -444,7 +439,6 @@ _agkozak_async_init() {
   #
   # Globals:
   #   AGKOZAK_ASYNC_FD
-  #   AGKOZAK_IS_WSL
   ############################################################
   _agkozak_subst_async() {
     setopt LOCAL_OPTIONS NO_IGNORE_BRACES
@@ -454,8 +448,7 @@ _agkozak_async_init() {
     if [[ $OSTYPE == (msys|cygwin|solaris*) ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status; command true)
     # Prevent WSL from locking up when using X
-    elif (( AGKOZAK_IS_WSL )) && (( $+DISPLAY )) \
-      || (( AGKOZAK_IS_CENTOS )); then
+    elif (( WSL )) && (( $+DISPLAY )); then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
     else
@@ -862,7 +855,7 @@ _agkozak_prompt_string () {
 }
 
 # Clean up environment
-#  unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_is_ssh \
-#    _agkozak_async_init
+unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_is_ssh \
+  _agkozak_async_init
 
 # vim: ts=2:et:sts=2:sw=2:

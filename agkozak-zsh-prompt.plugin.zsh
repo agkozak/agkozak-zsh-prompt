@@ -379,6 +379,7 @@ _agkozak_has_usr1() {
 # when necessary).
 #
 # Globals:
+#   AGKOZAK_IS_WSL
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_FORCE_ASYNC_METHOD
 #   AGKOZAK_TRAPUSR1_FUNCTION
@@ -390,7 +391,7 @@ _agkozak_async_init() {
   if [[ -e /proc/version ]]; then
     if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
       unsetopt BG_NICE
-      local WSL=1   # For later reference
+      typeset -g AGKOZAK_IS_WSL=1   # For later reference
     fi
   fi
 
@@ -402,7 +403,7 @@ _agkozak_async_init() {
   # Otherwise, first provide for certain quirky systems
   else
 
-    if (( WSL )) || [[ $OSTYPE == solaris* ]]; then
+    if (( AGKOZAK_IS_WSL )) || [[ $OSTYPE == solaris* ]]; then
       if [[ $ZSH_VERSION != '5.0.2' ]] &&_agkozak_load_async_lib; then
         typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
       elif _agkozak_has_usr1; then
@@ -411,8 +412,8 @@ _agkozak_async_init() {
         typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
       fi
 
-    # SIGUSR1 method is still much faster on MSYS2 and Cygwin
-    elif [[ $OSTYPE == (msys|cygwin) ]]; then
+    # SIGUSR1 method is still much faster on MSYS2, Cygwin, and ZSH v5.0.2
+    elif [[ $ZSH_VERSION == '5.0.2' ]] || [[ $OSTYPE == (msys|cygwin) ]]; then
       if _agkozak_has_usr1; then
         typeset -g AGKOZAK_ASYNC_METHOD='usr1'
       else
@@ -439,6 +440,7 @@ _agkozak_async_init() {
   #
   # Globals:
   #   AGKOZAK_ASYNC_FD
+  #   AGKOZAK_IS_WSL
   ############################################################
   _agkozak_subst_async() {
     setopt LOCAL_OPTIONS NO_IGNORE_BRACES
@@ -447,8 +449,9 @@ _agkozak_async_init() {
     # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
     if [[ $OSTYPE == (msys|cygwin|solaris*) ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status; command true)
-    # Prevent WSL from locking up when using X
-    elif (( WSL )) && (( $+DISPLAY )); then
+    # Prevent WSL from locking up when using X; also workaround for ZSH v5.0.2
+  elif (( AGKOZAK_IS_WSL )) && (( $+DISPLAY )) \
+    || [[ $ZSH_VERSION == '5.0.2' ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
     else

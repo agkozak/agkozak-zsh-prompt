@@ -266,7 +266,7 @@ _agkozak_branch_status() {
   branch=${ref#refs/heads/}
 
   if [[ -n $branch ]]; then
-    local git_status symbols i=1 k
+    local git_status symbols i=1
     git_status="$(LC_ALL=C command git status 2>&1)"
 
     typeset -A messages

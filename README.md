@@ -42,7 +42,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 ## News
 
 - v3.2.1 (May 6, 2019)
-    - The `subst-async` method now works correctly on ZSH v5.0.2, but the `usr1` will be used by default on ZSH v5.0.2, as it should be slightly faster.
+    - For ZSH v5.0.2, `subst-async` now works correctly, but `usr1` will be used as the default async method, as it should be slightly faster.
 - v3.2.0 (February 28, 2019)
     - By default, a space precedes the Git branch status indicator. The space can now be eliminated by setting `AGKOZAK_BRANCH_STATUS_SEPARATOR=''`, or changed to another character or characters (e.g. `AGKOZAK_BRANCH_STATUS_SEPARATOR='--'`).
 - v3.1.0 (February 5, 2019)

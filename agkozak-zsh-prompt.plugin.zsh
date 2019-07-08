@@ -75,7 +75,7 @@ if (( AGKOZAK_PROMPT_DEBUG )); then
   fi
 fi
 
-# Use --no-optional-locks option with git status if git version > 2.15.0
+# Use --no-optional-locks option with git status if ZSH version > 2.15.0
 if is-at-least 2.15.0 "$(git --version)"; then
   typeset -g AGKOZAK_GIT_STATUS_OPTS='--no-optional-locks'
 fi

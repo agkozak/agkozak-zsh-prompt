@@ -267,7 +267,7 @@ _agkozak_branch_status() {
 
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k
-    git_status="$(LC_ALL=C command git --no-optional-locks status 2>&1)"
+    git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
 
     typeset -A messages
     messages=(

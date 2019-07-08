@@ -77,7 +77,7 @@ fi
 
 # Use --no-optional-locks option with git status if ZSH version > 2.15.0
 if is-at-least 2.15.0 "$(git --version)"; then
-  typeset -g AGKOZAK_GIT_STATUS_OPTS='--no-optional-locks'
+  typeset -g GIT_STATUS_OPTS='--no-optional-locks'
 fi
 
 # Set AGKOZAK_PROMPT_DIRTRIM to the desired number of directory elements to
@@ -272,7 +272,7 @@ _agkozak_branch_status() {
 
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k
-    git_status="$(LC_ALL=C command git $AGKOZAK_GIT_STATUS_OPTS status 2>&1)"
+    git_status="$(LC_ALL=C command git $GIT_STATUS_OPTS status 2>&1)"
 
     typeset -A messages
     messages=(

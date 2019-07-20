@@ -656,6 +656,7 @@ _agkozak_strip_colors() {
 #   AGKOZAK_OLD_MULTILINE
 #   AGKOZAK_LEFT_PROMPT_ONLY
 #   AGKOZAK_OLD_LEFT_PROMPT_ONLY
+#   AGKOZAK_USER_HOST_DISPLAY
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_BLANK_LINES
@@ -689,6 +690,12 @@ _agkozak_precmd() {
 
   psvar[3]=''
   psvar[4]=''
+
+  if (( AGKOZAK_USER_HOST_DISPLAY )); then
+    psvar[5]=${AGKOZAK_USER_HOST_DISPLAY}
+  else
+    psvar[5]=''
+  fi
 
   case $AGKOZAK_ASYNC_METHOD in
     'subst-async') _agkozak_subst_async ;;
@@ -737,7 +744,6 @@ _agkozak_precmd() {
 # Globals:
 #   AGKOZAK_CUSTOM_PROMPT
 #   AGKOZAK_COLORS_EXIT_STATUS
-#   AGKOZAK_USER_HOST_DISPLAY
 #   AGKOZAK_COLORS_USER_HOST
 #   AGKOZAK_COLORS_PATH
 #   AGKOZAK_PROMPT_WHITESPACE
@@ -754,9 +760,7 @@ _agkozak_prompt_string () {
   else
     # The color left prompt
     PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-    if (( AGKOZAK_USER_HOST_DISPLAY )); then
-      PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
-    fi
+    PROMPT+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) .)'
     PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
     if (( AGKOZAK_LEFT_PROMPT_ONLY )); then
       PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'

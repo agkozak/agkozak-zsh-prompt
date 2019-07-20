@@ -96,6 +96,8 @@ typeset -g AGKOZAK_COLORS_USER_HOST=${AGKOZAK_COLORS_USER_HOST:-green}
 typeset -g AGKOZAK_COLORS_PATH=${AGKOZAK_COLORS_PATH:-blue}
 typeset -g AGKOZAK_COLORS_BRANCH_STATUS=${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}
 
+typeset -g AGKOZAK_USER_HOST_DISPLAY=${AGKOZAK_USER_HOST_DISPLAY:-1}
+
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
 ######################################################################
@@ -750,7 +752,9 @@ _agkozak_prompt_string () {
   else
     # The color left prompt
     PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-    PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+    if (( AGKOZAK_USER_HOST_DISPLAY )); then
+      PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+    fi
     PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
     if (( AGKOZAK_LEFT_PROMPT_ONLY )); then
       PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'

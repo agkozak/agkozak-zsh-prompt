@@ -41,6 +41,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 ## News
 
+- v3.2.2 (July 8, 2019)
+    - When the local `git` version is 2.15.0 or greater, `git status` will not run unnecessary optional operations that require locks.
 - v3.2.1 (May 6, 2019)
     - For ZSH v5.0.2, `subst-async` now works correctly, but `usr1` will be used as the default async method, as it should be slightly faster.
 - v3.2.0 (February 28, 2019)

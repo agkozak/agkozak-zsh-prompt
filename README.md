@@ -36,11 +36,15 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - [Custom Prompt Character](#custom-prompt-character)
     - [Custom Git Symbols](#custom-git-symbols)
     - [Other Settings](#other-settings)
+        - [AGKOZAK_USER_HOST_DISPLAY](#agkozak_user_host_display)
+        - [AGKOZAK_BRANCH_STATUS_SEPARATOR](#agkozak_branch_status_separator)
     - [Advanced Customization](#advanced-customization)
 - [Asynchronous Methods](#asynchronous-methods)
 
 ## News
 
+- v3.3.0 (July 20, 2019)
+    - If `AGKOZAK_USER_HOST_DISPLAY=0`, the username and hostname will not be displayed.
 - v3.2.2 (July 8, 2019)
     - When the local `git` version is 2.15.0 or greater, `git status` will not run unnecessary optional operations that require locks.
 - v3.2.1 (May 6, 2019)
@@ -274,7 +278,17 @@ If you prefer the [pure](https://github.com/sindresorhus/pure) symbols for the "
 
 ### Other Settings
 
-By default, a space precedes the Git branch status indicator, typically right between it and the directory. You may eliminate the space by setting
+#### AGKOZAK_USER_HOST_DISPLAY
+
+![AGKOZAK_USER_HOST_DISPLAY demo](img/AGKOZAK_USER_HOST_DISPLAY.gif)
+
+For a more streamlined prompt, you may choose to suppress the display of the username and hostname by setting
+
+    AGKOZAK_USER_HOST_DISPLAY=0
+
+#### AGKOZAK_BRANCH_STATUS_SEPARATOR
+
+By default, a space precedes the Git branch status indicator, typically right between it and the directory name. You may eliminate the space by setting
 
     AGKOZAK_BRANCH_STATUS_SEPARATOR=''
 

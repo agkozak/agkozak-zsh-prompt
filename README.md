@@ -335,3 +335,73 @@ If you want to force the agkozak ZSH Prompt to use a specific asynchronous metho
 <p align="center">
   <img src="img/logo.png" alt="agkozak ZSH Prompt Logo">
 </p>
+
+## Examples of agkozak-zsh-prompt Customization
+
+*Note: If you see your prompt customization here, I may have rewritten it a bit or even simplified it for educational purposes.*
+
+### [downtrip](https://gitlab.com/downtrip/dotfiles-p6/blob/2f4b7ae84f725cda8bbbb8aac157ee387dc279f2/.zshrc#L152)
+
+![downtrip](img/custom_downtrip.png)
+
+```sh
+AGKOZAK_COLORS_BRANCH_STATUS=248
+AGKOZAK_BLANK_LINES=1
+AGKOZAK_LEFT_PROMPT_ONLY=1
+AGKOZAK_PROMPT_CHAR=( '%F{magenta}❯%f' '%F{red}❯%f' '%F{magenta}❮%f' )
+AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
+AGKOZAK_USER_HOST_DISPLAY=0
+```
+### [borekb](https://github.com/agkozak/agkozak-zsh-prompt/pull/9)
+
+![borekb](img/custom_borekb.png)
+
+```sh
+AGKOZAK_COLORS_BRANCH_STATUS=243
+AGKOZAK_BLANK_LINES=1
+AGKOZAK_LEFT_PROMPT_ONLY=1
+AGKOZAK_PROMPT_CHAR=( '$' '#' ':' )
+AGKOZAK_USER_HOST_DISPLAY=0
+```
+
+### [donkebap](https://github.com/donkebap/dotfiles/blob/a6fd36382c7f997156316173dd1ce898944bb0ae/dot_zshrc)
+
+![donkebap](img/custom_donkebap.png)
+
+```sh
+AGKOZAK_MULTILINE=0
+AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
+```
+
+
+### [pjcj](https://github.com/pjcj/base/blob/6138f2310fbabd809b3b10b1e279bbaff4ccbe05/.zshrc)
+
+![pjcj](img/custom_pjcj.png)
+
+```sh
+AGKOZAK_PROMPT_DIRTRIM=0
+AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
+
+AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
+AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{32})%n%1v%(!.%b%s.%f%b)'
+AGKOZAK_CUSTOM_PROMPT+=' %B%F{13}%h%f%b'
+AGKOZAK_CUSTOM_PROMPT+=$'\n%F{13}%(4V.:.%#)%f '
+
+AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.) '
+AGKOZAK_CUSTOM_RPROMPT+='%B%F{blue}%~%f%b '
+AGKOZAK_CUSTOM_RPROMPT+='%F{32}%*'
+```
+
+### [ccb012100](https://github.com/ccb012100/linux-configs/blob/f31f11794deb3365dd78427d03bb51284392a35b/.zshrc)
+
+![ccb012100](img/custom_ccb012100.png)
+
+```sh
+AGKOZAK_CUSTOM_PROMPT='%F{blue}%h%f%F{yellow} %D{%H:%M:%S}%f%F{cyan} %D{%a %b-%d}%f'
+AGKOZAK_CUSTOM_PROMPT+=' %(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
+AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b%(3V.%F{yellow}%3v%f.)'
+AGKOZAK_CUSTOM_PROMPT+=' %(?..%B%F{red}(%?%)%f%b)'
+AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
+
+AGKOZAK_RPROMPT=''
+```

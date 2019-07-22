@@ -440,6 +440,19 @@ AGKOZAK_BLANK_LINES=1
 AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
 ```
 
+### [amenbreakfast](https://www.reddit.com/r/zsh/comments/cgiu1f/examples_of_agkozak_zsh_prompt_customization/euhsehg/)
+
+![amenbreakfast](img/custom_amenbreakfast.png)
+
+```sh
+AGKOZAK_PROMPT_DIRTRIM=0
+
+AGKOZAK_BLANK_LINES=1
+AGKOZAK_MULTILINE=0
+AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
+AGKOZAK_USER_HOST_DISPLAY=0
+```
+
 ### Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT
 
 #### [gnumoksha](https://github.com/gnumoksha/dotfiles/blob/e48d195c58abbedee65976b41d9cdf35a4716c7a/shell/zsh/agkozak-settings.zsh)

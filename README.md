@@ -348,6 +348,7 @@ If you want to force the agkozak ZSH Prompt to use a specific asynchronous metho
 AGKOZAK_COLORS_BRANCH_STATUS=248
 AGKOZAK_BLANK_LINES=1
 AGKOZAK_LEFT_PROMPT_ONLY=1
+# Make the prompt character red when superuser
 AGKOZAK_PROMPT_CHAR=( '%F{magenta}❯%f' '%F{red}❯%f' '%F{magenta}❮%f' )
 AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
 AGKOZAK_USER_HOST_DISPLAY=0
@@ -360,6 +361,7 @@ AGKOZAK_USER_HOST_DISPLAY=0
 AGKOZAK_COLORS_BRANCH_STATUS=243
 AGKOZAK_BLANK_LINES=1
 AGKOZAK_LEFT_PROMPT_ONLY=1
+# Make the prompt character more like that of bash
 AGKOZAK_PROMPT_CHAR=( '$' '#' ':' )
 AGKOZAK_USER_HOST_DISPLAY=0
 ```
@@ -409,8 +411,10 @@ AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
 AGKOZAK_PROMPT_DIRTRIM=4
 AGKOZAK_COLORS_BRANCH_STATUS=243
 AGKOZAK_LEFT_PROMPT_ONLY=1
+# The prompt character is always $
 AGKOZAK_PROMPT_CHAR=( '$' '$' '$'  )
 
+# Display the time in the right prompt
 AGKOZAK_CUSTOM_RPROMPT='%*'
 ```
 
@@ -424,11 +428,14 @@ AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
 
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{32})%n%1v%(!.%b%s.%f%b)'
+# Display the current history event number
 AGKOZAK_CUSTOM_PROMPT+=' %B%F{13}%h%f%b'
 AGKOZAK_CUSTOM_PROMPT+=$'\n%F{13}%(4V.:.%#)%f '
 
 AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.) '
+# Display the path (substituting ~ for $HOME and in named directories)
 AGKOZAK_CUSTOM_RPROMPT+='%B%F{blue}%~%f%b '
+# Display the time
 AGKOZAK_CUSTOM_RPROMPT+='%F{32}%*'
 ```
 
@@ -437,9 +444,11 @@ AGKOZAK_CUSTOM_RPROMPT+='%F{32}%*'
 ![ccb012100](img/custom_ccb012100.png)
 
 ```sh
+# Current history event number, time, and date
 AGKOZAK_CUSTOM_PROMPT='%F{blue}%h%f%F{yellow} %D{%H:%M:%S}%f%F{cyan} %D{%a %b-%d}%f'
 AGKOZAK_CUSTOM_PROMPT+=' %(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b%(3V.%F{yellow}%3v%f.)'
+# Exit status
 AGKOZAK_CUSTOM_PROMPT+=' %(?..%B%F{red}(%?%)%f%b)'
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 

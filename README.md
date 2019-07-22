@@ -205,7 +205,7 @@ This prompt will work perfectly if you use the default ZSH Emacs editing mode; i
 
 ## Customization
 
-In addition to setting `AGKOZAK_PROMPT_DIRTRIM` and `AGKOZAK_NAMED_DIRS` to change how the working directory is displayed ([see above](#abbreviated-paths)), you may use other settings to alter how the prompt is displayed.
+In addition to setting `AGKOZAK_PROMPT_DIRTRIM` and `AGKOZAK_NAMED_DIRS` to change how the working directory is displayed ([see above](#abbreviated-paths)), you may use other settings to alter how the prompt is displayed. For some examples of prompt configurations people have created using simple combinations of options, see ["Using Basic Configuration Settings"](#using-basic-configuration-settings).
 
 ### Custom Colors
 If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
@@ -323,6 +323,8 @@ Both prompts, thus altered, could be expressed as
     AGKOZAK_CUSTOM_RPROMPT='%*'
 
 Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, it may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.
+
+For some examples of prompt configurations that people have created using `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT`, see ["Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT"](#using-agkozak_custom_prompt-and-agkozak_custom_rprompt).
 
 ## Asynchronous Methods
 

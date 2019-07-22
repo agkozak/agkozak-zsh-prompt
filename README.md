@@ -40,6 +40,9 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
         - [AGKOZAK_BRANCH_STATUS_SEPARATOR](#agkozak_branch_status_separator)
     - [Advanced Customization](#advanced-customization)
 - [Asynchronous Methods](#asynchronous-methods)
+- [Examples of agkozak ZSH Prompt Customization](#examples-of-agkozak-zsh-prompt-customization)
+    - [Using Basic Configuration Settings](#using-basic-configuration-settings)
+    - [Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT](#using-agkozak_custom_prompt-and-agkozak_custom_rprompt)
 
 ## News
 
@@ -331,16 +334,13 @@ The agkozak ZSH Prompt has three different methods for displaying the Git status
 
 If you want to force the agkozak ZSH Prompt to use a specific asynchronous method (or none at all), execute `export AGKOZAK_FORCE_ASYNC_METHOD=subst-async`, `zsh-async`, `usr1`, or `none` before sourcing it. If you want more insight into how the prompt is working in your shell, put `export AGKOZAK_PROMPT_DEBUG=1` in your `.zshrc` before the code loading this prompt.
 
-
-<p align="center">
-  <img src="img/logo.png" alt="agkozak ZSH Prompt Logo">
-</p>
-
-## Examples of agkozak-zsh-prompt Customization
+## Examples of agkozak ZSH Prompt Customization
 
 *Note: If you see your prompt customization here, I may have rewritten it a bit or even simplified it for educational purposes.*
 
-### [downtrip](https://gitlab.com/downtrip/dotfiles-p6/blob/2f4b7ae84f725cda8bbbb8aac157ee387dc279f2/.zshrc#L152)
+### Using Basic Configuration Settings
+
+#### [downtrip](https://gitlab.com/downtrip/dotfiles-p6/blob/2f4b7ae84f725cda8bbbb8aac157ee387dc279f2/.zshrc#L152)
 
 ![downtrip](img/custom_downtrip.png)
 
@@ -352,7 +352,7 @@ AGKOZAK_PROMPT_CHAR=( '%F{magenta}❯%f' '%F{red}❯%f' '%F{magenta}❮%f' )
 AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
 AGKOZAK_USER_HOST_DISPLAY=0
 ```
-### [borekb](https://github.com/agkozak/agkozak-zsh-prompt/pull/9)
+#### [borekb](https://github.com/agkozak/agkozak-zsh-prompt/pull/9)
 
 ![borekb](img/custom_borekb.png)
 
@@ -364,7 +364,7 @@ AGKOZAK_PROMPT_CHAR=( '$' '#' ':' )
 AGKOZAK_USER_HOST_DISPLAY=0
 ```
 
-### [donkebap](https://github.com/donkebap/dotfiles/blob/a6fd36382c7f997156316173dd1ce898944bb0ae/dot_zshrc)
+#### [donkebap](https://github.com/donkebap/dotfiles/blob/a6fd36382c7f997156316173dd1ce898944bb0ae/dot_zshrc)
 
 ![donkebap](img/custom_donkebap.png)
 
@@ -373,8 +373,48 @@ AGKOZAK_MULTILINE=0
 AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
 ```
 
+#### [andeee](https://github.com/andeee/dotfiles/blob/ae53603fe69243ae4f3028d80e002af5630f40dd/zsh/.zshrc)
 
-### [pjcj](https://github.com/pjcj/base/blob/6138f2310fbabd809b3b10b1e279bbaff4ccbe05/.zshrc)
+![andeee](img/custom_andeee.png)
+
+```sh
+AGKOZAK_COLORS_PROMPT_CHAR='magenta'
+AGKOZAK_MULTILINE=0
+AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
+AGKOZAK_USER_HOST_DISPLAY=0
+```
+
+#### [DFG](https://github.com/tarkin88/DFG/blob/2bad488681cd5ca1ca2e59d9ed9d4409a949c0bb/dots/antigen/zshrc)
+
+![DFG](img/custom_DFG.png)
+
+```sh
+AGKOZAK_COLORS_PATH=grey
+AGKOZAK_COLORS_BRANCH_STATUS=cyan
+AGKOZAK_COLORS_PROMPT_CHAR=white
+AGKOZAK_COLORS_PROMPT_CHAR=cyan
+
+AGKOZAK_BLANK_LINES=1
+
+AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
+```
+
+### Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT
+
+#### [gnumoksha](https://github.com/gnumoksha/dotfiles/blob/e48d195c58abbedee65976b41d9cdf35a4716c7a/shell/zsh/agkozak-settings.zsh)
+
+![gnumoksha](img/custom_gnumoksha.png)
+
+```sh
+AGKOZAK_PROMPT_DIRTRIM=4
+AGKOZAK_COLORS_BRANCH_STATUS=243
+AGKOZAK_LEFT_PROMPT_ONLY=1
+AGKOZAK_PROMPT_CHAR=( '$' '$' '$'  )
+
+AGKOZAK_CUSTOM_RPROMPT='%*'
+```
+
+#### [pjcj](https://github.com/pjcj/base/blob/6138f2310fbabd809b3b10b1e279bbaff4ccbe05/.zshrc)
 
 ![pjcj](img/custom_pjcj.png)
 
@@ -392,7 +432,7 @@ AGKOZAK_CUSTOM_RPROMPT+='%B%F{blue}%~%f%b '
 AGKOZAK_CUSTOM_RPROMPT+='%F{32}%*'
 ```
 
-### [ccb012100](https://github.com/ccb012100/linux-configs/blob/f31f11794deb3365dd78427d03bb51284392a35b/.zshrc)
+#### [ccb012100](https://github.com/ccb012100/linux-configs/blob/f31f11794deb3365dd78427d03bb51284392a35b/.zshrc)
 
 ![ccb012100](img/custom_ccb012100.png)
 
@@ -405,3 +445,7 @@ AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
 AGKOZAK_RPROMPT=''
 ```
+
+<p align="center">
+  <img src="img/logo.png" alt="agkozak ZSH Prompt Logo">
+</p>

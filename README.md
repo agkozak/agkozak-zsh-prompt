@@ -310,29 +310,65 @@ Alternatively, you may set `AGKOZAK_BRANCH_STATUS_SEPARATOR` to any other charac
 ### Advanced Customization
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as
 
-    AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
-    AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
-    AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b\n'
-    AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
+```sh
+# Exit status
+AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
+# Username and hostname
+AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
+# Path
+AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b\n'
+# Prompt character
+AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
-    AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.)'
+# Git status
+AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.)'
+```
 
 In general, you will not need to change these settings to achieve a custom prompt. If, for example, you would like to move the Git status into the left prompt, you may do so simply with `AGKOZAK_LEFT_PROMPT_ONLY=1`. If you want to make it your favorite shade of grey, you may add `AGKOZAK_COLORS_BRANCH_STATUS=243`.
 
-But if you then wanted to have the (now empty) right prompt display the time, you should add
+Now that the right prompt no longer does anything, you could use the `AGKOZAK_CUSTOM_RPROMPT` variable to have it do something new, such as to display the time:
 
      AGKOZAK_CUSTOM_RPROMPT='%*'
 
-Both prompts, thus altered, could be expressed as
+So far, you will have used only the following code:
 
-    AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
-    AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
-    AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b%(3V.%F{243}%3v%f.)\n'
-    AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
-
+    AGKOZAK_LEFT_PROMPT_ONLY=1
+    AGKOZAK_COLORS_BRANCH_STATUS=243 
     AGKOZAK_CUSTOM_RPROMPT='%*'
 
-Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, it may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.
+The same result could be achieved by starting with the default code given at the top of this section and altering it to produce
+
+```sh
+# Exit status 
+AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
+# Username and hostname
+AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
+# Path and Git status (followed by newline)
+AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b%(3V.%F{243}%3v%f.)\n'
+# Prompt character
+AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
+
+# Time
+AGKOZAK_CUSTOM_RPROMPT='%*'
+```
+
+Obviously, this code is considerably harder to read, but you might use it if you wanted to do something much less supported by the basic configuration options, such as displaying the exit status immediately before the prompt character:
+
+```sh
+# Username and hostname
+AGKOZAK_CUSTOM_PROMPT='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
+# Path and Git status (followed by newline)
+AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b%(3V.%F{243}%3v%f.)\n'
+# Exit status
+AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{red}(%?%)%f%b )'
+# Prompt character
+AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
+
+# Time
+AGKOZAK_CUSTOM_RPROMPT='%*'
+```
+
+*Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, it may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.*
 
 For some examples of prompt configurations that people have created using `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT`, see ["Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT"](#using-agkozak_custom_prompt-and-agkozak_custom_rprompt).
 

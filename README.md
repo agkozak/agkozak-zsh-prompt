@@ -348,7 +348,8 @@ If you want to force the agkozak ZSH Prompt to use a specific asynchronous metho
 AGKOZAK_COLORS_BRANCH_STATUS=248
 AGKOZAK_BLANK_LINES=1
 AGKOZAK_LEFT_PROMPT_ONLY=1
-# Make the prompt character red when superuser
+# Make the unicode prompt character red when superuser
+# and reversed when in vi command mode
 AGKOZAK_PROMPT_CHAR=( '%F{magenta}❯%f' '%F{red}❯%f' '%F{magenta}❮%f' )
 AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
 AGKOZAK_USER_HOST_DISPLAY=0

@@ -440,7 +440,7 @@ AGKOZAK_BLANK_LINES=1
 AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
 ```
 
-### [amenbreakfast](https://www.reddit.com/r/zsh/comments/cgiu1f/examples_of_agkozak_zsh_prompt_customization/euhsehg/)
+#### [amenbreakfast](https://www.reddit.com/r/zsh/comments/cgiu1f/examples_of_agkozak_zsh_prompt_customization/euhsehg/)
 
 ![amenbreakfast](img/custom_amenbreakfast.png)
 

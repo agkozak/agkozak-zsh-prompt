@@ -354,8 +354,7 @@ _agkozak_load_async_lib() {
 }
 
 ############################################################
-# If SIGUSR1 is available and not already in use by ZSH, use
-# it; otherwise disable asynchronous mode
+# Is SIGUSR1 is available and not already in use by ZSH?
 ############################################################
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then

@@ -43,12 +43,18 @@
 #
 # psvar[1]      %1v                         Hostname/abbreviated hostname (only
 #                                           displayed for SSH connections)
+#
 # psvar[2]      %2v                         Working directory or abbreviation
 #                                           thereof
+#
 # psvar[3]      %3v                         Current working Git branch, along
 #                                           with indicator of changes made
+#
 # psvar[4]      %4v                         Equals 'vicmd' when vi command mode
 #                                           is enabled; otherwise empty
+#
+# psvar[5]      %5v                         Empty only when
+#                                           AGKOZAK_USER_HOST_DISPLAY is 0
 
 # Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
 AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}

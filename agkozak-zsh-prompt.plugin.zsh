@@ -873,7 +873,6 @@ _agkozak_prompt_string () {
 }
 
 # Clean up environment
-unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_is_ssh \
-  _agkozak_async_init
+unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_async_init
 
 # vim: ts=2:et:sts=2:sw=2:

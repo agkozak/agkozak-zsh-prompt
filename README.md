@@ -507,6 +507,20 @@ AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 AGKOZAK_RPROMPT=''
 ```
 
+#### [AGitBoy](https://github.com/agkozak/agkozak-zsh-prompt/issues/15)
+
+![AGitBoy](img/custom_AGitBoy.png)
+
+```sh
+AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
+AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b):'
+AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
+# Use > as the prompt character when in vi command mode
+AGKOZAK_CUSTOM_PROMPT+='%(4V.>.%(!.#.$))'
+```
+
+<hr>
+
 <p align="center">
   <img src="img/logo.png" alt="agkozak ZSH Prompt Logo">
 </p>

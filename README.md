@@ -519,6 +519,33 @@ AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 AGKOZAK_CUSTOM_PROMPT+='%(4V.>.%(!.#.$))'
 ```
 
+#### [steinex_ (for Kerberos)](https://www.reddit.com/r/zsh/comments/cgiu1f/examples_of_agkozak_zsh_prompt_customization/eultop7/)
+
+![steinex_](img/custom_steinex_.png)
+
+```sh
+AGKOZAK_PROMPT_DIRTRIM=5
+
+# Output the prompt character (normally %; %% for active kerberos principal)
+krbprinc() {
+  p=$(klist 2>/dev/null | grep "Default principal:" | awk -F ' ' '{print $3}' | cut -d "@" -f 1)
+
+  if [ -z $p ]; then
+    echo "%B%%%b"
+  elif [[ $p =~ "$USER" ]]; then
+    echo "%B%%%%%b"
+  fi
+}
+
+AGKOZAK_CUSTOM_PROMPT=''
+_agkozak_is_ssh && AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B)%m%(!.%b%s.%b) '
+AGKOZAK_CUSTOM_PROMPT+='%F{blue}%2v%f%b'
+AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{green}%3v%f.)\n'
+AGKOZAK_CUSTOM_PROMPT+='$(krbprinc) '
+
+AGKOZAK_CUSTOM_RPROMPT=''
+```
+
 <hr>
 
 <p align="center">

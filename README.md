@@ -528,7 +528,7 @@ AGKOZAK_PROMPT_DIRTRIM=5
 
 # Output the prompt character (normally %; %% for active kerberos principal)
 krbprinc() {
-  if klist &> /dev/null; then
+  if klist -s; then
     print '%B%%%%%b'
     else
     print '%B%%%b'

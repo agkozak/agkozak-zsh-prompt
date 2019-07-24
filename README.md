@@ -528,7 +528,7 @@ AGKOZAK_PROMPT_DIRTRIM=5
 
 # Output the prompt character (normally %; %% for active kerberos principal)
 krbprinc() {
-  p=$(klist 2>/dev/null | grep "Default principal:" | awk -F ' ' '{print $3}' | cut -d "@" -f 1)
+  local p=${${${(M)${(f)"$(klist 2> /dev/null)"}:#Default\ principal\:*}%@*}#Default\ principal\: }
 
   if [ -z $p ]; then
     echo "%B%%%b"

@@ -297,6 +297,12 @@ _agkozak_branch_status() {
       (( i++ ))
     done
 
+    # Check for stashed changes. If this is the case add the respective
+    # stash symbol to the list of symbols.
+    if $(command git rev-parse --verify refs/stash >/dev/null 2>&1); then
+      symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
+    fi
+
     [[ -n $symbols ]] && symbols=" ${symbols}"
 
     printf '%s(%s%s)' "${AGKOZAK_BRANCH_STATUS_SEPARATOR- }" "$branch" "$symbols"

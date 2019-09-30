@@ -56,6 +56,8 @@
 # psvar[5]      %5v                         Empty only when
 #                                           AGKOZAK_USER_HOST_DISPLAY is 0
 
+autoload -Uz is-at-least
+
 # Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
 AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
 
@@ -72,8 +74,6 @@ _agkozak_debug_print() {
 }
 
 if (( AGKOZAK_PROMPT_DEBUG )); then
-  autoload -Uz is-at-least
-
   setopt WARN_CREATE_GLOBAL
 
   if is-at-least 5.4.0; then
@@ -104,6 +104,9 @@ typeset -g AGKOZAK_COLORS_BRANCH_STATUS=${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}
 
 # AGKOZAK_USER_HOST_DISPLAY determines whether user and host will be displayed (default: 1)
 typeset -g AGKOZAK_USER_HOST_DISPLAY=${AGKOZAK_USER_HOST_DISPLAY:-1}
+
+# AGKOZAK_SHOW_STASH determines whether stashed changes will be displayed (default: 1)
+typeset -g AGKOZAK_SHOW_STASH=${AGKOZAK_SHOW_STASH:-1}
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -276,7 +279,16 @@ _agkozak_branch_status() {
 
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k
-    git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
+
+    if (( AGKOZAK_SHOW_STASH )); then
+      typeset -g AGKOZAK_GIT_VERSION=${AGKOZAK_GIT_VERSION:=$(command git --version)}
+
+      if is-at-least 2.14 ${AGKOZAK_GIT_VERSION#git version }; then
+        git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
+      else
+        git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
+      fi
+    fi
 
     typeset -A messages
     messages=(
@@ -297,10 +309,20 @@ _agkozak_branch_status() {
       (( i++ ))
     done
 
-    # Check for stashed changes. If this is the case add the respective
-    # stash symbol to the list of symbols.
-    if $(command git rev-parse --verify refs/stash >/dev/null 2>&1); then
-      symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
+    # Check for stashed changes. If there are any, add the stash symbol to the
+    # list of symbols.
+    if (( AGKOZAK_SHOW_STASH )); then
+      if is-at-least 2.14 ${AGKOZAK_GIT_VERSION#git version }; then
+        case $git_status in
+          *'Your stash currently has '*)
+            symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
+            ;;
+        esac
+      else
+        if command git rev-parse --verify refs/stash &> /dev/null; then
+          symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
+        fi
+      fi
     fi
 
     [[ -n $symbols ]] && symbols=" ${symbols}"

@@ -39,6 +39,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - [Other Settings](#other-settings)
         - [AGKOZAK_USER_HOST_DISPLAY](#agkozak_user_host_display)
         - [AGKOZAK_BRANCH_STATUS_SEPARATOR](#agkozak_branch_status_separator)
+        - [AGKOZAK_SHOW_STASH](#agkozak_show_stash)
     - [Advanced Customization](#advanced-customization)
 - [Examples of agkozak ZSH Prompt Customization](#examples-of-agkozak-zsh-prompt-customization)
     - [Using Basic Configuration Settings](#using-basic-configuration-settings)
@@ -46,6 +47,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 ## News
 
+- v3.4.0
+    - Stashed changes are now displayed by default (set `AGKOZAK_SHOW_STASH=0` to turn this feature off)
 - v3.3.0 (July 20, 2019)
     - If `AGKOZAK_USER_HOST_DISPLAY=0`, the username and hostname will not be displayed.
 - v3.2.2 (July 8, 2019)
@@ -182,7 +185,7 @@ Deleted | x
 Modified | !
 Renamed | >
 Untracked | ?
-Stashed Changes | $
+Stashed changes | $
 
 ## Exit Status
 
@@ -307,6 +310,10 @@ By default, a space precedes the Git branch status indicator, typically right be
     AGKOZAK_BRANCH_STATUS_SEPARATOR=''
 
 Alternatively, you may set `AGKOZAK_BRANCH_STATUS_SEPARATOR` to any other character or characters that you prefer.
+
+#### AGKOZAK_SHOW_STASH
+
+If you prefer not to have stashed changes displayed, you may set `AGKOZAK_SHOW_STASH=0`.
 
 ### Advanced Customization
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as

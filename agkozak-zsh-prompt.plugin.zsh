@@ -102,8 +102,13 @@ typeset -g AGKOZAK_COLORS_USER_HOST=${AGKOZAK_COLORS_USER_HOST:-green}
 typeset -g AGKOZAK_COLORS_PATH=${AGKOZAK_COLORS_PATH:-blue}
 typeset -g AGKOZAK_COLORS_BRANCH_STATUS=${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}
 
-# AGKOZAK_USER_HOST_DISPLAY determines whether user and host will be displayed (default: 1)
+# AGKOZAK_USER_HOST_DISPLAY determines whether user and host will be
+# displayed (default: 1)
 typeset -g AGKOZAK_USER_HOST_DISPLAY=${AGKOZAK_USER_HOST_DISPLAY:-1}
+
+# For single-line prompt, AGKOZAK_PRE_PROMPT_CHAR comes before the prompt
+# character (default: space)
+typeset -g AGKOZAK_PRE_PROMPT_CHAR=${AGKOZAK_PRE_PROMPT_CHAR- }
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -711,7 +716,7 @@ _agkozak_precmd() {
 
   if (( AGKOZAK_MULTILINE == 0 )) && (( ! AGKOZAK_LEFT_PROMPT_ONLY )) \
     && [[ -z $INSIDE_EMACS ]]; then
-    typeset -g AGKOZAK_PROMPT_WHITESPACE=' '
+    typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR}
   else
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
   fi

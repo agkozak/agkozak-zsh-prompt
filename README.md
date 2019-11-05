@@ -244,6 +244,8 @@ in your `.zshrc`.
 
 ![Single-line prompt](img/single-line_prompt.gif)
 
+If you would prefer to have a character or characters other than a space appear before the prompt character, set `AGKOZAK_PRE_PROMPT_CHAR` to that character or characters -- or set `AGKOZAK_PRE_PROMPT_CHAR=''` to eliminate the space.
+
 ### Optional Left-prompt-only Mode
 
 If you would like to have the Git status displayed in the left prompt (with no right prompt -- this is how [`pure`](https://github.com/sindresorhus/pure) does it), set

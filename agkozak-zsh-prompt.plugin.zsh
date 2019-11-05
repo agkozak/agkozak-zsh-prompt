@@ -286,9 +286,7 @@ _agkozak_branch_status() {
     local git_status symbols i=1 k
 
     if (( AGKOZAK_SHOW_STASH )); then
-      typeset -g AGKOZAK_GIT_VERSION=${AGKOZAK_GIT_VERSION:=$(command git --version)}
-
-      if is-at-least 2.14 ${AGKOZAK_GIT_VERSION#git version }; then
+      if is-at-least 2.14 ${AGKOZAK_GIT_VERSION}; then
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
       else
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
@@ -317,7 +315,7 @@ _agkozak_branch_status() {
     # Check for stashed changes. If there are any, add the stash symbol to the
     # list of symbols.
     if (( AGKOZAK_SHOW_STASH )); then
-      if is-at-least 2.14 ${AGKOZAK_GIT_VERSION#git version }; then
+      if is-at-least 2.14 ${AGKOZAK_GIT_VERSION}; then
         case $git_status in
           *'Your stash currently has '*)
             symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
@@ -686,6 +684,8 @@ _agkozak_strip_colors() {
 # TODO: Consider making AGKOZAK_PROMPT_WHITESPACE a psvar
 #
 # Globals:
+#   AGKOZAK_SHOW_STASH
+#   AGKOZAK_GIT_VERSION
 #   AGKOZAK_PROMPT_DIRTRIM
 #   AGKOZAK_OLD_PROMPT_DIRTRIM
 #   AGKOZAK_NAMED_DIRS
@@ -706,6 +706,10 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
+  # Cache the Git version for use in _agkozak_branch_status
+  (( AGKOZAK_SHOW_STASH )) && \
+    typeset -g AGKOZAK_GIT_VERSION=${${AGKOZAK_GIT_VERSION:=$(command git --version)}#git version }
+
   # Update displayed directory when AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS
   # changes or when first sourcing this script
   if (( AGKOZAK_PROMPT_DIRTRIM != AGKOZAK_OLD_PROMPT_DIRTRIM )) \

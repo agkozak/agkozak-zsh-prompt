@@ -44,11 +44,13 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - [Examples of agkozak ZSH Prompt Customization](#examples-of-agkozak-zsh-prompt-customization)
     - [Using Basic Configuration Settings](#using-basic-configuration-settings)
     - [Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT](#using-agkozak_custom_prompt-and-agkozak_custom_rprompt)
+- [Options Index](#options-index)
 
 ## News
 
 - v3.4.0
-    - Stashed changes are now displayed by default (set `AGKOZAK_SHOW_STASH=0` to turn this feature off)
+    - Stashed changes are now displayed by default (set `AGKOZAK_SHOW_STASH=0` to turn this feature off).
+    - In a single-line prompt, `AGKOZAK_PRE_PROMPT_CHAR` allows you to change the space before the prompt character to any character or characters you like; setting `AGKOZAK_PRE_PROMPT_CHAR=''` eliminates the space entirely.
 - v3.3.0 (July 20, 2019)
     - If `AGKOZAK_USER_HOST_DISPLAY=0`, the username and hostname will not be displayed.
 - v3.2.2 (July 8, 2019)
@@ -553,6 +555,28 @@ AGKOZAK_CUSTOM_PROMPT+='$(krbprinc) '
 
 AGKOZAK_CUSTOM_RPROMPT=''
 ```
+# Options Index
+
+Option | Default | Meaning
+--- | --- | ---
+[`AGKOZAK_BLANK_LINES`](#blank-lines-between-prompts) | `0` | Display a blank line before displaying the prompt
+[`AGKOZAK_BRANCH_STATUS_SEPARATOR`](#AGKOZAK_BRANCH_STATUS_SEPARATOR) | ` ` | Character or characters preceding the Git status indicator
+[`AGKOZAK_COLORS_BRANCH_STATUS`](#custom-colors) | `yellow` | Color of Git status
+[`AGKOZAK_COLORS_EXIT_STATUS`](#custom-colors) | `red` | Color of exit status
+[`AGKOZAK_COLORS_PATH`](#custom-colors) | `blue` | Color of path
+[`AGKOZAK_COLORS_USER_HOST`](#custom-colors) | `green` | Color of username and hostname
+[`AGKOZAK_CUSTOM_PROMPT`](#advanced-customization) | | Code for custom left prompt
+[`AGKOZAK_CUSTOM_RPROMPT`](#advanced-customization) | | Code for custom right prompt
+[`AGKOZAK_CUSTOM_SYMBOLS`](#custom-git-symbols) | `( '&*' '&' '*' '+' 'x" '!' '>' '?' '$' )` | Array containing custom Git symbols for the statuses Diverged, Behind, Ahead, New file(s), Deleted, Modified, Renamed, Untracked, Stashed changes
+[`AGKOZAK_FORCE_ASYNC_METHOD`](#asynchronous-methods) | | Forces the async method to be `subst-async`, `zsh-async`, `usr1` or `none`
+[`AGKOZAK_LEFT_PROMPT_ONLY`](#optional-left-prompt-only-mode) | `0` | Display a two-line prompt with the Git status on the left side
+[`AGKOZAK_MULTILINE`](#optional-single-line-prompt) | `1` | Display a two-line prompt
+[`AGKOZAK_NAMED_DIRS`](#abbreviated-paths) | `1` | Display named (hashed) directories thus: `~foo`
+[`AGKOZAK_PRE_PROMPT_CHAR`](#optional-single-line-prompt) | ` ` | For a single-line prompt, the character or characters to display before the prompt character
+[`AGKOZAK_PROMPT_DEBUG`](#asynchronous-methods) | `0` | Show debugging information
+[`AGKOZAK_PROMPT_DIRTRIM`](#abbreviated-paths) | `2` | Number of directory elements to display; `0` turns off directory trimming
+[`AGKOZAK_SHOW_STASH`](#agkozak_show_stash) | `1` | Display stashed changes
+[`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display) | `1` | Display the username and hostname
 
 <hr>
 

@@ -568,7 +568,7 @@ Option | Default | Meaning
 [`AGKOZAK_CUSTOM_PROMPT`](#advanced-customization) | | Code for custom left prompt
 [`AGKOZAK_CUSTOM_RPROMPT`](#advanced-customization) | | Code for custom right prompt
 [`AGKOZAK_CUSTOM_SYMBOLS`](#custom-git-symbols) | `( '&*' '&' '*' '+' 'x" '!' '>' '?' '$' )` | Array containing custom Git symbols for the statuses Diverged, Behind, Ahead, New file(s), Deleted, Modified, Renamed, Untracked, Stashed changes
-[`AGKOZAK_FORCE_ASYNC_METHOD`](#asynchronous-methods) | | Forces the async method to be `subst-async`, `zsh-async`, `usr1` or `none`
+[`AGKOZAK_FORCE_ASYNC_METHOD`](#asynchronous-methods) | | Forces the asynchronous method to be `subst-async`, `zsh-async`, `usr1` or `none`
 [`AGKOZAK_LEFT_PROMPT_ONLY`](#optional-left-prompt-only-mode) | `0` | Display a two-line prompt with the Git status on the left side
 [`AGKOZAK_MULTILINE`](#optional-single-line-prompt) | `1` | Display a two-line prompt
 [`AGKOZAK_NAMED_DIRS`](#abbreviated-paths) | `1` | Display named (hashed) directories thus: `~foo`

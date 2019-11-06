@@ -911,6 +911,7 @@ _agkozak_prompt_string () {
 }
 
 # Clean up environment
-unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_async_init
+(( AGKOZAK_PROMPT_DEBUG )) \
+  || unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_async_init
 
 # vim: ts=2:et:sts=2:sw=2:

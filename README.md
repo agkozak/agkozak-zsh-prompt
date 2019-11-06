@@ -48,7 +48,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 ## News
 
-- v3.4.0
+- v3.4.0 (November 6, 2019)
     - Stashed changes are now displayed by default (set `AGKOZAK_SHOW_STASH=0` to turn this feature off).
     - In a single-line prompt, `AGKOZAK_PRE_PROMPT_CHAR` allows you to change the space before the prompt character to any character or characters you like; setting `AGKOZAK_PRE_PROMPT_CHAR=''` eliminates the space entirely.
 - v3.3.0 (July 20, 2019)

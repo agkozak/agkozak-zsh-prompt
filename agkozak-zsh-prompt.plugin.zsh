@@ -708,7 +708,7 @@ _agkozak_strip_colors() {
 _agkozak_precmd() {
   # Cache the Git version for use in _agkozak_branch_status
   (( AGKOZAK_SHOW_STASH )) && \
-    typeset -g AGKOZAK_GIT_VERSION=${${AGKOZAK_GIT_VERSION:=$(command git --version)}#git version }
+    typeset -gx AGKOZAK_GIT_VERSION=${${AGKOZAK_GIT_VERSION:=$(command git --version)}#git version }
 
   # Update displayed directory when AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS
   # changes or when first sourcing this script

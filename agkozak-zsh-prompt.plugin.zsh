@@ -58,6 +58,44 @@
 
 autoload -Uz is-at-least
 
+# Options to reset if the prompt is unloaded
+typeset -gA AGKOZAK_OLD_OPTIONS
+local k
+for k in warncreateglobal warnnestedvar promptsubst promptbang; do
+  AGKOZAK_OLD_OPTIONS+=( ${(k)options[$k]} ${(v)options[$k]} )
+done
+
+# Store previous prompts for the unload function
+typeset -ga AGKOZAK_OLD_PROMPTS
+AGKOZAK_OLD_PROMPTS=( $PROMPT $RPROMPT )
+
+# Names of prompt functions. Used to enable WARN_NESTED_VAR in debug mode
+# and for unloading the prompt.
+typeset -ga AGKOZAK_FUNCTIONS
+AGKOZAK_FUNCTIONS=( _agkozak_debug_print
+                    _agkozak_has_colors
+                    _agkozak_is_ssh
+                    _agkozak_prompt_dirtrim
+                    _agkozak_branch_status
+                    zle-keymap-select
+                    TRAPWINCH
+                    _agkozak_vi_mode_indicator
+                    _agkozak_load_async_lib
+                    _agkozak_has_usr1
+                    _agkozak_async_init
+                    _agkozak_subst_async
+                    _agkozak_zsh_subst_async_callback
+                    _agkozak_zsh_async
+                    _agkozak_zsh_async_callback
+                    _agkozak_usr1_async
+                    _agkozak_usr1_async_worker
+                    TRAPUSR1
+                    _agkozak_strip_colors
+                    _agkozak_precmd
+                    _agkozak_chpwd
+                    _agkozak_prompt_string
+                  )
+
 # Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
 AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
 
@@ -77,7 +115,11 @@ if (( AGKOZAK_PROMPT_DEBUG )); then
   setopt WARN_CREATE_GLOBAL
 
   if is-at-least 5.4.0; then
-    setopt WARN_NESTED_VAR
+    local x
+    for x in $AGKOZAK_FUNCTIONS; do
+      # Enable WARN_CREATE_GLOBAL for each function of the prompt
+      functions -W $x
+    done
   fi
 fi
 
@@ -913,5 +955,53 @@ _agkozak_prompt_string () {
 # Clean up environment
 (( AGKOZAK_PROMPT_DEBUG )) \
   || unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_async_init
+
+############################################################
+# Unload function
+#
+# See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun
+############################################################
+agkozak-zsh-prompt_plugin_unload() {
+  local agkozak_vars x
+
+  [[ ${AGKOZAK_OLD_OPTIONS[warncreateglobal]} == 'off' ]] \
+    && unsetopt WARN_CREATE_GLOBAL
+  [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] \
+    && unsetopt PROMPT_SUBST
+  [[ ${AGKOZAK_OLD_OPTIONS[prompt_bang]} == 'on' ]] \
+    && setopt PROMPT_BANG
+
+  PROMPT=${AGKOZAK_OLD_PROMPTS[1]}
+  RPROMPT=${AGKOZAK_OLD_PROMPTS[2]}
+
+  add-zsh-hook -D precmd _agkozak_precmd
+  add-zsh-hook -D chpwd _agkozak_chpwd
+
+  for x in $AGKOZAK_FUNCTIONS; do
+    whence -w $x &> /dev/null && unfunction $x
+  done
+
+  agkozak_vars=(
+                 AGKOZAK_FUNCTIONS
+                 AGKOZAK_OLD_PROMPTS
+                 AGKOZAK_OLD_OPTIONS
+                 AGKOZAK_ASYNC_METHOD
+                 AGKOZAK_CURRENT_CUSTOM_PROMPT
+                 AGKOZAK_CURRENT_CUSTOM_RPROMPT
+                 AGKOZAK_OLD_LEFT_PROMPT_ONLY
+                 AGKOZAK_OLD_MULTILINE
+                 AGKOZAK_OLD_NAMED_DIRS
+                 AGKOZAK_OLD_PROMPT_DIRTRIM
+                 AGKOZAK_PROMPT_DIR
+                 AGKOZAK_TRAPUSR1_FUNCTION
+                 AGKOZAK_USR1_ASYNC_WORKER
+               )
+
+  for x in $agkozak_vars; do
+    (( $+x )) && unset $x
+  done
+
+  unfunction $0
+}
 
 # vim: ts=2:et:sts=2:sw=2:

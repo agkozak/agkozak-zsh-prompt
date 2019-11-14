@@ -60,10 +60,10 @@ autoload -Uz is-at-least
 
 # Options to reset if the prompt is unloaded
 typeset -gA AGKOZAK_OLD_OPTIONS
-local k
-for k in warncreateglobal warnnestedvar promptsubst promptbang; do
-  AGKOZAK_OLD_OPTIONS+=( ${(k)options[$k]} ${(v)options[$k]} )
-done
+AGKOZAK_OLD_OPTIONS=(
+                      'promptsubst' ${options[promptsubst]}
+                      'promptbang' ${options[promptbang]}
+                    )
 
 # Store previous prompts for the unload function
 typeset -ga AGKOZAK_OLD_PROMPTS
@@ -111,17 +111,13 @@ _agkozak_debug_print() {
   (( AGKOZAK_PROMPT_DEBUG )) && print -- "agkozak-zsh-prompt: $1" >&2
 }
 
-if (( AGKOZAK_PROMPT_DEBUG )); then
-  setopt WARN_CREATE_GLOBAL
-
-  if is-at-least 5.4.0; then
-    local x
-    for x in $AGKOZAK_FUNCTIONS; do
-      # Enable WARN_CREATE_GLOBAL for each function of the prompt
-      functions -W $x
-    done
-  fi
+if is-at-least 5.4.0; then
+  for x in $AGKOZAK_FUNCTIONS; do
+    # Enable WARN_CREATE_GLOBAL for each function of the prompt
+    functions -W $x
+  done
 fi
+unset x
 
 # Set AGKOZAK_PROMPT_DIRTRIM to the desired number of directory elements to
 # display, or set it to 0 for no directory trimming
@@ -228,6 +224,8 @@ _agkozak_is_ssh() {
 #   $@ Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
+  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
   # Process arguments
   local argument
   for argument in $@; do
@@ -314,6 +312,8 @@ _agkozak_prompt_dirtrim() {
 # representing changes to the working copy
 ############################################################
 _agkozak_branch_status() {
+  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
   local ref branch
   ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
   case $? in        # See what the exit code is.
@@ -468,7 +468,6 @@ _agkozak_has_usr1() {
 _agkozak_async_init() {
 
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
   if [[ -e /proc/version ]]; then
     if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
       unsetopt BG_NICE
@@ -524,7 +523,6 @@ _agkozak_async_init() {
   #   AGKOZAK_IS_WSL
   ############################################################
   _agkozak_subst_async() {
-    setopt LOCAL_OPTIONS NO_IGNORE_BRACES
     typeset -g AGKOZAK_ASYNC_FD=13371
 
     # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
@@ -577,9 +575,9 @@ _agkozak_async_init() {
       # Create zsh-async worker
       ############################################################
       _agkozak_zsh_async() {
-          async_start_worker agkozak_git_status_worker -n
-          async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
-          async_job agkozak_git_status_worker _agkozak_branch_status
+        async_start_worker agkozak_git_status_worker -n
+        async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
+        async_job agkozak_git_status_worker _agkozak_branch_status
       }
 
       ############################################################
@@ -677,7 +675,6 @@ _agkozak_async_init() {
 #   $1 The prompt string
 ############################################################
 _agkozak_strip_colors() {
-
   local prompt=$1
   local open_braces
 
@@ -748,9 +745,12 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
+  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
   # Cache the Git version for use in _agkozak_branch_status
   (( AGKOZAK_SHOW_STASH )) && \
-    typeset -gx AGKOZAK_GIT_VERSION=${${AGKOZAK_GIT_VERSION:=$(command git --version)}#git version }
+    typeset -gx AGKOZAK_GIT_VERSION
+    AGKOZAK_GIT_VERSION=${${AGKOZAK_GIT_VERSION:=$(command git --version)}#git version }
 
   # Update displayed directory when AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS
   # changes or when first sourcing this script
@@ -888,6 +888,7 @@ _agkozak_prompt_string () {
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
 () {
+  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   _agkozak_async_init
 
@@ -964,11 +965,9 @@ _agkozak_prompt_string () {
 agkozak-zsh-prompt_plugin_unload() {
   local agkozak_vars x
 
-  [[ ${AGKOZAK_OLD_OPTIONS[warncreateglobal]} == 'off' ]] \
-    && unsetopt WARN_CREATE_GLOBAL
   [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] \
     && unsetopt PROMPT_SUBST
-  [[ ${AGKOZAK_OLD_OPTIONS[prompt_bang]} == 'on' ]] \
+  [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] \
     && setopt PROMPT_BANG
 
   PROMPT=${AGKOZAK_OLD_PROMPTS[1]}

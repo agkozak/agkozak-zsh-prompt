@@ -224,6 +224,7 @@ _agkozak_is_ssh() {
 #   $@ Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
+  emulate -L zsh
   setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Process arguments
@@ -312,6 +313,7 @@ _agkozak_prompt_dirtrim() {
 # representing changes to the working copy
 ############################################################
 _agkozak_branch_status() {
+  emulate -L zsh
   setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   local ref branch
@@ -382,6 +384,8 @@ _agkozak_branch_status() {
 # to a colon
 ############################################################
 zle-keymap-select() {
+  emulate -L zsh
+
   [[ $KEYMAP == 'vicmd' ]] && psvar[4]='vicmd' || psvar[4]=''
   zle reset-prompt
   zle -R
@@ -552,6 +556,7 @@ _agkozak_async_init() {
   #   $1  File descriptor
   ############################################################
   _agkozak_zsh_subst_async_callback() {
+    emulate -L zsh
     setopt LOCAL_OPTIONS NO_IGNORE_BRACES
 
     local FD="$1" response
@@ -584,6 +589,8 @@ _agkozak_async_init() {
       # Set RPROMPT and stop worker
       ############################################################
       _agkozak_zsh_async_callback() {
+        emulate -L zsh
+
         psvar[3]=$3
         zle && zle reset-prompt
         async_stop_worker agkozak_git_status_worker -n
@@ -603,6 +610,8 @@ _agkozak_async_init() {
       #   AGKOZAK_ASYNC_METHOD
       ############################################################
       _agkozak_usr1_async() {
+        emulate -L zsh
+
         if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
@@ -649,6 +658,8 @@ _agkozak_async_init() {
       #   AGKOZAK_TRAPUSR1_FUNCTION
       ############################################################
       TRAPUSR1() {
+        emulate -L zsh
+
         # Set prompt from contents of temporary file
         psvar[3]=$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")
 
@@ -745,6 +756,7 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
+  emulate -L zsh
   setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Cache the Git version for use in _agkozak_branch_status
@@ -840,6 +852,8 @@ _agkozak_precmd() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_prompt_string () {
+  emulate -L zsh
+
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
   else
@@ -888,6 +902,7 @@ _agkozak_prompt_string () {
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
 () {
+  emulate -L zsh
   setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   _agkozak_async_init

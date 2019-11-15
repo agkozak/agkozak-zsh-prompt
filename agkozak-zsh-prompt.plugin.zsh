@@ -686,13 +686,14 @@ _agkozak_async_init() {
 ######################################################################
 
 ############################################################
-# Strip color codes from a prompt string
+# Strip color codes from a prompt string and put the result
+# on the editing buffer stack
 #
 # Arguments:
-#   $1 The prompt string
+#   $1 Name of prompt string variable (PROMPT or RPROMPT)
 ############################################################
 _agkozak_strip_colors() {
-  local prompt=$1
+  local prompt=${(P)1} newprompt
   local open_braces
 
   while [[ -n $prompt ]]; do
@@ -710,11 +711,13 @@ _agkozak_strip_colors() {
         ;;
       %f*|%k*) prompt=${prompt#%[fk]} ;;
       *)
-        print -n -- "${prompt:0:1}"
+        newprompt+="${prompt:0:1}"
         prompt=${prompt#?}
         ;;
     esac
   done
+
+  print -nz -- "${(qq)newprompt}"
 }
 
 ############################################################
@@ -828,7 +831,9 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     if ! _agkozak_has_colors; then
-      PROMPT=$(_agkozak_strip_colors "${PROMPT}")
+      _agkozak_strip_colors 'PROMPT'
+      read -rz PROMPT
+      PROMPT=${(Q)PROMPT}
     fi
   fi
 
@@ -836,7 +841,9 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
     RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
     if ! _agkozak_has_colors; then
-      RPROMPT=$(_agkozak_strip_colors "${RPROMPT}")
+      _agkozak_strip_colors 'RPROMPT'
+      read -rz RPROMPT
+      RPROMPT=${(Q)RPROMPT}
     fi
   fi
 }
@@ -894,8 +901,12 @@ _agkozak_prompt_string () {
   fi
 
   if ! _agkozak_has_colors; then
-    PROMPT=$(_agkozak_strip_colors "$PROMPT")
-    RPROMPT=$(_agkozak_strip_colors "$RPROMPT")
+    _agkozak_strip_colors 'PROMPT'
+    read -rz PROMPT
+    PROMPT=${(Q)PROMPT}
+    _agkozak_strip_colors 'RPROMPT'
+    read -rz RPROMPT
+    RPROMPT=${(Q)RPROMPT}
   fi
 }
 

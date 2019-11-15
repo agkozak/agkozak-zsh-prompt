@@ -982,16 +982,16 @@ agkozak-zsh-prompt_plugin_unload() {
   done
 
   agkozak_vars=(
-                 AGKOZAK_FUNCTIONS
-                 AGKOZAK_OLD_PROMPTS
-                 AGKOZAK_OLD_OPTIONS
                  AGKOZAK_ASYNC_METHOD
                  AGKOZAK_CURRENT_CUSTOM_PROMPT
                  AGKOZAK_CURRENT_CUSTOM_RPROMPT
+                 AGKOZAK_FUNCTIONS
                  AGKOZAK_OLD_LEFT_PROMPT_ONLY
                  AGKOZAK_OLD_MULTILINE
                  AGKOZAK_OLD_NAMED_DIRS
+                 AGKOZAK_OLD_OPTIONS
                  AGKOZAK_OLD_PROMPT_DIRTRIM
+                 AGKOZAK_OLD_PROMPTS
                  AGKOZAK_PROMPT_DIR
                  AGKOZAK_TRAPUSR1_FUNCTION
                  AGKOZAK_USR1_ASYNC_WORKER

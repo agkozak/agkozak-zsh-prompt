@@ -471,7 +471,8 @@ _agkozak_has_usr1() {
 #   AGKOZAK_TRAPUSR1_FUNCTION
 ############################################################
 _agkozak_async_init() {
-  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT EXTENDED_GLOB
+  emulate -L zsh
+  setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
   if [[ -e /proc/version ]]; then
@@ -907,7 +908,8 @@ _agkozak_prompt_string () {
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
 () {
-  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT WARN_CREATE_GLOBAL
+  emulate -L zsh
+  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   _agkozak_async_init
 

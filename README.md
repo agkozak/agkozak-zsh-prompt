@@ -133,6 +133,10 @@ Run the command
 
 to try out the prompt; add the same command to your `.zshrc` to load it automatically.
 
+agkozak-zsh-prompt now supports `zplugin`'s `unload` feature; you may restore the shell to its state before loading the prompt by running
+
+    zplugin unload agkozak/agkozak-zsh-prompt
+
 ## Local and Remote Sessions
 
 When a session is local, only the username is shown; when it is remote over SSH (or `mosh`), the hostname is also shown:

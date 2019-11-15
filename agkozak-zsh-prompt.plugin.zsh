@@ -58,6 +58,44 @@
 
 autoload -Uz is-at-least
 
+# Options to reset if the prompt is unloaded
+typeset -gA AGKOZAK_OLD_OPTIONS
+AGKOZAK_OLD_OPTIONS=(
+                      'promptsubst' ${options[promptsubst]}
+                      'promptbang' ${options[promptbang]}
+                    )
+
+# Store previous prompts for the unload function
+typeset -ga AGKOZAK_OLD_PROMPTS
+AGKOZAK_OLD_PROMPTS=( $PROMPT $RPROMPT )
+
+# Names of prompt functions. Used to enable WARN_NESTED_VAR in debug mode
+# and for unloading the prompt.
+typeset -ga AGKOZAK_FUNCTIONS
+AGKOZAK_FUNCTIONS=( _agkozak_debug_print
+                    _agkozak_has_colors
+                    _agkozak_is_ssh
+                    _agkozak_prompt_dirtrim
+                    _agkozak_branch_status
+                    zle-keymap-select
+                    TRAPWINCH
+                    _agkozak_vi_mode_indicator
+                    _agkozak_load_async_lib
+                    _agkozak_has_usr1
+                    _agkozak_async_init
+                    _agkozak_subst_async
+                    _agkozak_zsh_subst_async_callback
+                    _agkozak_zsh_async
+                    _agkozak_zsh_async_callback
+                    _agkozak_usr1_async
+                    _agkozak_usr1_async_worker
+                    TRAPUSR1
+                    _agkozak_strip_colors
+                    _agkozak_precmd
+                    _agkozak_chpwd
+                    _agkozak_prompt_string
+                  )
+
 # Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
 AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
 
@@ -73,13 +111,13 @@ _agkozak_debug_print() {
   (( AGKOZAK_PROMPT_DEBUG )) && print -- "agkozak-zsh-prompt: $1" >&2
 }
 
-if (( AGKOZAK_PROMPT_DEBUG )); then
-  setopt WARN_CREATE_GLOBAL
-
-  if is-at-least 5.4.0; then
-    setopt WARN_NESTED_VAR
-  fi
+if is-at-least 5.4.0; then
+  for x in $AGKOZAK_FUNCTIONS; do
+    # Enable WARN_CREATE_GLOBAL for each function of the prompt
+    functions -W $x
+  done
 fi
+unset x
 
 # Set AGKOZAK_PROMPT_DIRTRIM to the desired number of directory elements to
 # display, or set it to 0 for no directory trimming
@@ -187,6 +225,7 @@ _agkozak_is_ssh() {
 ############################################################
 _agkozak_prompt_dirtrim() {
   emulate -L zsh
+  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Process arguments
   local argument
@@ -274,6 +313,9 @@ _agkozak_prompt_dirtrim() {
 # representing changes to the working copy
 ############################################################
 _agkozak_branch_status() {
+  emulate -L zsh
+  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
   local ref branch
   ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
   case $? in        # See what the exit code is.
@@ -429,9 +471,9 @@ _agkozak_has_usr1() {
 ############################################################
 _agkozak_async_init() {
   emulate -L zsh
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
 
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
   if [[ -e /proc/version ]]; then
     if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
       unsetopt BG_NICE
@@ -543,9 +585,9 @@ _agkozak_async_init() {
       # Create zsh-async worker
       ############################################################
       _agkozak_zsh_async() {
-          async_start_worker agkozak_git_status_worker -n
-          async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
-          async_job agkozak_git_status_worker _agkozak_branch_status
+        async_start_worker agkozak_git_status_worker -n
+        async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
+        async_job agkozak_git_status_worker _agkozak_branch_status
       }
 
       ############################################################
@@ -649,7 +691,6 @@ _agkozak_async_init() {
 #   $1 The prompt string
 ############################################################
 _agkozak_strip_colors() {
-
   local prompt=$1
   local open_braces
 
@@ -721,10 +762,12 @@ _agkozak_strip_colors() {
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
+  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Cache the Git version for use in _agkozak_branch_status
   (( AGKOZAK_SHOW_STASH )) && \
-    typeset -gx AGKOZAK_GIT_VERSION=${${AGKOZAK_GIT_VERSION:=$(command git --version)}#git version }
+    typeset -gx AGKOZAK_GIT_VERSION
+    AGKOZAK_GIT_VERSION=${${AGKOZAK_GIT_VERSION:=$(command git --version)}#git version }
 
   # Update displayed directory when AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS
   # changes or when first sourcing this script
@@ -814,6 +857,8 @@ _agkozak_precmd() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_prompt_string () {
+  emulate -L zsh
+
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
   else
@@ -863,6 +908,7 @@ _agkozak_prompt_string () {
 ############################################################
 () {
   emulate -L zsh
+  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   _agkozak_async_init
 
@@ -930,5 +976,52 @@ _agkozak_prompt_string () {
 # Clean up environment
 (( AGKOZAK_PROMPT_DEBUG )) \
   || unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_async_init
+
+############################################################
+# Unload function
+#
+# See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun
+############################################################
+agkozak-zsh-prompt_plugin_unload() {
+  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
+  local agkozak_vars x
+
+  [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] \
+    && unsetopt PROMPT_SUBST
+  [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] \
+    && setopt PROMPT_BANG
+
+  PROMPT=${AGKOZAK_OLD_PROMPTS[1]}
+  RPROMPT=${AGKOZAK_OLD_PROMPTS[2]}
+
+  add-zsh-hook -D precmd _agkozak_precmd
+  add-zsh-hook -D chpwd _agkozak_chpwd
+
+  for x in $AGKOZAK_FUNCTIONS; do
+    whence -w $x &> /dev/null && unfunction $x
+  done
+
+  agkozak_vars=(
+                 AGKOZAK_ASYNC_METHOD
+                 AGKOZAK_CURRENT_CUSTOM_PROMPT
+                 AGKOZAK_CURRENT_CUSTOM_RPROMPT
+                 AGKOZAK_FUNCTIONS
+                 AGKOZAK_OLD_LEFT_PROMPT_ONLY
+                 AGKOZAK_OLD_MULTILINE
+                 AGKOZAK_OLD_NAMED_DIRS
+                 AGKOZAK_OLD_OPTIONS
+                 AGKOZAK_OLD_PROMPT_DIRTRIM
+                 AGKOZAK_OLD_PROMPTS
+                 AGKOZAK_PROMPT_DIR
+                 AGKOZAK_TRAPUSR1_FUNCTION
+                 AGKOZAK_USR1_ASYNC_WORKER
+               )
+
+  for x in $agkozak_vars; do
+    (( $+x )) && unset $x
+  done
+
+  unfunction $0
+}
 
 # vim: ts=2:et:sts=2:sw=2:

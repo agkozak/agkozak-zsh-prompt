@@ -65,9 +65,10 @@ AGKOZAK_OLD_OPTIONS=(
                       'promptbang' ${options[promptbang]}
                     )
 
-# Store previous prompts for the unload function
-typeset -ga AGKOZAK_OLD_PROMPTS
+# Store previous prompts and psvars for the unload function
+typeset -ga AGKOZAK_OLD_PROMPTS AGKOZAK_OLD_PSVAR
 AGKOZAK_OLD_PROMPTS=( $PROMPT $RPROMPT )
+AGKOZAK_OLD_PSVAR=( ${psvar[@]} )
 
 # Names of prompt functions. Used to enable WARN_NESTED_VAR in debug mode
 # and for unloading the prompt.
@@ -993,6 +994,8 @@ agkozak-zsh-prompt_plugin_unload() {
 
   PROMPT=${AGKOZAK_OLD_PROMPTS[1]}
   RPROMPT=${AGKOZAK_OLD_PROMPTS[2]}
+
+  psvar=( $AGKOZAK_OLD_PSVAR )
 
   add-zsh-hook -D precmd _agkozak_precmd
   add-zsh-hook -D chpwd _agkozak_chpwd

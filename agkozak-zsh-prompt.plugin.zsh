@@ -618,7 +618,7 @@ _agkozak_async_init() {
       _agkozak_usr1_async() {
         emulate -L zsh
 
-        if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
+        if [[ "$(builtin which TRAPUSR1)" == "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
             kill -s HUP "$AGKOZAK_USR1_ASYNC_WORKER" &> /dev/null || :

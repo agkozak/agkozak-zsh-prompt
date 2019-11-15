@@ -186,6 +186,8 @@ _agkozak_is_ssh() {
 #   $@ Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
+  emulate -L zsh
+
   # Process arguments
   local argument
   for argument in $@; do
@@ -340,6 +342,8 @@ _agkozak_branch_status() {
 # to a colon
 ############################################################
 zle-keymap-select() {
+  emulate -L zsh
+
   [[ $KEYMAP == 'vicmd' ]] && psvar[4]='vicmd' || psvar[4]=''
   zle reset-prompt
   zle -R
@@ -424,6 +428,7 @@ _agkozak_has_usr1() {
 #   AGKOZAK_TRAPUSR1_FUNCTION
 ############################################################
 _agkozak_async_init() {
+  emulate -L zsh
 
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
   setopt LOCAL_OPTIONS EXTENDED_GLOB
@@ -482,7 +487,9 @@ _agkozak_async_init() {
   #   AGKOZAK_IS_WSL
   ############################################################
   _agkozak_subst_async() {
+    emulate -L zsh
     setopt LOCAL_OPTIONS NO_IGNORE_BRACES
+
     typeset -g AGKOZAK_ASYNC_FD=13371
 
     # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
@@ -512,6 +519,7 @@ _agkozak_async_init() {
   #   $1  File descriptor
   ############################################################
   _agkozak_zsh_subst_async_callback() {
+    emulate -L zsh
     setopt LOCAL_OPTIONS NO_IGNORE_BRACES
 
     local FD="$1" response
@@ -544,6 +552,8 @@ _agkozak_async_init() {
       # Set RPROMPT and stop worker
       ############################################################
       _agkozak_zsh_async_callback() {
+        emulate -L zsh
+
         psvar[3]=$3
         zle && zle reset-prompt
         async_stop_worker agkozak_git_status_worker -n
@@ -563,6 +573,8 @@ _agkozak_async_init() {
       #   AGKOZAK_ASYNC_METHOD
       ############################################################
       _agkozak_usr1_async() {
+        emulate -L zsh
+
         if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK_USR1_ASYNC_WORKER )); then
@@ -609,6 +621,8 @@ _agkozak_async_init() {
       #   AGKOZAK_TRAPUSR1_FUNCTION
       ############################################################
       TRAPUSR1() {
+        emulate -L zsh
+
         # Set prompt from contents of temporary file
         psvar[3]=$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")
 
@@ -706,6 +720,8 @@ _agkozak_strip_colors() {
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
+  emulate -L zsh
+
   # Cache the Git version for use in _agkozak_branch_status
   (( AGKOZAK_SHOW_STASH )) && \
     typeset -gx AGKOZAK_GIT_VERSION=${${AGKOZAK_GIT_VERSION:=$(command git --version)}#git version }
@@ -846,6 +862,7 @@ _agkozak_prompt_string () {
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
 () {
+  emulate -L zsh
 
   _agkozak_async_init
 

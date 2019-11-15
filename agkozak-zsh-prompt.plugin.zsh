@@ -963,6 +963,7 @@ _agkozak_prompt_string () {
 # See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun
 ############################################################
 agkozak-zsh-prompt_plugin_unload() {
+  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
   local agkozak_vars x
 
   [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] \

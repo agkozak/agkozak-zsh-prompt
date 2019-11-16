@@ -864,7 +864,7 @@ _agkozak_precmd() {
 #   AGKOZAK_COLORS_BRANCH_STATUS
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
-_agkozak_prompt_string () {
+_agkozak_prompt_string() {
   emulate -L zsh
 
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then

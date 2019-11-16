@@ -272,15 +272,32 @@ _agkozak_prompt_dirtrim() {
 # representing changes to the working copy
 ############################################################
 _agkozak_branch_status() {
-  local ref branch
-  ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
-  case $? in        # See what the exit code is.
-    0) ;;           # $ref contains the name of a checked-out branch.
-    128) return ;;  # No Git repository here.
-    # Otherwise, see if HEAD is in detached state.
-    *) ref=$(command git rev-parse --short HEAD 2> /dev/null) || return ;;
-  esac
-  branch=${ref#refs/heads/}
+  local current_dir="$PWD" branch
+
+  while [[ $current_dir != '/' ]]; do
+    if [[ -f ${current_dir}/.git/HEAD ]]; then
+      print -nz -- "$(<"${current_dir}/.git/HEAD")"
+      break
+    fi
+    current_dir="${current_dir:h}"
+  done
+
+  read -rz branch
+  if [[ $branch == ref:\ refs/heads/* ]]; then
+    branch=${branch#ref: refs\/heads\/}
+  else
+    branch=${branch:0:7}
+  fi
+
+  # local ref branch
+  # ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
+  # case $? in        # See what the exit code is.
+  #   0) ;;           # $ref contains the name of a checked-out branch.
+  #   128) return ;;  # No Git repository here.
+  #   # Otherwise, see if HEAD is in detached state.
+  #   *) ref=$(command git rev-parse --short HEAD 2> /dev/null) || return ;;
+  # esac
+  # branch=${ref#refs/heads/}
 
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k

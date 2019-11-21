@@ -988,8 +988,6 @@ agkozak-zsh-prompt_plugin_unload() {
   [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] \
     && setopt PROMPT_BANG
 
-  trap - USR1
-
   PROMPT=${AGKOZAK_OLD_PROMPTS[1]}
   RPROMPT=${AGKOZAK_OLD_PROMPTS[2]}
 

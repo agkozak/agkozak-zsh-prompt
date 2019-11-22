@@ -832,7 +832,7 @@ _agkozak_precmd() {
       print -Pnz -- ${PROMPT}
       local REPLY
       read -rz REPLY
-      print -- ${REPLY%${AGKOZAK_PROMPT_WHITESPACE}*}
+      print -- ${REPLY%$'\n'*}
       typeset -g AGKOZAK_SAVED_PROMPT=${PROMPT}
       PROMPT=${PROMPT#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
     fi

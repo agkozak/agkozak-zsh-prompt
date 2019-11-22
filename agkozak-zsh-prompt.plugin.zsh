@@ -93,6 +93,7 @@ AGKOZAK_FUNCTIONS=( _agkozak_debug_print
                     TRAPUSR1
                     _agkozak_strip_colors
                     _agkozak_precmd
+                    _agkozak_clear-screen
                     _agkozak_chpwd
                     _agkozak_prompt_string
                   )
@@ -846,13 +847,13 @@ _agkozak_precmd() {
       # When the screen clears, _agkozak_precmd must be run to
       # display the first line of the prompt
       ############################################################
-      clear-screen() {
+      _agkozak_clear-screen() {
         echoti clear
         _agkozak_precmd
         zle .redisplay
       }
 
-      zle -N clear-screen
+      zle -N clear-screen _agkozak_clear-screen
 
     fi
   fi
@@ -1054,6 +1055,8 @@ agkozak-zsh-prompt_plugin_unload() {
   for x in $AGKOZAK_FUNCTIONS; do
     whence -w $x &> /dev/null && unfunction $x
   done
+
+  zle -N clear-screen clear-screen
 
   agkozak_vars=(
                  AGKOZAK_ASYNC_METHOD

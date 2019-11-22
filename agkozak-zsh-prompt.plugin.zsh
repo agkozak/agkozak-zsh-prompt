@@ -833,6 +833,7 @@ _agkozak_precmd() {
     # TODO: Take into account all sorts of situations involving custom PROMPTs
     # (including ones with more than one newline?)
     if (( ! AGKOZAK_LEFT_PROMPT_ONLY )) && (( ! AGKOZAK_LEFT_CUSTOM )); then
+
       PROMPT=${AGKOZAK_SAVED_PROMPT:-${PROMPT}}
       print -Pnz -- ${PROMPT}
       local REPLY
@@ -840,6 +841,19 @@ _agkozak_precmd() {
       print -- ${REPLY%$'\n'*}
       typeset -g AGKOZAK_SAVED_PROMPT=${PROMPT}
       PROMPT=${PROMPT#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
+
+      ############################################################
+      # When the screen clears, _agkozak_precmd must be run to
+      # display the first line of the prompt
+      ############################################################
+      clear-screen() {
+        echoti clear
+        _agkozak_precmd
+        zle .redisplay
+      }
+
+      zle -N clear-screen
+
     fi
   fi
 

@@ -762,6 +762,7 @@ _agkozak_strip_colors() {
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_FIRST_PROMPT_PRINTED
 #   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_LEFT_CUSTOM
 #   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_CURRENT_CUSTOM_RPROMPT
@@ -826,7 +827,7 @@ _agkozak_precmd() {
     #
     # TODO: Take into account all sorts of situations involving custom PROMPTs
     # (including ones with more than one newline?)
-    if (( ! AGKOZAK_LEFT_PROMPT_ONLY )) && (( ! $+AGKOZAK_CUSTOM_PROMPT )); then
+    if (( ! AGKOZAK_LEFT_PROMPT_ONLY )) && (( ! AGKOZAK_LEFT_CUSTOM )); then
       PROMPT=${AGKOZAK_SAVED_PROMPT:-${PROMPT}}
       print -Pnz -- ${PROMPT}
       local REPLY
@@ -848,6 +849,7 @@ _agkozak_precmd() {
   # corresponding prompt is updated
 
   if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
+    typeset -g AGKOZAK_LEFT_CUSTOM=1
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     if ! _agkozak_has_colors; then

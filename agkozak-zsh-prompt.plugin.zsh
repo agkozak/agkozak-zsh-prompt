@@ -388,7 +388,7 @@ zle-keymap-select() {
   emulate -L zsh
 
   [[ $KEYMAP == 'vicmd' ]] && psvar[4]='vicmd' || psvar[4]=''
-  zle reset-prompt
+  zle .reset-prompt
   zle -R
 }
 
@@ -575,7 +575,7 @@ _agkozak_async_init() {
 
     # Make the changes visible
     psvar[3]="$response"
-    zle && zle reset-prompt
+    zle && zle .reset-prompt
   }
 
   case $AGKOZAK_ASYNC_METHOD in
@@ -598,7 +598,7 @@ _agkozak_async_init() {
         emulate -L zsh
 
         psvar[3]=$3
-        zle && zle reset-prompt
+        zle && zle .reset-prompt
         async_stop_worker agkozak_git_status_worker -n
       }
       ;;
@@ -673,7 +673,7 @@ _agkozak_async_init() {
         typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
 
         # Redraw the prompt
-        zle && zle reset-prompt
+        zle && zle .reset-prompt
       }
 
       typeset -g AGKOZAK_TRAPUSR1_FUNCTION="$(builtin which TRAPUSR1)"

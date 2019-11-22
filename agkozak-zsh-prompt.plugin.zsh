@@ -826,7 +826,7 @@ _agkozak_precmd() {
     #
     # TODO: Take into account all sorts of situations involving custom PROMPTs
     # (including ones with more than one newline?)
-    if (( ! AGKOZAK_LEFT_PROMPT_ONLY )); then
+    if (( ! AGKOZAK_LEFT_PROMPT_ONLY )) && (( ! $+AGKOZAK_CUSTOM_PROMPT )); then
       PROMPT=${AGKOZAK_SAVED_PROMPT:-${PROMPT}}
       print -Pnz -- ${PROMPT}
       local REPLY

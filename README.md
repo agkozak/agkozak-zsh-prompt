@@ -525,7 +525,7 @@ AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b%(3V.%F{yellow}%3v%f.)'
 AGKOZAK_CUSTOM_PROMPT+=' %(?..%B%F{red}(%?%)%f%b)'
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
-AGKOZAK_RPROMPT=''
+AGKOZAK_CUSTOM_RPROMPT=''
 ```
 
 #### [AGitBoy](https://github.com/agkozak/agkozak-zsh-prompt/issues/15)

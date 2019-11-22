@@ -757,6 +757,7 @@ _agkozak_strip_colors() {
 #   AGKOZAK_ASYNC_METHOD
 #   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_PRE_PROMPT_CHAR
+#   AGKOZAK_SAVED_PROMPT
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_FIRST_PROMPT_PRINTED
 #   AGKOZAK_CUSTOM_PROMPT
@@ -815,6 +816,24 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR}
   else
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
+
+    # ZSH multiline prompts tend to cause the last line of stdout to disappear
+    # if the screen is redrawn. The solution would appear to be to have a precmd
+    # function output all but the last line of the prompt; PROMPT would the be
+    # the last line. Note that this approach would not seem to work when
+    # AGKOZAK_LEFT_PROMPT_ONLY == 1, as the Git status would not display.
+    #
+    # TODO: Take into account all sorts of situations involving custom PROMPTs
+    # (including ones with more than one newline?)
+    if (( ! AGKOZAK_LEFT_PROMPT_ONLY )); then
+      PROMPT=${AGKOZAK_SAVED_PROMPT:-$PROMPT}
+      print -Pz -- ${PROMPT%$AGKOZAK_PROMPT_WHITESPACE}
+      local REPLY
+      read -rz REPLY
+      print -n ${REPLY}
+      typeset -g AGKOZAK_SAVED_PROMPT=$PROMPT
+      PROMPT=${PROMPT#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
+    fi
   fi
 
   if (( AGKOZAK_BLANK_LINES )); then
@@ -878,7 +897,7 @@ _agkozak_prompt_string() {
       PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
     fi
     PROMPT+='${AGKOZAK_PROMPT_WHITESPACE}'
-    PROMPT+='${AGKOZAK_COLORS_PROMPT_CHAR:+%F{${AGKOZAK_COLORS_PROMPT_CHAR}\}}'
+    PROMPT+='${AGKOZAK_COLORS_PROMPT_CHAR:+%F\{$AGKOZAK_COLORS_PROMPT_CHAR\}}'
     PROMPT+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
     PROMPT+='${AGKOZAK_COLORS_PROMPT_CHAR:+%f} '
 

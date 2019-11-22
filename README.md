@@ -573,6 +573,7 @@ Option | Default | Meaning
 [`AGKOZAK_COLORS_BRANCH_STATUS`](#custom-colors) | `yellow` | Color of Git status
 [`AGKOZAK_COLORS_EXIT_STATUS`](#custom-colors) | `red` | Color of exit status
 [`AGKOZAK_COLORS_PATH`](#custom-colors) | `blue` | Color of path
+[`AGKOZAK_COLORS_PROMPT_CHAR`](#custom-colors) | `white` | Color of prompt character
 [`AGKOZAK_COLORS_USER_HOST`](#custom-colors) | `green` | Color of username and hostname
 [`AGKOZAK_CUSTOM_PROMPT`](#advanced-customization) | | Code for custom left prompt
 [`AGKOZAK_CUSTOM_RPROMPT`](#advanced-customization) | | Code for custom right prompt

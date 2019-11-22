@@ -793,6 +793,7 @@ _agkozak_precmd() {
   if (( AGKOZAK_MULTILINE != AGKOZAK_OLD_MULTILINE )); then
     (( AGKOZAK_MULTILINE == 0 )) && AGKOZAK_LEFT_PROMPT_ONLY=0
     typeset -g AGKOZAK_OLD_MULTILINE=$AGKOZAK_MULTILINE
+    _agkozak_prompt_string
   fi
 
   if (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK_OLD_LEFT_PROMPT_ONLY )); then

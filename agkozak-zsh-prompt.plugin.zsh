@@ -771,6 +771,10 @@ _agkozak_precmd() {
   emulate -L zsh
   setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
+  if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
+    typeset -g AGKOZAK_LEFT_CUSTOM=1
+  fi
+
   # Cache the Git version for use in _agkozak_branch_status
   (( AGKOZAK_SHOW_STASH )) && \
     typeset -gx AGKOZAK_GIT_VERSION
@@ -849,7 +853,6 @@ _agkozak_precmd() {
   # corresponding prompt is updated
 
   if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
-    typeset -g AGKOZAK_LEFT_CUSTOM=1
     typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
     if ! _agkozak_has_colors; then

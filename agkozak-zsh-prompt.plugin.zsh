@@ -1070,6 +1070,7 @@ agkozak-zsh-prompt_plugin_unload() {
                  AGKOZAK_OLD_PROMPT_DIRTRIM
                  AGKOZAK_OLD_PROMPTS
                  AGKOZAK_PROMPT_DIR
+                 AGKOZAK_SAVED_PROMPT
                  AGKOZAK_TRAPUSR1_FUNCTION
                  AGKOZAK_USR1_ASYNC_WORKER
                )

@@ -756,6 +756,7 @@ _agkozak_precmd() {
   emulate -L zsh
   setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
+  # If a custom left prompt is enabled, make a note of that
   if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
     typeset -g AGKOZAK_LEFT_CUSTOM=1
   fi

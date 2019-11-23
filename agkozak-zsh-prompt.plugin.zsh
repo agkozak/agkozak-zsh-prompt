@@ -725,25 +725,6 @@ _agkozak_strip_colors() {
 # Runs right before each prompt is displayed; hooks into
 # precmd
 #
-# 1) If AGKOZAK_SHOW_STASH == 1, calculates Git version
-# 2) Redisplays path ($psvar[2]) whenever the value of
-#      AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS changes
-# 3) If AGKOZAK_MULTILINE is changed to 0, set
-#      AGKOZAK_LEFT_PROMPT_ONLY=0
-# 4) If AGKOZAK_LEFT_PROMPT_ONLY is changed, updated both
-#      prompt strings
-# 5) Resets Git status and vi mode display
-# 6) If AGKOZAK_USER_HOST_DISPLAY == 1, display username
-#      and hostname
-# 7) Begins to calculate Git status
-# 8) Sets AGKOZAK_PROMPT_WHITESPACE based on value of
-#      AGKOZAK_MULTILINE
-# 9) Optionally display a blank line (AGKOZAK_BLANK_LINES),
-#      while avoiding a blank line when the shell is first
-#      loaded
-# 10) If custom prompts are defined, update the prompt
-#      strings
-#
 # TODO: Consider making AGKOZAK_PROMPT_WHITESPACE a psvar
 #
 # Globals:

@@ -784,10 +784,10 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_OLD_NAMED_DIRS=$AGKOZAK_NAMED_DIRS
   fi
 
-  if (( AGKOZAK_MULTILINE != AGKOZAK_OLD_MULTILINE )); then
-    (( ! AGKOZAK_MULTILINE )) && AGKOZAK_LEFT_PROMPT_ONLY=0
-    typeset -g AGKOZAK_OLD_MULTILINE=$AGKOZAK_MULTILINE
-  fi
+  # if (( AGKOZAK_MULTILINE != AGKOZAK_OLD_MULTILINE )); then
+  #   (( ! AGKOZAK_MULTILINE )) && AGKOZAK_LEFT_PROMPT_ONLY=0
+  #   typeset -g AGKOZAK_OLD_MULTILINE=$AGKOZAK_MULTILINE
+  # fi
 
   if (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK_OLD_LEFT_PROMPT_ONLY )); then
     unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
@@ -795,7 +795,10 @@ _agkozak_precmd() {
     _agkozak_prompt_string
   fi
 
+  # Clear the Git status display until it has been recalculated
   psvar[3]=''
+
+  # It is necessary to clear the vicmd variable, too
   psvar[4]=''
 
   if (( AGKOZAK_USER_HOST_DISPLAY )); then

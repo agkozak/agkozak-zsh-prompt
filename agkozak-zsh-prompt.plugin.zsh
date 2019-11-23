@@ -785,7 +785,7 @@ _agkozak_precmd() {
   fi
 
   if (( AGKOZAK_MULTILINE != AGKOZAK_OLD_MULTILINE )); then
-    (( AGKOZAK_MULTILINE == 0 )) && AGKOZAK_LEFT_PROMPT_ONLY=0
+    (( ! AGKOZAK_MULTILINE )) && AGKOZAK_LEFT_PROMPT_ONLY=0
     typeset -g AGKOZAK_OLD_MULTILINE=$AGKOZAK_MULTILINE
   fi
 
@@ -811,7 +811,7 @@ _agkozak_precmd() {
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
-  if (( AGKOZAK_MULTILINE == 0 )) && (( ! AGKOZAK_LEFT_PROMPT_ONLY )) \
+  if (( ! AGKOZAK_MULTILINE )) && (( ! AGKOZAK_LEFT_PROMPT_ONLY )) \
     && [[ -z $INSIDE_EMACS ]]; then
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR}
   else

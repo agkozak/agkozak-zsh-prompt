@@ -725,20 +725,23 @@ _agkozak_strip_colors() {
 # Runs right before each prompt is displayed; hooks into
 # precmd
 #
-# 1) Redisplays path ($psvar[2]) whenever the value of
+# 1) If AGKOZAK_SHOW_STASH == 1, calculates Git version
+# 2) Redisplays path ($psvar[2]) whenever the value of
 #      AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS changes
-# 2) If AGKOZAK_MULTILINE is changed to 0, set
+# 3) If AGKOZAK_MULTILINE is changed to 0, set
 #      AGKOZAK_LEFT_PROMPT_ONLY=0
-# 3) If AGKOZAK_LEFT_PROMPT_ONLY is changed, updated both
+# 4) If AGKOZAK_LEFT_PROMPT_ONLY is changed, updated both
 #      prompt strings
-# 4) Resets Git status and vi mode display
-# 5) Begins to calculate Git status
-# 6) Sets AGKOZAK_PROMPT_WHITESPACE based on value of
+# 5) Resets Git status and vi mode display
+# 6) If AGKOZAK_USER_HOST_DISPLAY == 1, display username
+#      and hostname
+# 7) Begins to calculate Git status
+# 8) Sets AGKOZAK_PROMPT_WHITESPACE based on value of
 #      AGKOZAK_MULTILINE
-# 7) Optionally display a blank line (AGKOZAK_BLANK_LINES),
+# 9) Optionally display a blank line (AGKOZAK_BLANK_LINES),
 #      while avoiding a blank line when the shell is first
 #      loaded
-# 8) If custom prompts are defined, update the prompt
+# 10) If custom prompts are defined, update the prompt
 #      strings
 #
 # TODO: Consider making AGKOZAK_PROMPT_WHITESPACE a psvar
@@ -784,10 +787,10 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_OLD_NAMED_DIRS=$AGKOZAK_NAMED_DIRS
   fi
 
-  # if (( AGKOZAK_MULTILINE != AGKOZAK_OLD_MULTILINE )); then
-  #   (( ! AGKOZAK_MULTILINE )) && AGKOZAK_LEFT_PROMPT_ONLY=0
-  #   typeset -g AGKOZAK_OLD_MULTILINE=$AGKOZAK_MULTILINE
-  # fi
+  if (( AGKOZAK_MULTILINE != AGKOZAK_OLD_MULTILINE )); then
+    (( ! AGKOZAK_MULTILINE )) && AGKOZAK_LEFT_PROMPT_ONLY=0
+    typeset -g AGKOZAK_OLD_MULTILINE=$AGKOZAK_MULTILINE
+  fi
 
   if (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK_OLD_LEFT_PROMPT_ONLY )); then
     unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
@@ -798,7 +801,7 @@ _agkozak_precmd() {
   # Clear the Git status display until it has been recalculated
   psvar[3]=''
 
-  # It is necessary to clear the vicmd variable, too
+  # It is necessary to clear the vi mode display, too
   psvar[4]=''
 
   if (( AGKOZAK_USER_HOST_DISPLAY )); then
@@ -807,6 +810,7 @@ _agkozak_precmd() {
     psvar[5]=''
   fi
 
+  # Begin to calculate the Git status
   case $AGKOZAK_ASYNC_METHOD in
     'subst-async') _agkozak_subst_async ;;
     'zsh-async') _agkozak_zsh_async ;;
@@ -814,6 +818,7 @@ _agkozak_precmd() {
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
+  # If AGKOZAK_MULTILINE == 1, insert a newline into the prompt
   if (( ! AGKOZAK_MULTILINE )) && (( ! AGKOZAK_LEFT_PROMPT_ONLY )) \
     && [[ -z $INSIDE_EMACS ]]; then
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR}
@@ -821,6 +826,7 @@ _agkozak_precmd() {
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
   fi
 
+  # Optionally put blank lines between instances of the prompt
   if (( AGKOZAK_BLANK_LINES )); then
     if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
       print

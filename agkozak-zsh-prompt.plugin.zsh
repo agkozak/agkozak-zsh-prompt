@@ -166,7 +166,7 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 #   AGKOZAK_HAS_COLORS
 ############################################################
 _agkozak_has_colors() {
-  if ! (( $+AGKOZAK_HAS_COLORS )); then
+  if (( ! $+AGKOZAK_HAS_COLORS )); then
     case $TERM in
       *-256color) typeset -g AGKOZAK_HAS_COLORS=1 ;;
       vt100|dumb) typeset -g AGKOZAK_HAS_COLORS=0 ;;
@@ -691,33 +691,33 @@ _agkozak_async_init() {
 #   $1 Name of prompt string variable (PROMPT or RPROMPT)
 ############################################################
 _agkozak_strip_colors() {
-  local prompt=${(P)1} newprompt
+  local prompt_string=${(P)1} newprompt
   local open_braces
 
-  while [[ -n $prompt ]]; do
-    case $prompt in
+  while [[ -n $prompt_string ]]; do
+    case $prompt_string in
       %F\{*|%K\{*)
         (( open_braces++ ))
-        prompt=${prompt#%[FK]\{}
+        prompt_string=${prompt_string#%[FK]\{}
         while (( open_braces )); do
-          case ${prompt:0:1} in
+          case ${prompt_string:0:1} in
             \{) (( open_braces++ )) ;;
             \}) (( open_braces-- )) ;;
           esac
-          prompt=${prompt#?}
+          prompt_string=${prompt_string#?}
         done
         ;;
-      %f*|%k*) prompt=${prompt#%[fk]} ;;
+      %f*|%k*) prompt_string=${prompt_string#%[fk]} ;;
       *)
-        newprompt+="${prompt:0:1}"
-        prompt=${prompt#?}
+        newprompt+="${prompt_string:0:1}"
+        prompt_string=${prompt_string#?}
         ;;
     esac
   done
 
   print -nz -- "${(qq)newprompt}"
   read -rz $1
-  typeset -g $1=${(QQ)${(P)1}}
+  typeset -g $1=${(PQQ)1}
 }
 
 ############################################################

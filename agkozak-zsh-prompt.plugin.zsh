@@ -875,26 +875,6 @@ _agkozak_precmd() {
       shift
     done
   } PROMPT RPROMPT
-
-  # if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
-  #   typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
-  #   PROMPT=${AGKOZAK_CUSTOM_PROMPT}
-  #   if ! _agkozak_has_colors; then
-  #     _agkozak_strip_colors 'PROMPT'
-  #     read -rz PROMPT
-  #     PROMPT=${(Q)PROMPT}
-  #   fi
-  # fi
-
-  # if [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK_CURRENT_CUSTOM_RPROMPT}" ]]; then
-  #   typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
-  #   RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
-  #   if ! _agkozak_has_colors; then
-  #     _agkozak_strip_colors 'RPROMPT'
-  #     read -rz RPROMPT
-  #     RPROMPT=${(Q)RPROMPT}
-  #   fi
-  # fi
 }
 
 ############################################################

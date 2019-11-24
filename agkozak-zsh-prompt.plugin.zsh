@@ -167,7 +167,7 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 #   AGKOZAK_HAS_COLORS
 ############################################################
 _agkozak_has_colors() {
-  if ! (( $+AGKOZAK_HAS_COLORS )); then
+  if (( ! $+AGKOZAK_HAS_COLORS )); then
     case $TERM in
       *-256color) typeset -g AGKOZAK_HAS_COLORS=1 ;;
       vt100|dumb) typeset -g AGKOZAK_HAS_COLORS=0 ;;
@@ -686,38 +686,39 @@ _agkozak_async_init() {
 ######################################################################
 
 ############################################################
-# Strip color codes from a prompt string and put the result
-# on the editing buffer stack
+# Strip color codes from a prompt string
 #
 # Arguments:
 #   $1 Name of prompt string variable (PROMPT or RPROMPT)
 ############################################################
 _agkozak_strip_colors() {
-  local prompt=${(P)1} newprompt
+  local prompt_string=${(P)1} newprompt
   local open_braces
 
-  while [[ -n $prompt ]]; do
-    case $prompt in
+  while [[ -n $prompt_string ]]; do
+    case $prompt_string in
       %F\{*|%K\{*)
         (( open_braces++ ))
-        prompt=${prompt#%[FK]\{}
+        prompt_string=${prompt_string#%[FK]\{}
         while (( open_braces )); do
-          case ${prompt:0:1} in
+          case ${prompt_string:0:1} in
             \{) (( open_braces++ )) ;;
             \}) (( open_braces-- )) ;;
           esac
-          prompt=${prompt#?}
+          prompt_string=${prompt_string#?}
         done
         ;;
-      %f*|%k*) prompt=${prompt#%[fk]} ;;
+      %f*|%k*) prompt_string=${prompt_string#%[fk]} ;;
       *)
-        newprompt+="${prompt:0:1}"
-        prompt=${prompt#?}
+        newprompt+="${prompt_string:0:1}"
+        prompt_string=${prompt_string#?}
         ;;
     esac
   done
 
   print -nz -- "${(qq)newprompt}"
+  read -rz $1
+  typeset -g $1=${(PQQ)1}
 }
 
 ############################################################
@@ -864,11 +865,7 @@ _agkozak_precmd() {
       if [[ ${(P)${:-AGKOZAK_CUSTOM_$1}} != "${(P)${:-AGKOZAK_CURRENT_CUSTOM_$1}}" ]]; then
         typeset -g AGKOZAK_CURRENT_CUSTOM_$1=${(P)${:-AGKOZAK_CUSTOM_$1}}
         typeset -g $1=${(P)${:-AGKOZAK_CUSTOM_$1}}
-        if ! _agkozak_has_colors; then
-          _agkozak_strip_colors $1
-          read -rz $1
-          typeset -g $1=${(QQ)${(P)1}}
-        fi
+        ! _agkozak_has_colors && _agkozak_strip_colors $1
       fi
       shift
     done
@@ -929,11 +926,7 @@ _agkozak_prompt_string() {
 
   if ! _agkozak_has_colors; then
     _agkozak_strip_colors 'PROMPT'
-    read -rz PROMPT
-    PROMPT=${(Q)PROMPT}
     _agkozak_strip_colors 'RPROMPT'
-    read -rz RPROMPT
-    RPROMPT=${(Q)RPROMPT}
   fi
 }
 

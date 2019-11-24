@@ -99,7 +99,7 @@ AGKOZAK_FUNCTIONS=( _agkozak_debug_print
                   )
 
 # Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
-AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
+: ${AGKOZAK_PROMPT_DEBUG:=0}
 
 ############################################################
 # Display a message on STDERR if debug mode is enabled
@@ -123,13 +123,13 @@ unset x
 
 # Set AGKOZAK_PROMPT_DIRTRIM to the desired number of directory elements to
 # display, or set it to 0 for no directory trimming
-typeset -g AGKOZAK_PROMPT_DIRTRIM=${AGKOZAK_PROMPT_DIRTRIM:-2}
+: ${AGKOZAK_PROMPT_DIRTRIM:=2}
 
 # Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
-typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
+: ${AGKOZAK_MULTILINE:=1}
 
 # Set AGKOZAK_LEFT_PROMPT_ONLY to have the Git status appear in the left prompt
-typeset -g AGKOZAK_LEFT_PROMPT_ONLY=${AGKOZAK_LEFT_PROMPT_ONLY:-0}
+: ${AGKOZAK_LEFT_PROMPT_ONLY:=0}
 
 # Set AGKOZAK_COLORS_* variables to any valid color
 #   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color      (default: red)
@@ -137,22 +137,22 @@ typeset -g AGKOZAK_LEFT_PROMPT_ONLY=${AGKOZAK_LEFT_PROMPT_ONLY:-0}
 #   AGKOZAK_COLORS_PATH changes the path color                    (default: blue)
 #   AGKOZAK_COLORS_BRANCH_STATUS changes the branch status color  (default: yellow)
 #   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: white)
-typeset -g AGKOZAK_COLORS_EXIT_STATUS=${AGKOZAK_COLORS_EXIT_STATUS:-red}
-typeset -g AGKOZAK_COLORS_USER_HOST=${AGKOZAK_COLORS_USER_HOST:-green}
-typeset -g AGKOZAK_COLORS_PATH=${AGKOZAK_COLORS_PATH:-blue}
-typeset -g AGKOZAK_COLORS_BRANCH_STATUS=${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}
-typeset -g AGKOZAK_COLORS_PROMPT_CHAR=${AGKOZAK_COLORS_PROMPT_CHAR:-white}
+: ${AGKOZAK_COLORS_EXIT_STATUS:=red}
+: ${AGKOZAK_COLORS_USER_HOST:=green}
+: ${AGKOZAK_COLORS_PATH:=blue}
+: ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
+: ${AGKOZAK_COLORS_PROMPT_CHAR:=white}
 
 # AGKOZAK_USER_HOST_DISPLAY determines whether user and host will be
 # displayed (default: 1)
-typeset -g AGKOZAK_USER_HOST_DISPLAY=${AGKOZAK_USER_HOST_DISPLAY:-1}
+: ${AGKOZAK_USER_HOST_DISPLAY:=1}
 
 # AGKOZAK_SHOW_STASH determines whether stashed changes will be displayed (default: 1)
-typeset -g AGKOZAK_SHOW_STASH=${AGKOZAK_SHOW_STASH:-1}
+: ${AGKOZAK_SHOW_STASH:=1}
 
 # For single-line prompt, AGKOZAK_PRE_PROMPT_CHAR comes before the prompt
 # character (default: space)
-typeset -g AGKOZAK_PRE_PROMPT_CHAR=${AGKOZAK_PRE_PROMPT_CHAR- }
+: ${AGKOZAK_PRE_PROMPT_CHAR= }
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -167,9 +167,7 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 #   AGKOZAK_HAS_COLORS
 ############################################################
 _agkozak_has_colors() {
-  if (( $+AGKOZAK_HAS_COLORS )); then
-    :
-  else
+  if ! (( $+AGKOZAK_HAS_COLORS )); then
     case $TERM in
       *-256color) typeset -g AGKOZAK_HAS_COLORS=1 ;;
       vt100|dumb) typeset -g AGKOZAK_HAS_COLORS=0 ;;
@@ -418,7 +416,7 @@ _agkozak_vi_mode_indicator() {
 # Standarized $0 handling
 # (See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc)
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
-typeset -g AGKOZAK_PROMPT_DIR="${0:A:h}"
+AGKOZAK_PROMPT_DIR="${0:A:h}"
 
 ############################################################
 # If zsh-async has not already been loaded, try to load it

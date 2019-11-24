@@ -166,9 +166,7 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 #   AGKOZAK_HAS_COLORS
 ############################################################
 _agkozak_has_colors() {
-  if (( $+AGKOZAK_HAS_COLORS )); then
-    :
-  else
+  if ! (( $+AGKOZAK_HAS_COLORS )); then
     case $TERM in
       *-256color) typeset -g AGKOZAK_HAS_COLORS=1 ;;
       vt100|dumb) typeset -g AGKOZAK_HAS_COLORS=0 ;;

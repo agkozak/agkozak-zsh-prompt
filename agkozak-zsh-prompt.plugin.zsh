@@ -861,7 +861,7 @@ _agkozak_precmd() {
   # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
   # corresponding prompt is updated
   () {
-    while [[ $1 ]]; do
+    while [[ -n $1 ]]; do
       if [[ ${(P)${:-AGKOZAK_CUSTOM_$1}} != "${(P)${:-AGKOZAK_CURRENT_CUSTOM_$1}}" ]]; then
         typeset -g AGKOZAK_CURRENT_CUSTOM_$1=${(P)${:-AGKOZAK_CUSTOM_$1}}
         typeset -g $1=${(P)${:-AGKOZAK_CUSTOM_$1}}

@@ -472,7 +472,6 @@ _agkozak_has_usr1() {
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_FORCE_ASYNC_METHOD
-#   AGKOZAK_TRAPUSR1_FUNCTION
 ############################################################
 _agkozak_async_init() {
   emulate -L zsh
@@ -616,21 +615,19 @@ _agkozak_async_init() {
       #
       # Globals:
       #   AGKOZAK
-      #   AGKOZAK_TRAPUSR1_FUNCTION
-      #   AGKOZAK_USR1_ASYNC_WORKER
       ############################################################
       _agkozak_usr1_async() {
         emulate -L zsh
 
-        if [[ "$(builtin which TRAPUSR1)" == "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
+        if [[ "$(builtin which TRAPUSR1)" == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
           # Kill running child process if necessary
-          if (( AGKOZAK_USR1_ASYNC_WORKER )); then
-            kill -s HUP "$AGKOZAK_USR1_ASYNC_WORKER" &> /dev/null || :
+          if (( AGKOZAK[USR1_ASYNC_WORKER] )); then
+            kill -s HUP "${AGKOZAK[USR1_ASYNC_WORKER]}" &> /dev/null || :
           fi
 
           # Start background computation of Git status
           _agkozak_usr1_async_worker &!
-          typeset -g AGKOZAK_USR1_ASYNC_WORKER=$!
+          typeset -g AGKOZAK[USR1_ASYNC_WORKER]=$!
         else
           _agkozak_debug_print 'TRAPUSR1 has been redefined. Switching to subst-async mode.'
           typeset -g AGKOZAK[ASYNC_METHOD]='subst-async'
@@ -660,12 +657,11 @@ _agkozak_async_init() {
       ############################################################
       # On SIGUSR1, fetch Git status from temprary file and store
       # it in psvar[3]. This function caches its own code in
-      # AGKOZAK_TRAPUSR1_FUNCTION so that it can tell if it has
+      # AGKOZAK[TRAPUSR1_FUNCTION] so that it can tell if it has
       # been redefined by another script.
       #
       # Globals:
-      #   AGKOZAK_USR1_ASYNC_WORKER
-      #   AGKOZAK_TRAPUSR1_FUNCTION
+      #   AGKOZAK
       ############################################################
       TRAPUSR1() {
         emulate -L zsh
@@ -674,13 +670,13 @@ _agkozak_async_init() {
         psvar[3]=$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")
 
         # Reset asynchronous process number
-        typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
+        typeset -g AGKOZAK[USR1_ASYNC_WORKER]=0
 
         # Redraw the prompt
         zle && zle .reset-prompt
       }
 
-      typeset -g AGKOZAK_TRAPUSR1_FUNCTION="$(builtin which TRAPUSR1)"
+      typeset -g AGKOZAK[TRAPUSR1_FUNCTION]="$(builtin which TRAPUSR1)"
       ;;
   esac
 }
@@ -897,7 +893,6 @@ _agkozak_prompt_string() {
 #
 # Globals:
 #   AGKOZAK
-#   AGKOZAK_USR1_ASYNC_WORKER
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
 () {
@@ -909,7 +904,7 @@ _agkozak_prompt_string() {
   case ${AGKOZAK[ASYNC_METHOD]} in
     'subst-async') ;;
     'zsh-async') async_init ;;
-    'usr1') typeset -g AGKOZAK_USR1_ASYNC_WORKER=0 ;;
+    'usr1') typeset -g AGKOZAK[USR1_ASYNC_WORKER]=0 ;;
   esac
 
   zle -N zle-keymap-select
@@ -1008,8 +1003,6 @@ agkozak-zsh-prompt_plugin_unload() {
                  AGKOZAK_OLD_OPTIONS
                  AGKOZAK_OLD_PROMPT_DIRTRIM
                  AGKOZAK_OLD_PROMPTS
-                 AGKOZAK_TRAPUSR1_FUNCTION
-                 AGKOZAK_USR1_ASYNC_WORKER
                )
 
   for x in $agkozak_vars; do

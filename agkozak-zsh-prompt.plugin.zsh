@@ -973,7 +973,7 @@ agkozak-zsh-prompt
 ############################################################
 agkozak-zsh-prompt_plugin_unload() {
   setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
-  local x agkozak_vars
+  local x
 
   [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] \
     && unsetopt PROMPT_SUBST
@@ -992,15 +992,7 @@ agkozak-zsh-prompt_plugin_unload() {
     whence -w $x &> /dev/null && unfunction $x
   done
 
-  agkozak_vars=(
-                 AGKOZAK
-                 AGKOZAK_ASYNC_FD
-                 AGKOZAK_OLD_OPTIONS
-               )
-
-  for x in $agkozak_vars; do
-    (( $+x )) && unset $x
-  done
+  unset AGKOZAK AGKOZAK_ASYNC_FD AGKOZAK_OLD_OPTIONS AGKOZAK_OLD_PSVAR
 
   unfunction $0
 }

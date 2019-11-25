@@ -171,15 +171,15 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 _agkozak_has_colors() {
   if (( ! ${+AGKOZAK[HAS_COLORS]} )); then
     case $TERM in
-      *-256color) typeset -g AGKOZAK[HAS_COLORS]=1 ;;
-      vt100|dumb) typeset -g AGKOZAK[HAS_COLORS]=0 ;;
+      *-256color) AGKOZAK[HAS_COLORS]=1 ;;
+      vt100|dumb) AGKOZAK[HAS_COLORS]=0 ;;
       *)
         local colors
         case $OSTYPE in
           freebsd*|dragonfly*) colors=$(tput Co) ;;
           *) colors=$(tput colors) ;;
         esac
-        typeset -g AGKOZAK[HAS_COLORS]=$(( colors >= 8 ))
+        AGKOZAK[HAS_COLORS]=$(( colors >= 8 ))
         ;;
     esac
   fi
@@ -481,43 +481,43 @@ _agkozak_async_init() {
   if [[ -e /proc/version ]]; then
     if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
       unsetopt BG_NICE
-      typeset -g AGKOZAK[IS_WSL]=1   # For later reference
+      AGKOZAK[IS_WSL]=1   # For later reference
     fi
   fi
 
   # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
   [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
   if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
-    typeset -g AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
+    AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
 
   # Otherwise, first provide for certain quirky systems
   else
 
     if (( AGKOZAK[IS_WSL] )) || [[ $OSTYPE == solaris* ]]; then
       if [[ $ZSH_VERSION != '5.0.2' ]] &&_agkozak_load_async_lib; then
-        typeset -g AGKOZAK[ASYNC_METHOD]='zsh-async'
+        AGKOZAK[ASYNC_METHOD]='zsh-async'
       elif _agkozak_has_usr1; then
-        typeset -g AGKOZAK[ASYNC_METHOD]='usr1'
+        AGKOZAK[ASYNC_METHOD]='usr1'
       else
-        typeset -g AGKOZAK[ASYNC_METHOD]='subst-async'
+        AGKOZAK[ASYNC_METHOD]='subst-async'
       fi
 
     # SIGUSR1 method is still much faster on MSYS2, Cygwin, and ZSH v5.0.2
     elif [[ $ZSH_VERSION == '5.0.2' ]] || [[ $OSTYPE == (msys|cygwin) ]]; then
       if _agkozak_has_usr1; then
-        typeset -g AGKOZAK[ASYNC_METHOD]='usr1'
+        AGKOZAK[ASYNC_METHOD]='usr1'
       else
-        typeset -g AGKOZAK[ASYNC_METHOD]='subst-async'
+        AGKOZAK[ASYNC_METHOD]='subst-async'
       fi
 
     # Asynchronous methods don't work in Emacs shell mode (but they do in term
     # and ansi-term)
     elif [[ $TERM == 'dumb' ]]; then
-      typeset -g AGKOZAK[ASYNC_METHOD]='none'
+      AGKOZAK[ASYNC_METHOD]='none'
 
     # Otherwise use subst-async
     else
-      typeset -g AGKOZAK[ASYNC_METHOD]='subst-async'
+      AGKOZAK[ASYNC_METHOD]='subst-async'
     fi
   fi
 
@@ -627,10 +627,10 @@ _agkozak_async_init() {
 
           # Start background computation of Git status
           _agkozak_usr1_async_worker &!
-          typeset -g AGKOZAK[USR1_ASYNC_WORKER]=$!
+          AGKOZAK[USR1_ASYNC_WORKER]="$!"
         else
           _agkozak_debug_print 'TRAPUSR1 has been redefined. Switching to subst-async mode.'
-          typeset -g AGKOZAK[ASYNC_METHOD]='subst-async'
+          AGKOZAK[ASYNC_METHOD]='subst-async'
           psvar[3]="$(_agkozak_branch_status)"
         fi
       }
@@ -670,13 +670,13 @@ _agkozak_async_init() {
         psvar[3]=$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")
 
         # Reset asynchronous process number
-        typeset -g AGKOZAK[USR1_ASYNC_WORKER]=0
+        AGKOZAK[USR1_ASYNC_WORKER]=0
 
         # Redraw the prompt
         zle && zle .reset-prompt
       }
 
-      typeset -g AGKOZAK[TRAPUSR1_FUNCTION]="$(builtin which TRAPUSR1)"
+      AGKOZAK[TRAPUSR1_FUNCTION]="$(builtin which TRAPUSR1)"
       ;;
   esac
 }
@@ -757,21 +757,21 @@ _agkozak_precmd() {
     || (( AGKOZAK_NAMED_DIRS != AGKOZAK[OLD_NAMED_DIRS] )) \
     || (( ! $+psvar[2] )); then
     _agkozak_prompt_dirtrim -v $AGKOZAK_PROMPT_DIRTRIM
-    typeset -g AGKOZAK[OLD_PROMPT_DIRTRIM]=$AGKOZAK_PROMPT_DIRTRIM
-    typeset -g AGKOZAK[OLD_NAMED_DIRS]=$AGKOZAK_NAMED_DIRS
+    AGKOZAK[OLD_PROMPT_DIRTRIM]=$AGKOZAK_PROMPT_DIRTRIM
+    AGKOZAK[OLD_NAMED_DIRS]=$AGKOZAK_NAMED_DIRS
   fi
 
   # If AGKOZAK_MULTILINE changes and if AGKOZAK_MULTILINE == 0, turn off
   # AGKOZAK_LEFT_PROMPT_ONLY
   if (( AGKOZAK_MULTILINE != AGKOZAK[OLD_MULTILINE] )); then
     (( ! AGKOZAK_MULTILINE )) && AGKOZAK_LEFT_PROMPT_ONLY=0
-    typeset -g AGKOZAK[OLD_MULTILINE]=$AGKOZAK_MULTILINE
+    AGKOZAK[OLD_MULTILINE]=$AGKOZAK_MULTILINE
   fi
 
   # If AGKOZAK_LEFT_PROMPT_ONLY changes, recalculate the prompt strings
   if (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )); then
     unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
-    typeset -g AGKOZAK[OLD_LEFT_PROMPT_ONLY]=$AGKOZAK_LEFT_PROMPT_ONLY
+    AGKOZAK[OLD_LEFT_PROMPT_ONLY]=$AGKOZAK_LEFT_PROMPT_ONLY
     _agkozak_prompt_string
   fi
 
@@ -798,7 +798,7 @@ _agkozak_precmd() {
   # If AGKOZAK_MULTILINE == 1, insert a newline into the prompt
   if (( ! AGKOZAK_MULTILINE )) && (( ! AGKOZAK_LEFT_PROMPT_ONLY )) \
     && [[ -z $INSIDE_EMACS ]]; then
-    typeset -g AGKOZAK[PROMPT_WHITESPACE]=${AGKOZAK_PRE_PROMPT_CHAR}
+    AGKOZAK[PROMPT_WHITESPACE]=${AGKOZAK_PRE_PROMPT_CHAR}
   else
     typeset -g AGKOZAK[PROMPT_WHITESPACE]=$'\n'
 
@@ -841,7 +841,7 @@ _agkozak_precmd() {
     if (( AGKOZAK[FIRST_PROMPT_PRINTED] )); then
       print
     fi
-    typeset -g AGKOZAK[FIRST_PROMPT_PRINTED]=1
+    AGKOZAK[FIRST_PROMPT_PRINTED]=1
   fi
 
   # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
@@ -849,7 +849,7 @@ _agkozak_precmd() {
   () {
     while [[ -n $1 ]]; do
       if [[ ${(P)${:-AGKOZAK_CUSTOM_$1}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$1]}}" ]]; then
-        typeset -g AGKOZAK[CURRENT_CUSTOM_$1]=${(P)${:-AGKOZAK_CUSTOM_$1}}
+        AGKOZAK[CURRENT_CUSTOM_$1]=${(P)${:-AGKOZAK_CUSTOM_$1}}
         typeset -g $1=${(P)${:-AGKOZAK_CUSTOM_$1}}
         ! _agkozak_has_colors && _agkozak_strip_colors $1
       fi
@@ -891,7 +891,7 @@ _agkozak_prompt_string() {
     PROMPT+='%f '
 
     typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
-    typeset -g AGKOZAK[CURRENT_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
+    AGKOZAK[CURRENT_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   fi
 
   if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
@@ -905,7 +905,7 @@ _agkozak_prompt_string() {
     fi
 
     typeset -g AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
-    typeset -g AGKOZAK[CURRENT_CUSTOM_RPROMPT]=${RPROMPT}
+    AGKOZAK[CURRENT_CUSTOM_RPROMPT]=${RPROMPT}
   fi
 
   if ! _agkozak_has_colors; then
@@ -930,7 +930,7 @@ _agkozak_prompt_string() {
   case ${AGKOZAK[ASYNC_METHOD]} in
     'subst-async') ;;
     'zsh-async') async_init ;;
-    'usr1') typeset -g AGKOZAK[USR1_ASYNC_WORKER]=0 ;;
+    'usr1') AGKOZAK[USR1_ASYNC_WORKER]=0 ;;
   esac
 
   zle -N zle-keymap-select

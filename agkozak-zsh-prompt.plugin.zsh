@@ -115,13 +115,15 @@ _agkozak_debug_print() {
   (( AGKOZAK_PROMPT_DEBUG )) && print -- "agkozak-zsh-prompt: $1" >&2
 }
 
-if is-at-least 5.4.0; then
-  for x in ${=AGKOZAK[FUNCTIONS]}; do
-    # Enable WARN_CREATE_GLOBAL for each function of the prompt
-    functions -W $x
-  done
+if (( AGKOZAK_PROMPT_DEBUG )); then
+  if is-at-least 5.4.0; then
+    for x in ${=AGKOZAK[FUNCTIONS]}; do
+      # Enable WARN_CREATE_GLOBAL for each function of the prompt
+      functions -W $x
+    done
+  fi
+  unset x
 fi
-unset x
 
 # Set AGKOZAK_PROMPT_DIRTRIM to the desired number of directory elements to
 # display, or set it to 0 for no directory trimming
@@ -228,7 +230,7 @@ _agkozak_is_ssh() {
 ############################################################
 _agkozak_prompt_dirtrim() {
   emulate -L zsh
-  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Process arguments
   local argument
@@ -320,7 +322,7 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 _agkozak_branch_status() {
   emulate -L zsh
-  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   local ref branch
   ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
@@ -740,7 +742,7 @@ _agkozak_strip_colors() {
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
-  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # If a custom left prompt is enabled, make a note of that
   if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[CURRENT_CUSTOM_PROMPT]}" ]]; then
@@ -923,7 +925,7 @@ _agkozak_prompt_string() {
 ############################################################
 () {
   emulate -L zsh
-  setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   _agkozak_async_init
 

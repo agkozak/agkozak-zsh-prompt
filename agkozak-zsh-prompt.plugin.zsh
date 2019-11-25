@@ -551,8 +551,7 @@ _agkozak_async_init() {
       command sleep 0.01
     elif [[ $ZSH_VERSION == '5.0.2' ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
-      command sleep 0.01
-      command true
+      command sleep 0.02
     else
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
 

@@ -549,7 +549,8 @@ _agkozak_async_init() {
     elif [[ $OSTYPE == solaris* ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
-    elif [[ $ZSH_VERSION == '5.0.2' ]]; then
+    # TODO: Test zsh v5.0.3-7
+    elif [[ $ZSH_VERSION == 5.0.[0-2] ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.02
     else

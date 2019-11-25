@@ -69,14 +69,14 @@ AGKOZAK_OLD_OPTIONS=(
                     )
 
 # Store previous prompts and psvars for the unload function
-typeset -ga AGKOZAK_OLD_PROMPTS AGKOZAK_OLD_PSVAR
-AGKOZAK_OLD_PROMPTS=( $PROMPT $RPROMPT )
+typeset -ga AGKOZAK_OLD_PSVAR
+AGKOZAK[OLD_PROMPT]=${PROMPT}
+AGKOZAK[OLD_RPROMPT]=${RPROMPT}
 AGKOZAK_OLD_PSVAR=( ${psvar[@]} )
 
 # Names of prompt functions. Used to enable WARN_NESTED_VAR in debug mode
 # and for unloading the prompt.
-typeset -ga AGKOZAK_FUNCTIONS
-AGKOZAK_FUNCTIONS=( _agkozak_debug_print
+AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_has_colors
                     _agkozak_is_ssh
                     _agkozak_prompt_dirtrim
@@ -97,8 +97,7 @@ AGKOZAK_FUNCTIONS=( _agkozak_debug_print
                     _agkozak_strip_colors
                     _agkozak_precmd
                     _agkozak_chpwd
-                    _agkozak_prompt_string
-                  )
+                    _agkozak_prompt_string'
 
 # Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
 : ${AGKOZAK_PROMPT_DEBUG:=0}
@@ -116,7 +115,7 @@ _agkozak_debug_print() {
 }
 
 if is-at-least 5.4.0; then
-  for x in $AGKOZAK_FUNCTIONS; do
+  for x in ${=AGKOZAK[FUNCTIONS]}; do
     # Enable WARN_CREATE_GLOBAL for each function of the prompt
     functions -W $x
   done
@@ -961,30 +960,29 @@ _agkozak_prompt_string() {
 ############################################################
 agkozak-zsh-prompt_plugin_unload() {
   setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
-  local agkozak_vars x
+  local x agkozak_vars
 
   [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] \
     && unsetopt PROMPT_SUBST
   [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] \
     && setopt PROMPT_BANG
 
-  PROMPT=${AGKOZAK_OLD_PROMPTS[1]}
-  RPROMPT=${AGKOZAK_OLD_PROMPTS[2]}
+  PROMPT=${AGKOZAK[OLD_PROMPT]}
+  RPROMPT=${AGKOZAK[OLD_RPROMPT]}
 
   psvar=( $AGKOZAK_OLD_PSVAR )
 
   add-zsh-hook -D precmd _agkozak_precmd
   add-zsh-hook -D chpwd _agkozak_chpwd
 
-  for x in $AGKOZAK_FUNCTIONS; do
+  for x in ${=AGKOZAK[FUNCTIONS]}; do
     whence -w $x &> /dev/null && unfunction $x
   done
 
   agkozak_vars=(
                  AGKOZAK
-                 AGKOZAK_FUNCTIONS
+                 AGKOZAK_ASYNC_FD
                  AGKOZAK_OLD_OPTIONS
-                 AGKOZAK_OLD_PROMPTS
                )
 
   for x in $agkozak_vars; do

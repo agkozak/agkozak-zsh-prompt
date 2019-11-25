@@ -626,7 +626,7 @@ _agkozak_async_init() {
 
           # Start background computation of Git status
           _agkozak_usr1_async_worker &!
-          typeset -g AGKOZAK[USR1_ASYNC_WORKER]=$!
+          typeset -g AGKOZAK[USR1_ASYNC_WORKER]="$!"
         else
           _agkozak_debug_print 'TRAPUSR1 has been redefined. Switching to subst-async mode.'
           typeset -g AGKOZAK[ASYNC_METHOD]='subst-async'

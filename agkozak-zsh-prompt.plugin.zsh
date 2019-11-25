@@ -311,6 +311,9 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 # Display current branch name, followed by symbols
 # representing changes to the working copy
+#
+# Globals:
+#   AGKOZAK_GIT_VERSION   Installed Git version
 ############################################################
 _agkozak_branch_status() {
   emulate -L zsh

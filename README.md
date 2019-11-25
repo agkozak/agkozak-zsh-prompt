@@ -76,7 +76,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - When `AGKOZAK_LEFT_PROMPT_ONLY` is set to `1`, the Git status is displayed in the left prompt, and the right prompt is left blank.
     - The prompt script loads up to 4x faster.
     - The left prompt is displayed ~2x faster.
-    
+
 </details>
 
 ## Installation

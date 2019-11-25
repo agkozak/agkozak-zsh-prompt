@@ -545,9 +545,8 @@ _agkozak_async_init() {
     elif [[ $OSTYPE == solaris* ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
-    # Prevent WSL from locking up when using X; also workaround for ZSH v5.0.2
-    elif (( AGKOZAK[IS_WSL] )) && (( $+DISPLAY )) \
-    || [[ $ZSH_VERSION == '5.0.2' ]]; then
+    # Workaround for ZSH v5.0.2
+    elif [[ $ZSH_VERSION == '5.0.2' ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
       command true

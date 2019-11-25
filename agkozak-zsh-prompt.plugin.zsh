@@ -736,9 +736,7 @@ _agkozak_strip_colors() {
 #   AGKOZAK_PRE_PROMPT_CHAR
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_CUSTOM_PROMPT
-#   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
-#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
@@ -812,8 +810,8 @@ _agkozak_precmd() {
   # corresponding prompt is updated
   () {
     while [[ -n $1 ]]; do
-      if [[ ${(P)${:-AGKOZAK_CUSTOM_$1}} != "${(P)${:-AGKOZAK_CURRENT_CUSTOM_$1}}" ]]; then
-        typeset -g AGKOZAK_CURRENT_CUSTOM_$1=${(P)${:-AGKOZAK_CUSTOM_$1}}
+      if [[ ${(P)${:-AGKOZAK_CUSTOM_$1}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$1]}}" ]]; then
+        typeset -g AGKOZAK[CURRENT_CUSTOM_$1]=${(P)${:-AGKOZAK_CUSTOM_$1}}
         typeset -g $1=${(P)${:-AGKOZAK_CUSTOM_$1}}
         ! _agkozak_has_colors && _agkozak_strip_colors $1
       fi
@@ -833,10 +831,8 @@ _agkozak_precmd() {
 #   AGKOZAK_COLORS_PATH
 #   AGKOZAK_COLORS_PROMPT_CHAR
 #   AGKOZAK_PROMPT_CHAR
-#   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_COLORS_BRANCH_STATUS
-#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_prompt_string() {
   emulate -L zsh
@@ -857,7 +853,7 @@ _agkozak_prompt_string() {
     PROMPT+='%f '
 
     typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
-    typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+    typeset -g AGKOZAK[CURRENT_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   fi
 
   if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
@@ -871,7 +867,7 @@ _agkozak_prompt_string() {
     fi
 
     typeset -g AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
-    typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${RPROMPT}
+    typeset -g AGKOZAK[CURRENT_CUSTOM_RPROMPT]=${RPROMPT}
   fi
 
   if ! _agkozak_has_colors; then
@@ -986,8 +982,6 @@ agkozak-zsh-prompt_plugin_unload() {
 
   agkozak_vars=(
                  AGKOZAK
-                 AGKOZAK_CURRENT_CUSTOM_PROMPT
-                 AGKOZAK_CURRENT_CUSTOM_RPROMPT
                  AGKOZAK_FUNCTIONS
                  AGKOZAK_OLD_OPTIONS
                  AGKOZAK_OLD_PROMPTS

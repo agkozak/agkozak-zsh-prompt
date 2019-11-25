@@ -23,6 +23,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 - [News](#news)
 - [Installation](#installation)
+- [Command-Line Invocation](#command-line-invocation)
 - [Local and Remote Sessions](#local-and-remote-sessions)
 - [Abbreviated Paths](#abbreviated-paths)
 - [Git Branch and Status](#git-branch-and-status)
@@ -136,6 +137,12 @@ to try out the prompt; add the same command to your `.zshrc` to load it automati
 agkozak-zsh-prompt now supports `zplugin`'s `unload` feature; you may restore the shell to its state before loading the prompt by running
 
     zplugin unload agkozak/agkozak-zsh-prompt
+
+## Command-Line Invocation
+
+Normally sourcing the script or loading it with a framework should be sufficient, but if you are interested experimenting with [the agkozak ZSH Prompt's asynchronous methods](#asynchronous-methods), you may do so with the `agkozak-zsh-prompt` command. Passing it the parameters `subst-async`, `usr1`, `zsh-async`, or `none` will cause the prompt to the desired method, e.g.
+
+    agkozak-zsh-prompt usr1
 
 ## Local and Remote Sessions
 

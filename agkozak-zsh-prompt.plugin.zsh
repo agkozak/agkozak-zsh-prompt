@@ -495,11 +495,16 @@ _agkozak_async_init() {
   # Otherwise, first provide for certain quirky systems
   else
 
-    if (( AGKOZAK[IS_WSL] )) || [[ $OSTYPE == solaris* ]]; then
+    if (( AGKOZAK[IS_WSL] )); then
+      if _agkozak_has_usr1; then
+        AGKOZAK[ASYNC_METHOD]='usr1'
+      else
+        AGKOZAK[ASYNC_METHOD]='subst-async'
+      fi
+
+    elif [[ $OSTYPE == solaris* ]]; then
       if [[ $ZSH_VERSION != '5.0.2' ]] &&_agkozak_load_async_lib; then
         AGKOZAK[ASYNC_METHOD]='zsh-async'
-      elif _agkozak_has_usr1; then
-        AGKOZAK[ASYNC_METHOD]='usr1'
       else
         AGKOZAK[ASYNC_METHOD]='subst-async'
       fi
@@ -540,20 +545,21 @@ _agkozak_async_init() {
 
     typeset -g AGKOZAK_ASYNC_FD=13371
 
-    # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
-    if [[ $OSTYPE == (msys|cygwin|solaris*) ]]; then
+    if [[ $OSTYPE == (msys|cygwin) ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status; command true)
-    # Prevent WSL from locking up when using X; also workaround for ZSH v5.0.2
-    elif (( AGKOZAK[IS_WSL] )) && (( $+DISPLAY )) \
-    || [[ $ZSH_VERSION == '5.0.2' ]]; then
+    elif [[ $OSTYPE == solaris* ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
+    # TODO: Test zsh v5.0.3-7
+    elif [[ $ZSH_VERSION == 5.0.[0-2] ]]; then
+      exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
+      command sleep 0.02
     else
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
-    fi
 
-    # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
-    command true
+      # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
+      command true
+    fi
 
     zle -F "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
   }

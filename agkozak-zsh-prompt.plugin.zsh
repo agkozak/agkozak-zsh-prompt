@@ -547,12 +547,13 @@ _agkozak_async_init() {
     || [[ $ZSH_VERSION == '5.0.2' ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
+      command true
     else
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
-    fi
 
-    # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
-    command true
+      # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
+      command true
+    fi
 
     zle -F "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
   }

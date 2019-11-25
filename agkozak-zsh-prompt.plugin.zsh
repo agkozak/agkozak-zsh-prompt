@@ -61,6 +61,9 @@ autoload -Uz is-at-least
 # Associative array to store internal information in
 typeset -gA AGKOZAK
 
+# In case an argument is passed when the script is sourced
+AGKOZAK[ARGUMENT]=$1
+
 # Options to reset if the prompt is unloaded
 typeset -gA AGKOZAK_OLD_OPTIONS
 AGKOZAK_OLD_OPTIONS=(
@@ -98,7 +101,8 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_precmd
                     _agkozak_clear-screen
                     _agkozak_chpwd
-                    _agkozak_prompt_string'
+                    _agkozak_prompt_string
+                    agkozak-zsh-prompt'
 
 # Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
 : ${AGKOZAK_PROMPT_DEBUG:=0}
@@ -487,44 +491,60 @@ _agkozak_async_init() {
     fi
   fi
 
-  # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
-  [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
-  if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
-    AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
-
-  # Otherwise, first provide for certain quirky systems
+  # If an asynchronous method has been passed as an argument to
+  # agkozak-zsh-prompt, use it
+  if [[ ${AGKOZAK[ARGUMENT]} == (subst-async|usr1|zsh-async|none) ]]; then
+    AGKOZAK[ASYNC_METHOD]=${AGKOZAK[ARGUMENT]}
+    [[ ${AGKOZAK[ARGUMENT]} == 'zsh-async' ]] && _agkozak_load_async_lib
   else
 
-    if (( AGKOZAK[IS_WSL] )); then
-      if _agkozak_has_usr1; then
-        AGKOZAK[ASYNC_METHOD]='usr1'
-      else
-        AGKOZAK[ASYNC_METHOD]='subst-async'
+    # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
+
+    if [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]]; then
+      if [[ $OSTYPE == (msys|cygwin) ]]; then
+        print "Warning: zsh-async does not work on $OSTYPE." >&2
+        print >&2
       fi
+      _agkozak_load_async_lib
+    fi
 
-    elif [[ $OSTYPE == solaris* ]]; then
-      if [[ $ZSH_VERSION != '5.0.2' ]] &&_agkozak_load_async_lib; then
-        AGKOZAK[ASYNC_METHOD]='zsh-async'
-      else
-        AGKOZAK[ASYNC_METHOD]='subst-async'
-      fi
+    if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
+      AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
 
-    # SIGUSR1 method is still much faster on MSYS2, Cygwin, and ZSH v5.0.2
-    elif [[ $ZSH_VERSION == '5.0.2' ]] || [[ $OSTYPE == (msys|cygwin) ]]; then
-      if _agkozak_has_usr1; then
-        AGKOZAK[ASYNC_METHOD]='usr1'
-      else
-        AGKOZAK[ASYNC_METHOD]='subst-async'
-      fi
-
-    # Asynchronous methods don't work in Emacs shell mode (but they do in term
-    # and ansi-term)
-    elif [[ $TERM == 'dumb' ]]; then
-      AGKOZAK[ASYNC_METHOD]='none'
-
-    # Otherwise use subst-async
+    # Otherwise, first provide for certain quirky systems
     else
-      AGKOZAK[ASYNC_METHOD]='subst-async'
+
+      if (( AGKOZAK[IS_WSL] )); then
+        if _agkozak_has_usr1; then
+          AGKOZAK[ASYNC_METHOD]='usr1'
+        else
+          AGKOZAK[ASYNC_METHOD]='subst-async'
+        fi
+
+      elif [[ $OSTYPE == solaris* ]]; then
+        if [[ $ZSH_VERSION != '5.0.2' ]] && _agkozak_load_async_lib; then
+          AGKOZAK[ASYNC_METHOD]='zsh-async'
+        else
+          AGKOZAK[ASYNC_METHOD]='subst-async'
+        fi
+
+      # SIGUSR1 method is still much faster on MSYS2, Cygwin, and ZSH v5.0.2
+      elif [[ $ZSH_VERSION == '5.0.2' ]] || [[ $OSTYPE == (msys|cygwin) ]]; then
+        if _agkozak_has_usr1; then
+          AGKOZAK[ASYNC_METHOD]='usr1'
+        else
+          AGKOZAK[ASYNC_METHOD]='subst-async'
+        fi
+
+      # Asynchronous methods don't work in Emacs shell mode (but they do in term
+      # and ansi-term)
+      elif [[ $TERM == 'dumb' ]]; then
+        AGKOZAK[ASYNC_METHOD]='none'
+
+      # Otherwise use subst-async
+      else
+        AGKOZAK[ASYNC_METHOD]='subst-async'
+      fi
     fi
   fi
 
@@ -925,13 +945,37 @@ _agkozak_prompt_string() {
 ############################################################
 # Prompt setup
 #
+# Arguments:
+#   $1  If -h or --help, display the async method and show
+#       a help message; otherwise, the name of an async
+#       method launches the prompt using that method
+#
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
-() {
+agkozak-zsh-prompt() {
   emulate -L zsh
   (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
+  case $1 in
+    -h|--help)
+      print "Using async method: ${AGKOZAK[ASYNC_METHOD]}" >&2
+      print >&2
+      print 'Valid arguments: -h/--help subst-async usr1 zsh-async none' >&2
+      return
+      ;;
+    subst-async) AGKOZAK[ARGUMENT]='subst-async' ;;
+    usr1) AGKOZAK[ARGUMENT]='usr1' ;;
+    zsh-async)
+      if [[ $OSTYPE == (msys|cygwin) ]]; then
+        print "Warning: zsh-async does not work on $OSTYPE." >&2
+        print >&2
+      fi
+      AGKOZAK[ARGUMENT]='zsh-async'
+      ;;
+    none) AGKOZAK[ARGUMENT]='none' ;;
+  esac
 
   _agkozak_async_init
 
@@ -996,9 +1040,7 @@ _agkozak_prompt_string() {
   _agkozak_debug_print "Using async method: ${AGKOZAK[ASYNC_METHOD]}"
 }
 
-# Clean up environment
-(( AGKOZAK_PROMPT_DEBUG )) \
-  || unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_async_init
+agkozak-zsh-prompt
 
 ############################################################
 # Unload function

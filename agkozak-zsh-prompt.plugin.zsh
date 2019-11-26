@@ -126,6 +126,26 @@ if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
   unset x
 fi
 
+############################################################
+# Legacy assignments
+#
+# No longer entirely necessary for the prompt, but included
+# just in case someone is using an older custom prompt that
+# needs them.
+############################################################
+
+# Set AGKOZAK_COLORS_* variables to any valid color
+#   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color      (default: red)
+#   AGKOZAK_COLORS_USER_HOST changes the username/hostname color  (default: green)
+#   AGKOZAK_COLORS_PATH changes the path color                    (default: blue)
+#   AGKOZAK_COLORS_BRANCH_STATUS changes the branch status color  (default: yellow)
+#   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: white)
+: ${AGKOZAK_COLORS_EXIT_STATUS:=red}
+: ${AGKOZAK_COLORS_USER_HOST:=green}
+: ${AGKOZAK_COLORS_PATH:=blue}
+: ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
+: ${AGKOZAK_COLORS_PROMPT_CHAR:=white}
+
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
 ######################################################################
@@ -789,9 +809,9 @@ _agkozak_precmd() {
   # If AGKOZAK_MULTILINE == 1, insert a newline into the prompt
   if (( ! ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
     && [[ -z $INSIDE_EMACS ]]; then
-    AGKOZAK[PROMPT_WHITESPACE]=${AGKOZAK_PRE_PROMPT_CHAR- }
+    typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR- }
   else
-    typeset -g AGKOZAK[PROMPT_WHITESPACE]=$'\n'
+    typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
 
     # ZSH multiline prompts tend to cause the last line of stdout to disappear
     # if the screen is redrawn. The solution would appear to be to have a precmd
@@ -801,7 +821,7 @@ _agkozak_precmd() {
     #
     # TODO: Take into account all sorts of situations involving custom PROMPTs
     # (including ones with more than one newline?)
-    if (( ! AGKOZAK_LEFT_PROMPT_ONLY )) && (( ! AGKOZAK[LEFT_CUSTOM] )) \
+    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) && (( ! AGKOZAK[LEFT_CUSTOM] )) \
       && [[ -z ${INSIDE_EMACS} ]]; then
 
       PROMPT=${AGKOZAK[SAVED_PROMPT]:-${PROMPT}}
@@ -810,7 +830,7 @@ _agkozak_precmd() {
       read -rz
       print -- ${REPLY%$'\n'*}
       typeset -g AGKOZAK[SAVED_PROMPT]=${PROMPT}
-      PROMPT=${PROMPT#*\$\{AGKOZAK\[PROMPT_WHITESPACE\]\}}
+      PROMPT=${PROMPT#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
 
       ############################################################
       # When the screen clears, _agkozak_precmd must be run to
@@ -876,7 +896,7 @@ _agkozak_prompt_string() {
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:0} )); then
       PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi
-    PROMPT+='${AGKOZAK[PROMPT_WHITESPACE]}'
+    PROMPT+='${AGKOZAK_PROMPT_WHITESPACE}'
     PROMPT+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-white}}'
     PROMPT+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
     PROMPT+='%f '
@@ -1033,7 +1053,8 @@ agkozak-zsh-prompt_plugin_unload() {
 
   zle -N clear-screen clear-screen
 
-  unset AGKOZAK AGKOZAK_ASYNC_FD AGKOZAK_OLD_OPTIONS AGKOZAK_OLD_PSVAR
+  unset AGKOZAK AGKOZAK_ASYNC_FD AGKOZAK_OLD_OPTIONS AGKOZAK_OLD_PSVAR \
+    AGKOZAK_PROMPT_WHITESPACE
 
   unfunction $0
 }

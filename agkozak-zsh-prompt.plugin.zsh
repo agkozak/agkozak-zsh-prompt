@@ -819,16 +819,15 @@ _agkozak_precmd() {
 
   # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
   # corresponding prompt is updated
-  () {
-    while [[ -n $1 ]]; do
-      if [[ ${(P)${:-AGKOZAK_CUSTOM_$1}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$1]}}" ]]; then
-        AGKOZAK[CURRENT_CUSTOM_$1]=${(P)${:-AGKOZAK_CUSTOM_$1}}
-        typeset -g $1=${(P)${:-AGKOZAK_CUSTOM_$1}}
-        ! _agkozak_has_colors && _agkozak_strip_colors $1
-      fi
-      shift
-    done
-  } PROMPT RPROMPT
+
+  local prmpt
+  for prmpt in PROMPT RPROMPT; do
+    if [[ ${(P)${:-AGKOZAK_CUSTOM_$prmpt}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$prmpt]}}" ]]; then
+      AGKOZAK[CURRENT_CUSTOM_$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+      typeset -g $prmpt=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+      ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
+    fi
+  done
 }
 
 ############################################################

@@ -56,7 +56,7 @@
 # psvar[5]      %5v                         Empty only when
 #                                           AGKOZAK_USER_HOST_DISPLAY is 0
 
-autoload -Uz is-at-least
+autoload -Uz is-at-least add-zle-hook-widget
 
 # Associative array to store internal information in
 typeset -gA AGKOZAK
@@ -84,7 +84,7 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_is_ssh
                     _agkozak_prompt_dirtrim
                     _agkozak_branch_status
-                    zle-keymap-select
+                    _agkozak_zle-keymap-select
                     TRAPWINCH
                     _agkozak_vi_mode_indicator
                     _agkozak_load_async_lib
@@ -377,7 +377,7 @@ _agkozak_branch_status() {
 # enters vi command mode, the % or # in the prompt changes
 # to a colon
 ############################################################
-zle-keymap-select() {
+_agkozak_zle-keymap-select() {
   emulate -L zsh
 
   [[ $KEYMAP == 'vicmd' ]] && psvar[4]='vicmd' || psvar[4]=''
@@ -930,7 +930,11 @@ agkozak-zsh-prompt() {
     'usr1') AGKOZAK[USR1_ASYNC_WORKER]=0 ;;
   esac
 
-  zle -N zle-keymap-select
+  if is-at-least 5.3; then
+    add-zle-hook-widget zle-keymap-select _agkozak_zle-keymap-select
+  else
+    zle -N zle-keymap-select _agkozak_zle-keymap-select
+  fi
 
   # Don't use ZSH hooks in Emacs classic shell
   if (( $+INSIDE_EMACS )) && [[ $TERM == 'dumb' ]]; then
@@ -1008,6 +1012,12 @@ agkozak-zsh-prompt_plugin_unload() {
 
   add-zsh-hook -D precmd _agkozak_precmd
   add-zsh-hook -D chpwd _agkozak_chpwd
+
+  if is-at-least 5.3; then
+    add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select
+  else
+    zle -D _agkozak_zle-keymap_select
+  fi
 
   for x in ${=AGKOZAK[FUNCTIONS]}; do
     whence -w $x &> /dev/null && unfunction $x

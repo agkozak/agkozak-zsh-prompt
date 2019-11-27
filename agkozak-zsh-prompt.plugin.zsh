@@ -35,8 +35,6 @@
 # https://github.com/agkozak/agkozak-zsh-prompt
 #
 
-# shellcheck disable=SC1090,SC2016,SC2034,SC2088,SC2148,SC2154,SC2190
-
 # psvar[] Usage
 #
 # psvar Index   Prompt String Equivalent    Usage

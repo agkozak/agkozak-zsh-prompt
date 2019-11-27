@@ -495,15 +495,22 @@ _agkozak_async_init() {
     # Otherwise, first provide for certain quirky systems
     else
 
-      if [[ $OSTYPE == solaris* ]]; then
+      if (( AGKOZAK[IS_WSL] )); then
+        if _agkozak_has_usr1; then
+          AGKOZAK[ASYNC_METHOD]='usr1'
+        else
+          AGKOZAK[ASYNC_METHOD]='subst-async'
+        fi
+
+      elif [[ $OSTYPE == solaris* ]]; then
         if [[ $ZSH_VERSION != '5.0.2' ]] && _agkozak_load_async_lib; then
           AGKOZAK[ASYNC_METHOD]='zsh-async'
         else
           AGKOZAK[ASYNC_METHOD]='subst-async'
         fi
 
-      # SIGUSR1 method is on ZSH v5.0.2
-      elif [[ $ZSH_VERSION == '5.0.2' ]]; then
+      # SIGUSR1 method is still much faster on MSYS2, Cygwin, and ZSH v5.0.2
+      elif [[ $ZSH_VERSION == '5.0.2' ]] || [[ $OSTYPE == (msys|cygwin) ]]; then
         if _agkozak_has_usr1; then
           AGKOZAK[ASYNC_METHOD]='usr1'
         else

@@ -451,7 +451,7 @@ _agkozak_has_usr1() {
 # If AGKOZAK_FORCE_ASYNC_METHOD is set to a valid value,
 # set AGKOZAK[ASYNC_METHOD] to that; otherwise, determine
 # the optimal asynchronous method from the environment (usr1
-# for MSYS2/Cygwin, zsh-async for WSL, subst-async for
+# for MSYS2/Cygwin/WSL, zsh-async for WSL, subst-async for
 # everything else), with fallbacks being available. Define
 # the necessary asynchronous functions (loading async.zsh
 # when necessary).
@@ -505,11 +505,14 @@ _agkozak_async_init() {
       elif [[ $OSTYPE == solaris* ]]; then
         if [[ $ZSH_VERSION != '5.0.2' ]] && _agkozak_load_async_lib; then
           AGKOZAK[ASYNC_METHOD]='zsh-async'
+        elif _agkozak_has_usr1; then
+          AGKOZAK[ASYNC_METHOD]='usr1'
         else
           AGKOZAK[ASYNC_METHOD]='subst-async'
         fi
 
-      # SIGUSR1 method is still much faster on MSYS2, Cygwin, and ZSH v5.0.2
+      # SIGUSR1 method is still much faster on MSYS2 and Cygwin. ZSH v5.0.2 may
+      # only be able to use subst-async
       elif [[ $ZSH_VERSION == '5.0.2' ]] || [[ $OSTYPE == (msys|cygwin) ]]; then
         if _agkozak_has_usr1; then
           AGKOZAK[ASYNC_METHOD]='usr1'

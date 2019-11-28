@@ -23,6 +23,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 - [News](#news)
 - [Installation](#installation)
+- [Command-Line Invocation](#command-line-invocation)
 - [Local and Remote Sessions](#local-and-remote-sessions)
 - [Abbreviated Paths](#abbreviated-paths)
 - [Git Branch and Status](#git-branch-and-status)
@@ -50,7 +51,16 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 <details>
   <summary>Here are the latest features and updates.</summary>
-
+- v3.6.0
+    - There is now a command-line function, `agkozak-zsh-prompt`, that can be used to switch asynchronous methods on the fly.
+    - For reasons of speed, `WARN_CREATE_GLOBAL` and `WARN_NESTED_VAR` only run when you set `AGKOZAK_PROMPT_DEBUG=1`.
+    - `subst-async` continues to be the one asynchronous method that works on all supported systems, although ZSH's handling of `zle -F` is inherently buggy and requires workarounds. If you find that the prompt occasionally does not display your asynchronous Git status until you press a key, please open [an issue](https://github.com/agkozak/agkozak-zsh-prompt/issues) and provide your `$OSTYPE` and `$ZSH_VERSION` and I will use that information to further improve the `agkozak_subst_async` function.
+    - Also for reasons of speed, the prompt uses `usr1` (with `subst-async` as a fallback) for WSL (although `zsh-async` is still available if you want it). Solaris uses `zsh-async` (with `subst-async` as a fallback); `usr1` was proving unreliable on Solaris, although again you may try it if you like.
+- v3.5.0 (November 15, 2019)
+    - The prompt now supports the [zdharma ZSH plugin unload function standard](https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
+    - For debugging purposes, `WARN_CREATE_GLOBAL` is now applied to individual functions whether or not debugging mode is enabled. On ZSH v5.4.0+ and when `AGKOZAK_PROMPT_DEBUG` is set to `1`, all functions have `WARN_NESTED_VAR` applied to them.
+    - Measures have been taken to avoid problems when the shell options `KSH_ARRAYS` and `SH_WORD_SPLIT` have been enabled.
+    - When loaded on terminals without color, the prompt avoids using subshells when eliminating color codes from the `PROMPT` and `RPROMPT` strings.
 - v3.4.0 (November 6, 2019)
     - Stashed changes are now displayed by default (set `AGKOZAK_SHOW_STASH=0` to turn this feature off).
     - In a single-line prompt, `AGKOZAK_PRE_PROMPT_CHAR` allows you to change the space before the prompt character to any character or characters you like; setting `AGKOZAK_PRE_PROMPT_CHAR=''` eliminates the space entirely.
@@ -76,7 +86,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - When `AGKOZAK_LEFT_PROMPT_ONLY` is set to `1`, the Git status is displayed in the left prompt, and the right prompt is left blank.
     - The prompt script loads up to 4x faster.
     - The left prompt is displayed ~2x faster.
-    
+
 </details>
 
 ## Installation
@@ -132,6 +142,27 @@ Run the command
     zplugin load agkozak/agkozak-zsh-prompt
 
 to try out the prompt; add the same command to your `.zshrc` to load it automatically.
+
+If you are running ZSH v5.3+, you can take advantage of `zplugin`'s Turbo Mode to load the prompt asynchronously:
+
+```sh
+PROMPT='%m%# '  # Or whatever prompt suits you for the split second it takes for
+RPROMPT=''      # the agkozak ZSH Prompt to load
+zplugin ice atload'_agkozak_precmd' nocd silent wait
+zplugin load agkozak/agkozak-zsh-prompt
+```
+
+The prompt now supports `zplugin`'s `unload` feature; you may restore the shell to its state before loading the prompt by running
+
+    zplugin unload agkozak/agkozak-zsh-prompt
+
+## Command-Line Invocation
+
+Normally sourcing the script or loading it with a framework should be sufficient, but if you are interested experimenting with [the agkozak ZSH Prompt's asynchronous methods](#asynchronous-methods), you may do so with the `agkozak-zsh-prompt` command. Passing it the parameters `subst-async`, `usr1`, `zsh-async`, or `none` will cause the prompt to the desired method, e.g.
+
+    agkozak-zsh-prompt usr1
+
+Running `agkozak-zsh-prompt -h` will display the options available, as well as which asynchronous method is currently in use.
 
 ## Local and Remote Sessions
 
@@ -521,7 +552,7 @@ AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b%(3V.%F{yellow}%3v%f.)'
 AGKOZAK_CUSTOM_PROMPT+=' %(?..%B%F{red}(%?%)%f%b)'
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
-AGKOZAK_RPROMPT=''
+AGKOZAK_CUSTOM_RPROMPT=''
 ```
 
 #### [AGitBoy](https://github.com/agkozak/agkozak-zsh-prompt/issues/15)
@@ -569,10 +600,11 @@ Option | Default | Meaning
 [`AGKOZAK_COLORS_BRANCH_STATUS`](#custom-colors) | `yellow` | Color of Git status
 [`AGKOZAK_COLORS_EXIT_STATUS`](#custom-colors) | `red` | Color of exit status
 [`AGKOZAK_COLORS_PATH`](#custom-colors) | `blue` | Color of path
+[`AGKOZAK_COLORS_PROMPT_CHAR`](#custom-colors) | `white` | Color of prompt character
 [`AGKOZAK_COLORS_USER_HOST`](#custom-colors) | `green` | Color of username and hostname
 [`AGKOZAK_CUSTOM_PROMPT`](#advanced-customization) | | Code for custom left prompt
 [`AGKOZAK_CUSTOM_RPROMPT`](#advanced-customization) | | Code for custom right prompt
-[`AGKOZAK_CUSTOM_SYMBOLS`](#custom-git-symbols) | `( '&*' '&' '*' '+' 'x" '!' '>' '?' '$' )` | Array containing custom Git symbols for the statuses Diverged, Behind, Ahead, New file(s), Deleted, Modified, Renamed, Untracked, Stashed changes
+[`AGKOZAK_CUSTOM_SYMBOLS`](#custom-git-symbols) | `( '&*' '&' '*' '+' 'x' '!' '>' '?' '$' )` | Array containing custom Git symbols for the statuses Diverged, Behind, Ahead, New file(s), Deleted, Modified, Renamed, Untracked, Stashed changes
 [`AGKOZAK_FORCE_ASYNC_METHOD`](#asynchronous-methods) | | Forces the asynchronous method to be `subst-async`, `zsh-async`, `usr1` or `none`
 [`AGKOZAK_LEFT_PROMPT_ONLY`](#optional-left-prompt-only-mode) | `0` | Display a two-line prompt with the Git status on the left side
 [`AGKOZAK_MULTILINE`](#optional-single-line-prompt) | `1` | Display a two-line prompt

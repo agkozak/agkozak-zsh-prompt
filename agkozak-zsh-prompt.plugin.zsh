@@ -35,8 +35,6 @@
 # https://github.com/agkozak/agkozak-zsh-prompt
 #
 
-# shellcheck disable=SC1090,SC2016,SC2034,SC2088,SC2148,SC2154,SC2190
-
 # psvar[] Usage
 #
 # psvar Index   Prompt String Equivalent    Usage
@@ -56,10 +54,52 @@
 # psvar[5]      %5v                         Empty only when
 #                                           AGKOZAK_USER_HOST_DISPLAY is 0
 
-autoload -Uz is-at-least
+autoload -Uz is-at-least add-zle-hook-widget
 
-# Set AGKOZAK_PROMPT_DEBUG=1 to see debugging information
-AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
+# Associative array to store internal information in
+typeset -gA AGKOZAK
+
+# In case an argument is passed when the script is sourced
+AGKOZAK[ARGUMENT]=$1
+
+# Options to reset if the prompt is unloaded
+typeset -gA AGKOZAK_OLD_OPTIONS
+AGKOZAK_OLD_OPTIONS=(
+                      'promptsubst' ${options[promptsubst]}
+                      'promptbang' ${options[promptbang]}
+                    )
+
+# Store previous prompts and psvars for the unload function
+typeset -ga AGKOZAK_OLD_PSVAR
+AGKOZAK[OLD_PROMPT]=${PROMPT}
+AGKOZAK[OLD_RPROMPT]=${RPROMPT}
+AGKOZAK_OLD_PSVAR=( ${psvar[@]} )
+
+# Names of prompt functions. Used to enable WARN_NESTED_VAR in debug mode
+# and for unloading the prompt.
+AGKOZAK[FUNCTIONS]='_agkozak_debug_print
+                    _agkozak_has_colors
+                    _agkozak_is_ssh
+                    _agkozak_prompt_dirtrim
+                    _agkozak_branch_status
+                    _agkozak_zle-keymap-select
+                    TRAPWINCH
+                    _agkozak_vi_mode_indicator
+                    _agkozak_load_async_lib
+                    _agkozak_has_usr1
+                    _agkozak_async_init
+                    _agkozak_subst_async
+                    _agkozak_zsh_subst_async_callback
+                    _agkozak_zsh_async
+                    _agkozak_zsh_async_callback
+                    _agkozak_usr1_async
+                    _agkozak_usr1_async_worker
+                    TRAPUSR1
+                    _agkozak_strip_colors
+                    _agkozak_precmd
+                    _agkozak_chpwd
+                    _agkozak_prompt_string
+                    agkozak-zsh-prompt'
 
 ############################################################
 # Display a message on STDERR if debug mode is enabled
@@ -70,26 +110,26 @@ AGKOZAK_PROMPT_DEBUG=${AGKOZAK_PROMPT_DEBUG:-0}
 #   $1  Message to send to STDERR
 ############################################################
 _agkozak_debug_print() {
-  (( AGKOZAK_PROMPT_DEBUG )) && print -- "agkozak-zsh-prompt: $1" >&2
+  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && print -- "agkozak-zsh-prompt: $1" >&2
 }
 
-if (( AGKOZAK_PROMPT_DEBUG )); then
-  setopt WARN_CREATE_GLOBAL
-
+if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
   if is-at-least 5.4.0; then
-    setopt WARN_NESTED_VAR
+    for x in ${=AGKOZAK[FUNCTIONS]}; do
+      # Enable WARN_CREATE_GLOBAL for each function of the prompt
+      functions -W $x
+    done
   fi
+  unset x
 fi
 
-# Set AGKOZAK_PROMPT_DIRTRIM to the desired number of directory elements to
-# display, or set it to 0 for no directory trimming
-typeset -g AGKOZAK_PROMPT_DIRTRIM=${AGKOZAK_PROMPT_DIRTRIM:-2}
-
-# Set AGKOZAK_MULTILINE to 0 to enable the legacy, single-line prompt
-typeset -g AGKOZAK_MULTILINE=${AGKOZAK_MULTILINE:-1}
-
-# Set AGKOZAK_LEFT_PROMPT_ONLY to have the Git status appear in the left prompt
-typeset -g AGKOZAK_LEFT_PROMPT_ONLY=${AGKOZAK_LEFT_PROMPT_ONLY:-0}
+############################################################
+# Legacy assignments
+#
+# No longer entirely necessary for the prompt, but included
+# just in case someone is using an older custom prompt that
+# needs them.
+############################################################
 
 # Set AGKOZAK_COLORS_* variables to any valid color
 #   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color      (default: red)
@@ -97,21 +137,11 @@ typeset -g AGKOZAK_LEFT_PROMPT_ONLY=${AGKOZAK_LEFT_PROMPT_ONLY:-0}
 #   AGKOZAK_COLORS_PATH changes the path color                    (default: blue)
 #   AGKOZAK_COLORS_BRANCH_STATUS changes the branch status color  (default: yellow)
 #   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: white)
-typeset -g AGKOZAK_COLORS_EXIT_STATUS=${AGKOZAK_COLORS_EXIT_STATUS:-red}
-typeset -g AGKOZAK_COLORS_USER_HOST=${AGKOZAK_COLORS_USER_HOST:-green}
-typeset -g AGKOZAK_COLORS_PATH=${AGKOZAK_COLORS_PATH:-blue}
-typeset -g AGKOZAK_COLORS_BRANCH_STATUS=${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}
-
-# AGKOZAK_USER_HOST_DISPLAY determines whether user and host will be
-# displayed (default: 1)
-typeset -g AGKOZAK_USER_HOST_DISPLAY=${AGKOZAK_USER_HOST_DISPLAY:-1}
-
-# AGKOZAK_SHOW_STASH determines whether stashed changes will be displayed (default: 1)
-typeset -g AGKOZAK_SHOW_STASH=${AGKOZAK_SHOW_STASH:-1}
-
-# For single-line prompt, AGKOZAK_PRE_PROMPT_CHAR comes before the prompt
-# character (default: space)
-typeset -g AGKOZAK_PRE_PROMPT_CHAR=${AGKOZAK_PRE_PROMPT_CHAR- }
+: ${AGKOZAK_COLORS_EXIT_STATUS:=red}
+: ${AGKOZAK_COLORS_USER_HOST:=green}
+: ${AGKOZAK_COLORS_PATH:=blue}
+: ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
+: ${AGKOZAK_COLORS_PROMPT_CHAR:=white}
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -123,26 +153,24 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 # Are colors available?
 #
 # Globals:
-#   AGKOZAK_HAS_COLORS
+#   AGKOZAK
 ############################################################
 _agkozak_has_colors() {
-  if (( $+AGKOZAK_HAS_COLORS )); then
-    :
-  else
+  if (( ! ${+AGKOZAK[HAS_COLORS]} )); then
     case $TERM in
-      *-256color) typeset -g AGKOZAK_HAS_COLORS=1 ;;
-      vt100|dumb) typeset -g AGKOZAK_HAS_COLORS=0 ;;
+      *-256color) AGKOZAK[HAS_COLORS]=1 ;;
+      vt100|dumb) AGKOZAK[HAS_COLORS]=0 ;;
       *)
         local colors
         case $OSTYPE in
           freebsd*|dragonfly*) colors=$(tput Co) ;;
           *) colors=$(tput colors) ;;
         esac
-        typeset -g AGKOZAK_HAS_COLORS=$(( colors >= 8 ))
+        AGKOZAK[HAS_COLORS]=$(( colors >= 8 ))
         ;;
     esac
   fi
-  (( AGKOZAK_HAS_COLORS ))
+  (( AGKOZAK[HAS_COLORS] ))
 }
 
 ############################################################
@@ -186,6 +214,9 @@ _agkozak_is_ssh() {
 #   $@ Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
+  emulate -L zsh
+  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
   # Process arguments
   local argument
   for argument in $@; do
@@ -197,8 +228,7 @@ _agkozak_prompt_dirtrim() {
   [[ $1 -ge 0 ]] || set 2
 
   # Default behavior (when AGKOZAK_NAMED_DIRS is 1)
-  typeset -g AGKOZAK_NAMED_DIRS=${AGKOZAK_NAMED_DIRS:-1}
-  if (( AGKOZAK_NAMED_DIRS )); then
+  if (( ${AGKOZAK_NAMED_DIRS:-1} )); then
     local zsh_pwd
     print -Pnz '%~'
 
@@ -270,8 +300,14 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 # Display current branch name, followed by symbols
 # representing changes to the working copy
+#
+# Globals:
+#   AGKOZAK
 ############################################################
 _agkozak_branch_status() {
+  emulate -L zsh
+  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
   local current_dir="$PWD" branch
 
   while [[ $current_dir != '/' ]]; do
@@ -302,8 +338,8 @@ _agkozak_branch_status() {
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k
 
-    if (( AGKOZAK_SHOW_STASH )); then
-      if is-at-least 2.14 ${AGKOZAK_GIT_VERSION}; then
+    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+      if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
       else
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
@@ -331,8 +367,8 @@ _agkozak_branch_status() {
 
     # Check for stashed changes. If there are any, add the stash symbol to the
     # list of symbols.
-    if (( AGKOZAK_SHOW_STASH )); then
-      if is-at-least 2.14 ${AGKOZAK_GIT_VERSION}; then
+    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+      if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
         case $git_status in
           *'Your stash currently has '*)
             symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
@@ -356,9 +392,11 @@ _agkozak_branch_status() {
 # enters vi command mode, the % or # in the prompt changes
 # to a colon
 ############################################################
-zle-keymap-select() {
+_agkozak_zle-keymap-select() {
+  emulate -L zsh
+
   [[ $KEYMAP == 'vicmd' ]] && psvar[4]='vicmd' || psvar[4]=''
-  zle reset-prompt
+  zle .reset-prompt
   zle -R
 }
 
@@ -384,23 +422,24 @@ _agkozak_vi_mode_indicator() {
 ######################################################################
 
 # Standarized $0 handling
-# (See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc)
-0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
-typeset -g AGKOZAK_PROMPT_DIR="${0:A:h}"
+# (See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc)0=${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}})
+0=${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}
+0=${${(M)0:#/*}:-$PWD/$0}
+AGKOZAK[PROMPT_DIR]="${0:A:h}"
 
 ############################################################
 # If zsh-async has not already been loaded, try to load it
 #
 # Globals:
+#   AGKOZAK
 #   AGKOZAK_PROMPT_DEBUG
-#   AGKOZAK_PROMPT_DIR
 ############################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
-    if (( AGKOZAK_PROMPT_DEBUG )); then
-      source "${AGKOZAK_PROMPT_DIR}/lib/async.zsh"
+    if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
+      source "${AGKOZAK[PROMPT_DIR]}/lib/async.zsh"
     else
-      source "${AGKOZAK_PROMPT_DIR}/lib/async.zsh" &> /dev/null
+      source "${AGKOZAK[PROMPT_DIR]}/lib/async.zsh" &> /dev/null
     fi
     local success=$?
     return $success
@@ -427,63 +466,86 @@ _agkozak_has_usr1() {
 
 ############################################################
 # If AGKOZAK_FORCE_ASYNC_METHOD is set to a valid value,
-# set AGKOZAK_ASYNC_METHOD to that; otherwise, determine
+# set AGKOZAK[ASYNC_METHOD] to that; otherwise, determine
 # the optimal asynchronous method from the environment (usr1
-# for MSYS2/Cygwin, zsh-async for WSL, subst-async for
+# for MSYS2/Cygwin/WSL, zsh-async for WSL, subst-async for
 # everything else), with fallbacks being available. Define
 # the necessary asynchronous functions (loading async.zsh
 # when necessary).
 #
 # Globals:
-#   AGKOZAK_IS_WSL
-#   AGKOZAK_ASYNC_METHOD
+#   AGKOZAK
 #   AGKOZAK_FORCE_ASYNC_METHOD
-#   AGKOZAK_TRAPUSR1_FUNCTION
 ############################################################
 _agkozak_async_init() {
+  emulate -L zsh
+  setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-  setopt LOCAL_OPTIONS EXTENDED_GLOB
   if [[ -e /proc/version ]]; then
     if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
       unsetopt BG_NICE
-      typeset -g AGKOZAK_IS_WSL=1   # For later reference
+      AGKOZAK[IS_WSL]=1   # For later reference
     fi
   fi
 
-  # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
-  [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
-  if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
-    typeset -g AGKOZAK_ASYNC_METHOD=$AGKOZAK_FORCE_ASYNC_METHOD
-
-  # Otherwise, first provide for certain quirky systems
+  # If an asynchronous method has been passed as an argument to
+  # agkozak-zsh-prompt, use it
+  if [[ ${AGKOZAK[ARGUMENT]} == (subst-async|usr1|zsh-async|none) ]]; then
+    AGKOZAK[ASYNC_METHOD]=${AGKOZAK[ARGUMENT]}
+    [[ ${AGKOZAK[ARGUMENT]} == 'zsh-async' ]] && _agkozak_load_async_lib
   else
 
-    if (( AGKOZAK_IS_WSL )) || [[ $OSTYPE == solaris* ]]; then
-      if [[ $ZSH_VERSION != '5.0.2' ]] &&_agkozak_load_async_lib; then
-        typeset -g AGKOZAK_ASYNC_METHOD='zsh-async'
-      elif _agkozak_has_usr1; then
-        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-      else
-        typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
+    # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
+
+    if [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]]; then
+      if [[ $OSTYPE == (msys|cygwin) ]]; then
+        print "Warning: zsh-async does not work on $OSTYPE." >&2
+        print >&2
       fi
+      _agkozak_load_async_lib
+    fi
 
-    # SIGUSR1 method is still much faster on MSYS2, Cygwin, and ZSH v5.0.2
-    elif [[ $ZSH_VERSION == '5.0.2' ]] || [[ $OSTYPE == (msys|cygwin) ]]; then
-      if _agkozak_has_usr1; then
-        typeset -g AGKOZAK_ASYNC_METHOD='usr1'
-      else
-        typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
-      fi
+    if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
+      AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
 
-    # Asynchronous methods don't work in Emacs shell mode (but they do in term
-    # and ansi-term)
-    elif [[ $TERM == 'dumb' ]]; then
-      typeset -g AGKOZAK_ASYNC_METHOD='none'
-
-    # Otherwise use subst-async
+    # Otherwise, first provide for certain quirky systems
     else
-      typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
+
+      if (( AGKOZAK[IS_WSL] )); then
+        if _agkozak_has_usr1; then
+          AGKOZAK[ASYNC_METHOD]='usr1'
+        else
+          AGKOZAK[ASYNC_METHOD]='subst-async'
+        fi
+
+      elif [[ $OSTYPE == solaris* ]]; then
+        if [[ $ZSH_VERSION != '5.0.2' ]] && _agkozak_load_async_lib; then
+          AGKOZAK[ASYNC_METHOD]='zsh-async'
+        elif _agkozak_has_usr1; then
+          AGKOZAK[ASYNC_METHOD]='usr1'
+        else
+          AGKOZAK[ASYNC_METHOD]='subst-async'
+        fi
+
+      # SIGUSR1 method is still much faster on MSYS2 and Cygwin. ZSH v5.0.2 may
+      # only be able to use subst-async
+      elif [[ $ZSH_VERSION == '5.0.2' ]] || [[ $OSTYPE == (msys|cygwin) ]]; then
+        if _agkozak_has_usr1; then
+          AGKOZAK[ASYNC_METHOD]='usr1'
+        else
+          AGKOZAK[ASYNC_METHOD]='subst-async'
+        fi
+
+      # Asynchronous methods don't work in Emacs shell mode (but they do in term
+      # and ansi-term)
+      elif [[ $TERM == 'dumb' ]]; then
+        AGKOZAK[ASYNC_METHOD]='none'
+
+      # Otherwise use subst-async
+      else
+        AGKOZAK[ASYNC_METHOD]='subst-async'
+      fi
     fi
   fi
 
@@ -495,27 +557,30 @@ _agkozak_async_init() {
   # handler to process input from the file descriptor.
   #
   # Globals:
+  #   AGKOZAK
   #   AGKOZAK_ASYNC_FD
-  #   AGKOZAK_IS_WSL
   ############################################################
   _agkozak_subst_async() {
+    emulate -L zsh
     setopt LOCAL_OPTIONS NO_IGNORE_BRACES
+
     typeset -g AGKOZAK_ASYNC_FD=13371
 
-    # Workaround for buggy behavior in MSYS2, Cygwin, and Solaris
-    if [[ $OSTYPE == (msys|cygwin|solaris*) ]]; then
+    if [[ $OSTYPE == (msys|cygwin) ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status; command true)
-    # Prevent WSL from locking up when using X; also workaround for ZSH v5.0.2
-  elif (( AGKOZAK_IS_WSL )) && (( $+DISPLAY )) \
-    || [[ $ZSH_VERSION == '5.0.2' ]]; then
+    elif [[ $OSTYPE == solaris* ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
+    # TODO: Test zsh v5.0.3-7
+    elif [[ $ZSH_VERSION == 5.0.[0-2] ]]; then
+      exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
+      command sleep 0.02
     else
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
-    fi
 
-    # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
-    command true
+      # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
+      command true
+    fi
 
     zle -F "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback
   }
@@ -529,6 +594,7 @@ _agkozak_async_init() {
   #   $1  File descriptor
   ############################################################
   _agkozak_zsh_subst_async_callback() {
+    emulate -L zsh
     setopt LOCAL_OPTIONS NO_IGNORE_BRACES
 
     local FD="$1" response
@@ -541,10 +607,10 @@ _agkozak_async_init() {
 
     # Make the changes visible
     psvar[3]="$response"
-    zle && zle reset-prompt
+    zle && zle .reset-prompt
   }
 
-  case $AGKOZAK_ASYNC_METHOD in
+  case ${AGKOZAK[ASYNC_METHOD]} in
 
     zsh-async)
 
@@ -552,17 +618,19 @@ _agkozak_async_init() {
       # Create zsh-async worker
       ############################################################
       _agkozak_zsh_async() {
-          async_start_worker agkozak_git_status_worker -n
-          async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
-          async_job agkozak_git_status_worker _agkozak_branch_status
+        async_start_worker agkozak_git_status_worker -n
+        async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
+        async_job agkozak_git_status_worker _agkozak_branch_status
       }
 
       ############################################################
       # Set RPROMPT and stop worker
       ############################################################
       _agkozak_zsh_async_callback() {
+        emulate -L zsh
+
         psvar[3]=$3
-        zle && zle reset-prompt
+        zle && zle .reset-prompt
         async_stop_worker agkozak_git_status_worker -n
       }
       ;;
@@ -575,23 +643,23 @@ _agkozak_async_init() {
       # redefines TRAPUSR1, drop the prompt into synchronous mode.
       #
       # Globals:
-      #   AGKOZAK_TRAPUSR1_FUNCTION
-      #   AGKOZAK_USR1_ASYNC_WORKER
-      #   AGKOZAK_ASYNC_METHOD
+      #   AGKOZAK
       ############################################################
       _agkozak_usr1_async() {
-        if [[ "$(builtin which TRAPUSR1)" = "$AGKOZAK_TRAPUSR1_FUNCTION" ]]; then
+        emulate -L zsh
+
+        if [[ "$(builtin which TRAPUSR1)" == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
           # Kill running child process if necessary
-          if (( AGKOZAK_USR1_ASYNC_WORKER )); then
-            kill -s HUP "$AGKOZAK_USR1_ASYNC_WORKER" &> /dev/null || :
+          if (( AGKOZAK[USR1_ASYNC_WORKER] )); then
+            kill -s HUP "${AGKOZAK[USR1_ASYNC_WORKER]}" &> /dev/null || :
           fi
 
           # Start background computation of Git status
           _agkozak_usr1_async_worker &!
-          typeset -g AGKOZAK_USR1_ASYNC_WORKER=$!
+          AGKOZAK[USR1_ASYNC_WORKER]="$!"
         else
           _agkozak_debug_print 'TRAPUSR1 has been redefined. Switching to subst-async mode.'
-          typeset -g AGKOZAK_ASYNC_METHOD='subst-async'
+          AGKOZAK[ASYNC_METHOD]='subst-async'
           psvar[3]="$(_agkozak_branch_status)"
         fi
       }
@@ -608,7 +676,7 @@ _agkozak_async_init() {
         _agkozak_branch_status >| /tmp/agkozak_zsh_prompt_$$
 
         # Signal parent process
-        if (( AGKOZAK_PROMPT_DEBUG )); then
+        if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
           kill -s USR1 $$
         else
           kill -s USR1 $$ &> /dev/null
@@ -618,25 +686,26 @@ _agkozak_async_init() {
       ############################################################
       # On SIGUSR1, fetch Git status from temprary file and store
       # it in psvar[3]. This function caches its own code in
-      # AGKOZAK_TRAPUSR1_FUNCTION so that it can tell if it has
+      # AGKOZAK[TRAPUSR1_FUNCTION] so that it can tell if it has
       # been redefined by another script.
       #
       # Globals:
-      #   AGKOZAK_USR1_ASYNC_WORKER
-      #   AGKOZAK_TRAPUSR1_FUNCTION
+      #   AGKOZAK
       ############################################################
       TRAPUSR1() {
+        emulate -L zsh
+
         # Set prompt from contents of temporary file
         psvar[3]=$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")
 
         # Reset asynchronous process number
-        typeset -g AGKOZAK_USR1_ASYNC_WORKER=0
+        AGKOZAK[USR1_ASYNC_WORKER]=0
 
         # Redraw the prompt
-        zle && zle reset-prompt
+        zle && zle .reset-prompt
       }
 
-      typeset -g AGKOZAK_TRAPUSR1_FUNCTION="$(builtin which TRAPUSR1)"
+      AGKOZAK[TRAPUSR1_FUNCTION]="$(builtin which TRAPUSR1)"
       ;;
   esac
 }
@@ -649,230 +718,240 @@ _agkozak_async_init() {
 # Strip color codes from a prompt string
 #
 # Arguments:
-#   $1 The prompt string
+#   $1 Name of prompt string variable (PROMPT or RPROMPT)
 ############################################################
 _agkozak_strip_colors() {
-
-  local prompt=$1
+  local prompt_string=${(P)1} newprompt
   local open_braces
 
-  while [[ -n $prompt ]]; do
-    case $prompt in
+  while [[ -n $prompt_string ]]; do
+    case $prompt_string in
       %F\{*|%K\{*)
         (( open_braces++ ))
-        prompt=${prompt#%[FK]\{}
+        prompt_string=${prompt_string#%[FK]\{}
         while (( open_braces )); do
-          case ${prompt:0:1} in
+          case ${prompt_string:0:1} in
             \{) (( open_braces++ )) ;;
             \}) (( open_braces-- )) ;;
           esac
-          prompt=${prompt#?}
+          prompt_string=${prompt_string#?}
         done
         ;;
-      %f*|%k*) prompt=${prompt#%[fk]} ;;
+      %f*|%k*) prompt_string=${prompt_string#%[fk]} ;;
       *)
-        print -n -- "${prompt:0:1}"
-        prompt=${prompt#?}
+        newprompt+="${prompt_string:0:1}"
+        prompt_string=${prompt_string#?}
         ;;
     esac
   done
+
+  print -nz -- "${(qq)newprompt}"
+  read -rz $1
+  typeset -g $1=${(PQQ)1}
 }
 
 ############################################################
 # Runs right before each prompt is displayed; hooks into
 # precmd
 #
-# 1) Redisplays path ($psvar[2]) whenever the value of
-#      AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS changes
-# 2) If AGKOZAK_MULTILINE is changed to 0, set
-#      AGKOZAK_LEFT_PROMPT_ONLY=0
-# 3) If AGKOZAK_LEFT_PROMPT_ONLY is changed, updated both
-#      prompt strings
-# 4) Resets Git status and vi mode display
-# 5) Begins to calculate Git status
-# 6) Sets AGKOZAK_PROMPT_WHITESPACE based on value of
-#      AGKOZAK_MULTILINE
-# 7) Optionally display a blank line (AGKOZAK_BLANK_LINES),
-#      while avoiding a blank line when the shell is first
-#      loaded
-# 8) If custom prompts are defined, update the prompt
-#      strings
-#
-# TODO: Consider making AGKOZAK_PROMPT_WHITESPACE a psvar
-#
 # Globals:
+#   AGKOZAK
 #   AGKOZAK_SHOW_STASH
-#   AGKOZAK_GIT_VERSION
 #   AGKOZAK_PROMPT_DIRTRIM
-#   AGKOZAK_OLD_PROMPT_DIRTRIM
 #   AGKOZAK_NAMED_DIRS
-#   AGKOZAK_OLD_NAMED_DIRS
 #   AGKOZAK_MULTILINE
-#   AGKOZAK_OLD_MULTILINE
 #   AGKOZAK_LEFT_PROMPT_ONLY
-#   AGKOZAK_OLD_LEFT_PROMPT_ONLY
 #   AGKOZAK_USER_HOST_DISPLAY
-#   AGKOZAK_ASYNC_METHOD
-#   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_PRE_PROMPT_CHAR
 #   AGKOZAK_BLANK_LINES
-#   AGKOZAK_FIRST_PROMPT_PRINTED
 #   AGKOZAK_CUSTOM_PROMPT
-#   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
-#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
+  emulate -L zsh
+  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
   # Cache the Git version for use in _agkozak_branch_status
-  (( AGKOZAK_SHOW_STASH )) && \
-    typeset -gx AGKOZAK_GIT_VERSION=${${AGKOZAK_GIT_VERSION:=$(command git --version)}#git version }
+  (( ${AGKOZAK_SHOW_STASH:-1} )) && \
+    : ${${AGKOZAK[GIT_VERSION]:=$(command git --version)}#git version }
 
   # Update displayed directory when AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS
   # changes or when first sourcing this script
-  if (( AGKOZAK_PROMPT_DIRTRIM != AGKOZAK_OLD_PROMPT_DIRTRIM )) \
-    || (( AGKOZAK_NAMED_DIRS != AGKOZAK_OLD_NAMED_DIRS )) \
+  if (( ${AGKOZAK_PROMPT_DIRTRIM:-2} != AGKOZAK[OLD_PROMPT_DIRTRIM] )) \
+    || (( ${AGKOZAK_NAMED_DIRS:-1} != AGKOZAK[OLD_NAMED_DIRS] )) \
     || (( ! $+psvar[2] )); then
-    _agkozak_prompt_dirtrim -v $AGKOZAK_PROMPT_DIRTRIM
-    typeset -g AGKOZAK_OLD_PROMPT_DIRTRIM=$AGKOZAK_PROMPT_DIRTRIM
-    typeset -g AGKOZAK_OLD_NAMED_DIRS=$AGKOZAK_NAMED_DIRS
+    _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
+    AGKOZAK[OLD_PROMPT_DIRTRIM]=$AGKOZAK_PROMPT_DIRTRIM
+    AGKOZAK[OLD_NAMED_DIRS]=$AGKOZAK_NAMED_DIRS
   fi
 
-  if (( AGKOZAK_MULTILINE != AGKOZAK_OLD_MULTILINE )); then
-    (( AGKOZAK_MULTILINE == 0 )) && AGKOZAK_LEFT_PROMPT_ONLY=0
-    typeset -g AGKOZAK_OLD_MULTILINE=$AGKOZAK_MULTILINE
+  # If AGKOZAK_MULTILINE changes and if AGKOZAK_MULTILINE == 0, turn off
+  # AGKOZAK_LEFT_PROMPT_ONLY
+  if (( ${AGKOZAK_MULTILINE:-1} != AGKOZAK[OLD_MULTILINE] )); then
+    (( ! ${AGKOZAK_MULTILINE:-1} )) && typeset -g AGKOZAK_LEFT_PROMPT_ONLY=0
+    AGKOZAK[OLD_MULTILINE]=$AGKOZAK_MULTILINE
   fi
 
-  if (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK_OLD_LEFT_PROMPT_ONLY )); then
+  # If AGKOZAK_LEFT_PROMPT_ONLY changes, recalculate the prompt strings
+  if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )); then
     unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
-    typeset -g AGKOZAK_OLD_LEFT_PROMPT_ONLY=$AGKOZAK_LEFT_PROMPT_ONLY
+    AGKOZAK[OLD_LEFT_PROMPT_ONLY]=$AGKOZAK_LEFT_PROMPT_ONLY
     _agkozak_prompt_string
   fi
 
+  # Clear the Git status display until it has been recalculated
   psvar[3]=''
+
+  # It is necessary to clear the vi mode display, too
   psvar[4]=''
 
-  if (( AGKOZAK_USER_HOST_DISPLAY )); then
-    psvar[5]=${AGKOZAK_USER_HOST_DISPLAY}
+  if (( ${AGKOZAK_USER_HOST_DISPLAY:-1} )); then
+    psvar[5]=${AGKOZAK_USER_HOST_DISPLAY:-1}
   else
     psvar[5]=''
   fi
 
-  case $AGKOZAK_ASYNC_METHOD in
+  # Begin to calculate the Git status
+  case ${AGKOZAK[ASYNC_METHOD]} in
     'subst-async') _agkozak_subst_async ;;
     'zsh-async') _agkozak_zsh_async ;;
     'usr1') _agkozak_usr1_async ;;
     *) psvar[3]="$(_agkozak_branch_status)" ;;
   esac
 
-  if (( AGKOZAK_MULTILINE == 0 )) && (( ! AGKOZAK_LEFT_PROMPT_ONLY )) \
+  # If AGKOZAK_MULTILINE == 1, insert a newline into the prompt
+  if (( ! ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
     && [[ -z $INSIDE_EMACS ]]; then
-    typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR}
+    typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR- }
   else
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
   fi
 
+  # Optionally put blank lines between instances of the prompt
   if (( AGKOZAK_BLANK_LINES )); then
-    if (( AGKOZAK_FIRST_PROMPT_PRINTED )); then
+    if (( AGKOZAK[FIRST_PROMPT_PRINTED] )); then
       print
     fi
-    typeset -g AGKOZAK_FIRST_PROMPT_PRINTED=1
+    AGKOZAK[FIRST_PROMPT_PRINTED]=1
   fi
 
   # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
   # corresponding prompt is updated
 
-  if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK_CURRENT_CUSTOM_PROMPT}" ]]; then
-    typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
-    PROMPT=${AGKOZAK_CUSTOM_PROMPT}
-    if ! _agkozak_has_colors; then
-      PROMPT=$(_agkozak_strip_colors "${PROMPT}")
+  local prmpt
+  for prmpt in PROMPT RPROMPT; do
+    if [[ ${(P)${:-AGKOZAK_CUSTOM_$prmpt}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$prmpt]}}" ]]; then
+      AGKOZAK[CURRENT_CUSTOM_$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+      typeset -g $prmpt=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+      ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
     fi
-  fi
-
-  if [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK_CURRENT_CUSTOM_RPROMPT}" ]]; then
-    typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
-    RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
-    if ! _agkozak_has_colors; then
-      RPROMPT=$(_agkozak_strip_colors "${RPROMPT}")
-    fi
-  fi
+  done
 }
 
 ############################################################
 # Set the prompt strings
 #
 # Globals:
+#   AGKOZAK
 #   AGKOZAK_CUSTOM_PROMPT
 #   AGKOZAK_COLORS_EXIT_STATUS
 #   AGKOZAK_COLORS_USER_HOST
 #   AGKOZAK_COLORS_PATH
-#   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_COLORS_PROMPT_CHAR
 #   AGKOZAK_PROMPT_CHAR
-#   AGKOZAK_CURRENT_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_COLORS_BRANCH_STATUS
-#   AGKOZAK_CURRENT_CUSTOM_RPROMPT
 ############################################################
-_agkozak_prompt_string () {
+_agkozak_prompt_string() {
+  emulate -L zsh
+
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then
     PROMPT=${AGKOZAK_CUSTOM_PROMPT}
   else
     # The color left prompt
-    PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-    PROMPT+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) .)'
-    PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
-    if (( AGKOZAK_LEFT_PROMPT_ONLY )); then
-      PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
+    PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
+    PROMPT+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
+    PROMPT+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
+    if (( ${AGKOZAK_LEFT_PROMPT_ONLY:0} )); then
+      PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi
     PROMPT+='${AGKOZAK_PROMPT_WHITESPACE}'
-    PROMPT+='${AGKOZAK_COLORS_PROMPT_CHAR:+%F{${AGKOZAK_COLORS_PROMPT_CHAR}\}}'
+    PROMPT+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-white}}'
     PROMPT+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
-    PROMPT+='${AGKOZAK_COLORS_PROMPT_CHAR:+%f} '
+    PROMPT+='%f '
 
     typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
-    typeset -g AGKOZAK_CURRENT_CUSTOM_PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+    AGKOZAK[CURRENT_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   fi
 
   if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
     RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
   else
     # The color right prompt
-    if (( ! AGKOZAK_LEFT_PROMPT_ONLY )); then
-      typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
+    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
+      typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     else
       typeset -g RPROMPT=''
     fi
 
     typeset -g AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
-    typeset -g AGKOZAK_CURRENT_CUSTOM_RPROMPT=${RPROMPT}
+    AGKOZAK[CURRENT_CUSTOM_RPROMPT]=${RPROMPT}
   fi
 
   if ! _agkozak_has_colors; then
-    PROMPT=$(_agkozak_strip_colors "$PROMPT")
-    RPROMPT=$(_agkozak_strip_colors "$RPROMPT")
+    _agkozak_strip_colors 'PROMPT'
+    _agkozak_strip_colors 'RPROMPT'
   fi
 }
 
 ############################################################
 # Prompt setup
 #
+# Arguments:
+#   $1  If -h or --help, display the async method and show
+#       a help message; otherwise, the name of an async
+#       method launches the prompt using that method
+#
 # Globals:
-#   AGKOZAK_ASYNC_METHOD
-#   AGKOZAK_USR1_ASYNC_WORKER
+#   AGKOZAK
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
-() {
+agkozak-zsh-prompt() {
+  emulate -L zsh
+  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
+  case $1 in
+    -h|--help)
+      print "Using async method: ${AGKOZAK[ASYNC_METHOD]}" >&2
+      print >&2
+      print 'Valid arguments: -h/--help subst-async usr1 zsh-async none' >&2
+      return
+      ;;
+    subst-async) AGKOZAK[ARGUMENT]='subst-async' ;;
+    usr1) AGKOZAK[ARGUMENT]='usr1' ;;
+    zsh-async)
+      if [[ $OSTYPE == (msys|cygwin) ]]; then
+        print "Warning: zsh-async does not work on $OSTYPE." >&2
+        print >&2
+      fi
+      AGKOZAK[ARGUMENT]='zsh-async'
+      ;;
+    none) AGKOZAK[ARGUMENT]='none' ;;
+  esac
 
   _agkozak_async_init
 
-  case $AGKOZAK_ASYNC_METHOD in
+  case ${AGKOZAK[ASYNC_METHOD]} in
     'subst-async') ;;
     'zsh-async') async_init ;;
-    'usr1') typeset -g AGKOZAK_USR1_ASYNC_WORKER=0 ;;
+    'usr1') AGKOZAK[USR1_ASYNC_WORKER]=0 ;;
   esac
 
-  zle -N zle-keymap-select
+  if is-at-least 5.3; then
+    add-zle-hook-widget zle-keymap-select _agkozak_zle-keymap-select
+  else
+    zle -N zle-keymap-select _agkozak_zle-keymap-select
+  fi
 
   # Don't use ZSH hooks in Emacs classic shell
   if (( $+INSIDE_EMACS )) && [[ $TERM == 'dumb' ]]; then
@@ -885,7 +964,7 @@ _agkozak_prompt_string () {
     # Update the displayed directory when the PWD changes
     ############################################################
     _agkozak_chpwd() {
-      _agkozak_prompt_dirtrim -v $AGKOZAK_PROMPT_DIRTRIM
+      _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
     }
 
     add-zsh-hook chpwd _agkozak_chpwd
@@ -909,7 +988,7 @@ _agkozak_prompt_string () {
   if [[ $TERM == 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
-    PROMPT+='$(_agkozak_prompt_dirtrim "$AGKOZAK_PROMPT_DIRTRIM")'
+    PROMPT+='$(_agkozak_prompt_dirtrim "${AGKOZAK_PROMPT_DIRTRIM:-2}")'
     PROMPT+='$(_agkozak_branch_status) '
     PROMPT+='%# '
   else
@@ -924,11 +1003,47 @@ _agkozak_prompt_string () {
 
   fi
 
-  _agkozak_debug_print "Using async method: $AGKOZAK_ASYNC_METHOD"
+  _agkozak_debug_print "Using async method: ${AGKOZAK[ASYNC_METHOD]}"
 }
 
-# Clean up environment
-(( AGKOZAK_PROMPT_DEBUG )) \
-  || unfunction _agkozak_load_async_lib _agkozak_has_usr1 _agkozak_async_init
+agkozak-zsh-prompt
+
+############################################################
+# Unload function
+#
+# See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun
+############################################################
+agkozak-zsh-prompt_plugin_unload() {
+  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
+  local x
+
+  [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] \
+    && unsetopt PROMPT_SUBST
+  [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] \
+    && setopt PROMPT_BANG
+
+  PROMPT=${AGKOZAK[OLD_PROMPT]}
+  RPROMPT=${AGKOZAK[OLD_RPROMPT]}
+
+  psvar=( $AGKOZAK_OLD_PSVAR )
+
+  add-zsh-hook -D precmd _agkozak_precmd
+  add-zsh-hook -D chpwd _agkozak_chpwd
+
+  if is-at-least 5.3; then
+    add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select
+  else
+    zle -D _agkozak_zle-keymap_select
+  fi
+
+  for x in ${=AGKOZAK[FUNCTIONS]}; do
+    whence -w $x &> /dev/null && unfunction $x
+  done
+
+  unset AGKOZAK AGKOZAK_ASYNC_FD AGKOZAK_OLD_OPTIONS AGKOZAK_OLD_PSVAR \
+    AGKOZAK_PROMPT_WHITESPACE
+
+  unfunction $0
+}
 
 # vim: ts=2:et:sts=2:sw=2:

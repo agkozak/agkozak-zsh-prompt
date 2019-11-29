@@ -465,7 +465,7 @@ _agkozak_async_init() {
   setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-  if [[ $OSTYPE == 'linux-gnu' ]] && [[ -e /proc/version ]] \
+  if [[ $OSTYPE == linux* ]] && [[ -e /proc/version ]] \
     && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
     unsetopt BG_NICE
     AGKOZAK[IS_WSL]=1   # For later reference

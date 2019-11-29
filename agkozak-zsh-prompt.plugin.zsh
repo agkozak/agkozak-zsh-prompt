@@ -805,7 +805,8 @@ _agkozak_precmd() {
     #
     # TODO: Take into account all sorts of situations involving custom PROMPTs
     # (including ones with more than one newline?)
-    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) && [[ -z ${INSIDE_EMACS} ]]; then
+    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) && (( ! AGKOZAK[LEFT_CUSTOM] )) \
+      && [[ -z ${INSIDE_EMACS} ]]; then
 
       PROMPT=${AGKOZAK[SAVED_PROMPT]:-${PROMPT}}
       print -Pnz -- ${PROMPT}
@@ -813,7 +814,8 @@ _agkozak_precmd() {
       read -rz
       print -- ${REPLY%$'\n'*}
       typeset -g AGKOZAK[SAVED_PROMPT]=${PROMPT}
-      PROMPT=${PROMPT#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
+      PROMPT=${PROMPT#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
+
       ############################################################
       # When the screen clears, _agkozak_precmd must be run to
       # display the first line of the prompt

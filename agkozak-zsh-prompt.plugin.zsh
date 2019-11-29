@@ -747,7 +747,7 @@ _agkozak_precmd() {
 
   # If a custom left prompt is enabled, make a note of that
   if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[CURRENT_CUSTOM_PROMPT]}" ]]; then
-    typeset -g AGKOZAK[LEFT_CUSTOM]=1
+    AGKOZAK[LEFT_CUSTOM]=1
   fi
 
   # Cache the Git version for use in _agkozak_branch_status

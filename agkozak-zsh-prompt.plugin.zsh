@@ -788,14 +788,6 @@ _agkozak_precmd() {
     psvar[5]=''
   fi
 
-  # Begin to calculate the Git status
-  case ${AGKOZAK[ASYNC_METHOD]} in
-    'subst-async') _agkozak_subst_async ;;
-    'zsh-async') _agkozak_zsh_async ;;
-    'usr1') _agkozak_usr1_async ;;
-    *) psvar[3]="$(_agkozak_branch_status)" ;;
-  esac
-
   # If AGKOZAK_MULTILINE == 1, insert a newline into the prompt
   if (( ! ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
     && [[ -z $INSIDE_EMACS ]]; then
@@ -823,6 +815,14 @@ _agkozak_precmd() {
       ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
     fi
   done
+
+  # Begin to calculate the Git status
+  case ${AGKOZAK[ASYNC_METHOD]} in
+    'subst-async') _agkozak_subst_async ;;
+    'zsh-async') _agkozak_zsh_async ;;
+    'usr1') _agkozak_usr1_async ;;
+    *) psvar[3]="$(_agkozak_branch_status)" ;;
+  esac
 }
 
 ############################################################

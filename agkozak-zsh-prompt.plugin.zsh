@@ -750,6 +750,18 @@ _agkozak_precmd() {
     AGKOZAK[LEFT_CUSTOM]=1
   fi
 
+  # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
+  # corresponding prompt is updated
+
+  local prmpt
+  for prmpt in PROMPT RPROMPT; do
+    if [[ ${(P)${:-AGKOZAK_CUSTOM_$prmpt}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$prmpt]}}" ]]; then
+      AGKOZAK[CURRENT_CUSTOM_$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+      typeset -g $prmpt=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+      ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
+    fi
+  done
+
   # Cache the Git version for use in _agkozak_branch_status
   (( ${AGKOZAK_SHOW_STASH:-1} )) && \
     : ${${AGKOZAK[GIT_VERSION]:=$(command git --version)}#git version }
@@ -836,18 +848,6 @@ _agkozak_precmd() {
     fi
     AGKOZAK[FIRST_PROMPT_PRINTED]=1
   fi
-
-  # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
-  # corresponding prompt is updated
-
-  local prmpt
-  for prmpt in PROMPT RPROMPT; do
-    if [[ ${(P)${:-AGKOZAK_CUSTOM_$prmpt}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$prmpt]}}" ]]; then
-      AGKOZAK[CURRENT_CUSTOM_$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
-      typeset -g $prmpt=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
-      ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
-    fi
-  done
 
   # Begin to calculate the Git status
   case ${AGKOZAK[ASYNC_METHOD]} in

@@ -451,7 +451,7 @@ _agkozak_has_usr1() {
 # If AGKOZAK_FORCE_ASYNC_METHOD is set to a valid value,
 # set AGKOZAK[ASYNC_METHOD] to that; otherwise, determine
 # the optimal asynchronous method from the environment (usr1
-# for MSYS2/Cygwin, zsh-async for WSL, subst-async for
+# for MSYS2/Cygwin/WSL, zsh-async for WSL, subst-async for
 # everything else), with fallbacks being available. Define
 # the necessary asynchronous functions (loading async.zsh
 # when necessary).
@@ -497,12 +497,16 @@ _agkozak_async_init() {
       if [[ $OSTYPE == solaris* ]]; then
         if [[ $ZSH_VERSION != '5.0.2' ]] && _agkozak_load_async_lib; then
           AGKOZAK[ASYNC_METHOD]='zsh-async'
+        elif _agkozak_has_usr1; then
+          AGKOZAK[ASYNC_METHOD]='usr1'
         else
           AGKOZAK[ASYNC_METHOD]='subst-async'
         fi
 
-      # SIGUSR1 method is on ZSH v5.0.2
-      elif [[ $ZSH_VERSION == '5.0.2' ]]; then
+      # SIGUSR1 method is still much faster on Windows (MSYS2/Cygwin/WSL).
+      # TODO: ZSH v5.0.2 may only be able to use subst-async.
+      elif [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL] )) \
+        || [[ $ZSH_VERSION == '5.0.2' ]]; then
         if _agkozak_has_usr1; then
           AGKOZAK[ASYNC_METHOD]='usr1'
         else
@@ -783,14 +787,6 @@ _agkozak_precmd() {
     psvar[5]=''
   fi
 
-  # Begin to calculate the Git status
-  case ${AGKOZAK[ASYNC_METHOD]} in
-    'subst-async') _agkozak_subst_async ;;
-    'zsh-async') _agkozak_zsh_async ;;
-    'usr1') _agkozak_usr1_async ;;
-    *) psvar[3]="$(_agkozak_branch_status)" ;;
-  esac
-
   # If AGKOZAK_MULTILINE == 1, insert a newline into the prompt
   if (( ! ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
     && [[ -z $INSIDE_EMACS ]]; then
@@ -818,6 +814,14 @@ _agkozak_precmd() {
       ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
     fi
   done
+
+  # Begin to calculate the Git status
+  case ${AGKOZAK[ASYNC_METHOD]} in
+    'subst-async') _agkozak_subst_async ;;
+    'zsh-async') _agkozak_zsh_async ;;
+    'usr1') _agkozak_usr1_async ;;
+    *) psvar[3]="$(_agkozak_branch_status)" ;;
+  esac
 }
 
 ############################################################

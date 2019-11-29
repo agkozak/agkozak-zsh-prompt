@@ -15,7 +15,7 @@ The agkozak ZSH Prompt is an asynchronous color Git prompt for ZSH that uses bas
 * the exit status of the last command, if it was not zero
 * if `vi` line editing is enabled, whether insert or command mode is active
 
-This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris. It is also fully asynchronous in Windows environments such as MSYS2, Cygwin, and WSL.
+This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris, and in Windows environments (MSYS2, Cygwin, and WSL). It should also work perfectly on MacOS.
 
 ![The agkozak ZSH Prompt](img/demo.gif)
 
@@ -52,10 +52,10 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 - v3.6.0
-    - There is now a command-line function, `agkozak-zsh-prompt`, that can be used to switch asynchronous methods on the fly.
-    - For reasons of speed, `WARN_CREATE_GLOBAL` and `WARN_NESTED_VAR` only run when you set `AGKOZAK_PROMPT_DEBUG=1`.
-    - `subst-async` continues to be the one asynchronous method that works on all supported systems, although ZSH's handling of `zle -F` is inherently buggy and requires workarounds. If you find that the prompt occasionally does not display your asynchronous Git status until you press a key, please open [an issue](https://github.com/agkozak/agkozak-zsh-prompt/issues) and provide your `$OSTYPE` and `$ZSH_VERSION` and I will use that information to further improve the `agkozak_subst_async` function.
-    - All Windows systems (MSYS, Cygwin, and WSL) now use `subst-async` by default. Solaris uses `zsh-async` (with `subst-async` as a fallback); `usr1` was proving unreliable on Solaris, although you may try it if you like.
+    - There is now a command-line function, `agkozak-zsh-prompt`, that can be used to change asynchronous methods on the fly.
+    - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
+    - WSL now defaults to `usr1` and falls back to `subst-async`, as they are faster on WSL than `zsh-async`.
+    - In the interests of speed, `WARN_CREATE_GLOBAL` and `WARN_NESTED_VAR` are only enabled when you set `AGKOZAK_PROMPT_DEBUG=1`.
 - v3.5.0 (November 15, 2019)
     - The prompt now supports the [zdharma ZSH plugin unload function standard](https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
     - For debugging purposes, `WARN_CREATE_GLOBAL` is now applied to individual functions whether or not debugging mode is enabled. On ZSH v5.4.0+ and when `AGKOZAK_PROMPT_DEBUG` is set to `1`, all functions have `WARN_NESTED_VAR` applied to them.
@@ -149,7 +149,7 @@ The prompt now supports `zplugin`'s `unload` feature; you may restore the shell 
 
 ## Command-Line Invocation
 
-Normally sourcing the script or loading it with a framework should be sufficient, but if you are interested experimenting with [the agkozak ZSH Prompt's asynchronous methods](#asynchronous-methods), you may do so with the `agkozak-zsh-prompt` command. Passing it the parameters `subst-async`, `usr1`, `zsh-async`, or `none` will cause the prompt to the desired method, e.g.
+Normally, sourcing the script or loading it with a framework should be sufficient, but if you are interested experimenting with [the agkozak ZSH Prompt's asynchronous methods](#asynchronous-methods), you may do so with the `agkozak-zsh-prompt` command. Passing it the parameters `subst-async`, `usr1`, `zsh-async`, or `none` will cause the prompt to the desired method, e.g.
 
     agkozak-zsh-prompt usr1
 

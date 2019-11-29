@@ -466,11 +466,10 @@ _agkozak_async_init() {
   setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-  if [[ -e /proc/version ]]; then
-    if [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
-      unsetopt BG_NICE
-      AGKOZAK[IS_WSL]=1   # For later reference
-    fi
+  if [[ $OSTYPE == linux* ]] && [[ -e /proc/version ]] \
+    && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
+    unsetopt BG_NICE
+    AGKOZAK[IS_WSL]=1   # For later reference
   fi
 
   # If an asynchronous method has been passed as an argument to
@@ -506,9 +505,7 @@ _agkozak_async_init() {
         fi
 
       # SIGUSR1 method is still much faster on Windows (MSYS2/Cygwin/WSL).
-      # TODO: ZSH v5.0.2 may only be able to use subst-async.
-      elif [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL] )) \
-        || [[ $ZSH_VERSION == '5.0.2' ]]; then
+      elif [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL] )); then
         if _agkozak_has_usr1; then
           AGKOZAK[ASYNC_METHOD]='usr1'
         else
@@ -549,7 +546,6 @@ _agkozak_async_init() {
     elif [[ $OSTYPE == solaris* ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
-    # TODO: Test zsh v5.0.3-7
     elif [[ $ZSH_VERSION == 5.0.[0-2] ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.02

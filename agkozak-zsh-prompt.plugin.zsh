@@ -504,9 +504,7 @@ _agkozak_async_init() {
         fi
 
       # SIGUSR1 method is still much faster on Windows (MSYS2/Cygwin/WSL).
-      # TODO: ZSH v5.0.2 may only be able to use subst-async.
-      elif [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL] )) \
-        || [[ $ZSH_VERSION == '5.0.2' ]]; then
+      elif [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL] )); then
         if _agkozak_has_usr1; then
           AGKOZAK[ASYNC_METHOD]='usr1'
         else
@@ -547,7 +545,6 @@ _agkozak_async_init() {
     elif [[ $OSTYPE == solaris* ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.01
-    # TODO: Test zsh v5.0.3-7
     elif [[ $ZSH_VERSION == 5.0.[0-2] ]]; then
       exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
       command sleep 0.02

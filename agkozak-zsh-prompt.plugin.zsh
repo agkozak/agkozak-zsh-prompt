@@ -764,13 +764,6 @@ _agkozak_precmd() {
     AGKOZAK[OLD_NAMED_DIRS]=$AGKOZAK_NAMED_DIRS
   fi
 
-  # If AGKOZAK_MULTILINE changes and if AGKOZAK_MULTILINE == 0, turn off
-  # AGKOZAK_LEFT_PROMPT_ONLY
-  # if (( ${AGKOZAK_MULTILINE:-1} != AGKOZAK[OLD_MULTILINE] )); then
-  #   (( ! ${AGKOZAK_MULTILINE:-1} )) && typeset -g AGKOZAK_LEFT_PROMPT_ONLY=0
-  #   AGKOZAK[OLD_MULTILINE]=$AGKOZAK_MULTILINE
-  # fi
-
   # If AGKOZAK_LEFT_PROMPT_ONLY changes, recalculate the prompt strings
   if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )); then
     unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
@@ -790,13 +783,14 @@ _agkozak_precmd() {
     psvar[5]=''
   fi
 
-  # If AGKOZAK_MULTILINE == 1, insert a newline into the prompt
-  # if (( ! ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
   if (( ! ${AGKOZAK_MULTILINE:-1} )) && [[ -z $INSIDE_EMACS ]]; then
+    # Restore the whole prompt, not the partial prompt used by the code below
     PROMPT=${AGKOZAK[SAVED_PROMPT]:-${PROMPT}}
     _agkozak_prompt_string
+    # If AGKOZAK_MULTILINE == 0, insert a space (or whatever) into the left prompt
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR- }
   else
+    # Otherwise use a newline
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
 
     # ZSH multiline prompts tend to cause the last line of stdout to disappear
@@ -805,8 +799,9 @@ _agkozak_precmd() {
     # the last line. Note that this approach would not seem to work when
     # AGKOZAK_LEFT_PROMPT_ONLY == 1, as the Git status would not display.
     #
-    # TODO: Take into account all sorts of situations involving custom PROMPTs
-    # (including ones with more than one newline?)
+    # TODO: Make it so that custom prompts benefit from this treatment. Test
+    # first to see if they use %3v or _agkozak_branch_status in the left prompt
+    # -- that won't work.
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) && (( ! AGKOZAK[LEFT_CUSTOM] )) \
       && [[ -z ${INSIDE_EMACS} ]]; then
 

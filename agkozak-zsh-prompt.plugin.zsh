@@ -56,7 +56,35 @@
 
 autoload -Uz is-at-least add-zle-hook-widget
 
-# Associative array to store internal information in
+# AGKOZAK is an associative array for storing internal information that is discarded when the
+# prompt is unloaded.
+#
+# AGKOZAK[ARGUMENT]     An argument passed to the agkozak-zsh-prompt function
+# AGKOZAK[ASYNC_METHOD] Which asynchronous method is currently in use
+# AGKOZAK[CURRENT_CUSTOM_PROMPT]  The code for the current left prompt. Used to
+#                       determine if the left prompt has changed.
+# AGKOZAK[CURRENT_CUSTOM_RPROMPT] The code for the current left prompt. Used to
+#                       determine if the right prompt has changed.
+# AGKOZAK[FIRST_PROMPT_PRINTED] When AGKOZAK_BLANK_LINES=1, this variable
+#                       prevents an unnecessary blank line before the first
+#                       prompt of the session
+# AGKOZAK[FUNCTIONS]    A list of the prompt's functions
+# AGKOZAK[GIT_VERSION]  The version of Git on a given system
+# AGKOZAK[HAS_COLORS]   Whether or not to display the prompt in color
+# AGKOZAK[IS_WSL]       Whether or not the system is WSL
+# AGKOZAK[OLD_LEFT_PROMPT_ONLY] Used to detect changes in
+#                       AGKOZAK_LEFT_PROMPT_ONLY
+# AGKOZAK[OLD_NAMED_DIRS] Used to detect changes in AGKOZAK_NAMED_DIRS
+# AGKOZAK[OLD_PROMPT]   The left prompt before this prompt was loaded
+# AGKOZAK[OLD_PROMPT_DIRTRIM] Used to detect changes in AGKOZAK_PROMPT_DIRTRIM
+# AGKOZAK[OLD RPROMPT]  The right prompt before this prompt was loaded
+# AGKOZAK[PROMPT]       The current state of the left prompt
+# AGKOZAK[PROMPT_DIR]   The directory the prompt source code is in
+# AGKOZAK[RPROMPT]      The current state of the right prompt
+# AGKOZAK[TRAPUSR1_FUNCTION]  The code of the TRAPUSR1 function. If it changes,
+#                       the prompt knows to abandon the usr1 method.
+# AGKOZAK[USR1_ASYNC_WORKER]  When non-zero, the PID of the asynchronous
+#                       function handling Git Status (usr1 method)
 typeset -gA AGKOZAK
 
 # In case an argument is passed when the script is sourced
@@ -793,15 +821,19 @@ _agkozak_precmd() {
     # Otherwise use a newline
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
 
-    # ZSH multiline prompts tend to cause the last line of stdout to disappear
-    # if the screen is redrawn. The solution would appear to be to have a precmd
-    # function output all but the last line of the prompt; PROMPT would the be
-    # the last line. Note that this approach would not seem to work when
-    # AGKOZAK_LEFT_PROMPT_ONLY == 1, as the Git status would not display.
+    # ZSH multiline prompts tend to cause the last line of STDOUT to disappear
+    # if the screen is redrawn. The solution is to have a precmd function output
+    # all but the last line of the left prompt; that last part alone is held in
+    # the variable PROMPT.
     #
-    # TODO: Make it so that custom prompts benefit from this treatment. Test
-    # first to see if they use %3v or _agkozak_branch_status in the left prompt
-    # -- that won't work.
+    # The downside of this approach is that it does not work when the Git status
+    # is in the top line of the left prompt, such as when
+    # AGKOZAK_LEFT_PROMPT_ONLY == 1. The code below tries to detect if the Git
+    # status is in the left prompt so that it does not interfere with its
+    # display
+    #
+    # TODO: Create a setting to disable this workaround on the offchance that
+    # it causes trouble for someone.
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
       && [[ ${AGKOZAK_CUSTOM_PROMPT} != *%3v* ]] \
       && [[ ${AGKOZAK_CUSTOM_PROMPT} != *_agkozak_branch_status* ]] \

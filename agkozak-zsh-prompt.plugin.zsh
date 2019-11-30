@@ -746,9 +746,9 @@ _agkozak_precmd() {
   (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # If a custom left prompt is enabled, make a note of that
-  # if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[CURRENT_CUSTOM_PROMPT]}" ]]; then
-  #   AGKOZAK[LEFT_CUSTOM]=1
-  # fi
+  if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[CURRENT_CUSTOM_PROMPT]}" ]]; then
+    AGKOZAK[LEFT_CUSTOM]=1
+  fi
 
   # Cache the Git version for use in _agkozak_branch_status
   (( ${AGKOZAK_SHOW_STASH:-1} )) && \
@@ -792,8 +792,9 @@ _agkozak_precmd() {
 
   # If AGKOZAK_MULTILINE == 1, insert a newline into the prompt
   # if (( ! ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
-  if (( ! ${AGKOZAK_MULTILINE:-1} )) \
-    && [[ -z $INSIDE_EMACS ]]; then
+  if (( ! ${AGKOZAK_MULTILINE:-1} )) && [[ -z $INSIDE_EMACS ]]; then
+    PROMPT=${AGKOZAK[SAVED_PROMPT]:-${PROMPT}}
+    _agkozak_prompt_string
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR- }
   else
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
@@ -806,30 +807,30 @@ _agkozak_precmd() {
     #
     # TODO: Take into account all sorts of situations involving custom PROMPTs
     # (including ones with more than one newline?)
-    # if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) && (( ! AGKOZAK[LEFT_CUSTOM] )) \
-    #   && [[ -z ${INSIDE_EMACS} ]]; then
+    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) && (( ! AGKOZAK[LEFT_CUSTOM] )) \
+      && [[ -z ${INSIDE_EMACS} ]]; then
 
-    #   PROMPT=${AGKOZAK[SAVED_PROMPT]:-${PROMPT}}
-    #   print -Pnz -- ${PROMPT}
-    #   local REPLY
-    #   read -rz
-    #   print -- ${REPLY%$'\n'*}
-    #   typeset -g AGKOZAK[SAVED_PROMPT]=${PROMPT}
-    #   PROMPT=${PROMPT#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
+      PROMPT=${AGKOZAK[SAVED_PROMPT]:-${PROMPT}}
+      print -Pnz -- ${PROMPT}
+      local REPLY
+      read -rz
+      print -- ${REPLY%$'\n'*}
+      typeset -g AGKOZAK[SAVED_PROMPT]=${PROMPT}
+      PROMPT=${PROMPT#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
 
-    #   ############################################################
-    #   # When the screen clears, _agkozak_precmd must be run to
-    #   # display the first line of the prompt
-    #   ############################################################
-    #   _agkozak_clear-screen() {
-    #     echoti clear
-    #     _agkozak_precmd
-    #     zle .redisplay
-    #   }
+      ############################################################
+      # When the screen clears, _agkozak_precmd must be run to
+      # display the first line of the prompt
+      ############################################################
+      _agkozak_clear-screen() {
+        echoti clear
+        _agkozak_precmd
+        zle .redisplay
+      }
 
-    #   zle -N clear-screen _agkozak_clear-screen
+      zle -N clear-screen _agkozak_clear-screen
 
-    # fi
+    fi
   fi
 
   # Optionally put blank lines between instances of the prompt
@@ -1053,7 +1054,7 @@ agkozak-zsh-prompt_plugin_unload() {
     whence -w $x &> /dev/null && unfunction $x
   done
 
-  # zle -N clear-screen clear-screen
+  zle -N clear-screen clear-screen
 
   unset AGKOZAK AGKOZAK_ASYNC_FD AGKOZAK_OLD_OPTIONS AGKOZAK_OLD_PSVAR \
     AGKOZAK_PROMPT_WHITESPACE

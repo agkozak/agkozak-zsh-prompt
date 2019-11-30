@@ -785,7 +785,6 @@ _agkozak_precmd() {
 
   if (( ! ${AGKOZAK_MULTILINE:-1} )) && [[ -z $INSIDE_EMACS ]]; then
     # Restore the whole prompt, not the partial prompt used by the code below
-    PROMPT=${AGKOZAK[SAVED_PROMPT]:-${AGKOZAK[PROMPT]}}
     RPROMPT=${AGKOZAK[RPROMPT]}
     _agkozak_prompt_string
     # If AGKOZAK_MULTILINE == 0, insert a space (or whatever) into the left prompt
@@ -806,12 +805,10 @@ _agkozak_precmd() {
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) && (( ! AGKOZAK[LEFT_CUSTOM] )) \
       && [[ -z ${INSIDE_EMACS} ]]; then
 
-      # AGKOZAK[PROMPT]=${AGKOZAK[SAVED_PROMPT]:-${AGKOZAK[PROMPT]}}
       print -Pnz -- ${AGKOZAK[PROMPT]}
       local REPLY
       read -rz
       print -- ${REPLY%$'\n'*}
-      # typeset -g AGKOZAK[SAVED_PROMPT]=${AGKOZAK[PROMPT]}
       PROMPT=${AGKOZAK[PROMPT]#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
       RPROMPT=${AGKOZAK[RPROMPT]}
 

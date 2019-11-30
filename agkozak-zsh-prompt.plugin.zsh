@@ -785,7 +785,8 @@ _agkozak_precmd() {
 
   if (( ! ${AGKOZAK_MULTILINE:-1} )) && [[ -z $INSIDE_EMACS ]]; then
     # Restore the whole prompt, not the partial prompt used by the code below
-    PROMPT=${AGKOZAK[SAVED_PROMPT]:-${PROMPT}}
+    PROMPT=${AGKOZAK[SAVED_PROMPT]:-${AGKOZAK[PROMPT]}}
+    RPROMPT=${AGKOZAK[RPROMPT]}
     _agkozak_prompt_string
     # If AGKOZAK_MULTILINE == 0, insert a space (or whatever) into the left prompt
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR- }
@@ -805,13 +806,14 @@ _agkozak_precmd() {
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) && (( ! AGKOZAK[LEFT_CUSTOM] )) \
       && [[ -z ${INSIDE_EMACS} ]]; then
 
-      PROMPT=${AGKOZAK[SAVED_PROMPT]:-${PROMPT}}
-      print -Pnz -- ${PROMPT}
+      # AGKOZAK[PROMPT]=${AGKOZAK[SAVED_PROMPT]:-${AGKOZAK[PROMPT]}}
+      print -Pnz -- ${AGKOZAK[PROMPT]}
       local REPLY
       read -rz
       print -- ${REPLY%$'\n'*}
-      typeset -g AGKOZAK[SAVED_PROMPT]=${PROMPT}
-      PROMPT=${PROMPT#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
+      # typeset -g AGKOZAK[SAVED_PROMPT]=${AGKOZAK[PROMPT]}
+      PROMPT=${AGKOZAK[PROMPT]#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
+      RPROMPT=${AGKOZAK[RPROMPT]}
 
       ############################################################
       # When the screen clears, _agkozak_precmd must be run to
@@ -824,7 +826,9 @@ _agkozak_precmd() {
       }
 
       zle -N clear-screen _agkozak_clear-screen
-
+    else
+      PROMPT=${AGKOZAK[PROMPT]}
+      RPROMPT=${AGKOZAK[RPROMPT]}
     fi
   fi
 
@@ -875,41 +879,41 @@ _agkozak_prompt_string() {
   emulate -L zsh
 
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then
-    PROMPT=${AGKOZAK_CUSTOM_PROMPT}
+    AGKOZAK[PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   else
     # The color left prompt
-    PROMPT='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
-    PROMPT+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
-    PROMPT+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
+    AGKOZAK[PROMPT]='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
+    AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
+    AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:0} )); then
-      PROMPT+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
+      AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi
-    PROMPT+='${AGKOZAK_PROMPT_WHITESPACE}'
-    PROMPT+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-white}}'
-    PROMPT+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
-    PROMPT+='%f '
+    AGKOZAK[PROMPT]+='${AGKOZAK_PROMPT_WHITESPACE}'
+    AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-white}}'
+    AGKOZAK[PROMPT]+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
+    AGKOZAK[PROMPT]+='%f '
 
-    typeset -g AGKOZAK_CUSTOM_PROMPT=${PROMPT}
+    typeset -g AGKOZAK_CUSTOM_PROMPT=${AGKOZAK[PROMPT]}
     AGKOZAK[CURRENT_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   fi
 
   if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
-    RPROMPT=${AGKOZAK_CUSTOM_RPROMPT}
+    AGKOZAK[RPROMPT]=${AGKOZAK_CUSTOM_RPROMPT}
   else
     # The color right prompt
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
-      typeset -g RPROMPT='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
+      typeset -g AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     else
-      typeset -g RPROMPT=''
+      typeset -g AGKOZAK[RPROMPT]=''
     fi
 
-    typeset -g AGKOZAK_CUSTOM_RPROMPT=${RPROMPT}
-    AGKOZAK[CURRENT_CUSTOM_RPROMPT]=${RPROMPT}
+    typeset -g AGKOZAK_CUSTOM_RPROMPT=${AGKOZAK[RPROMPT]}
+    AGKOZAK[CURRENT_CUSTOM_RPROMPT]=${AGKOZAK[RPROMPT]}
   fi
 
   if ! _agkozak_has_colors; then
-    _agkozak_strip_colors 'PROMPT'
-    _agkozak_strip_colors 'RPROMPT'
+    _agkozak_strip_colors 'AGKOZAK[PROMPT]'
+    _agkozak_strip_colors 'AGKOZAK[RPROMPT]'
   fi
 }
 

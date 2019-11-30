@@ -802,14 +802,16 @@ _agkozak_precmd() {
     # TODO: Make it so that custom prompts benefit from this treatment. Test
     # first to see if they use %3v or _agkozak_branch_status in the left prompt
     # -- that won't work.
-    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) && (( ! AGKOZAK[LEFT_CUSTOM] )) \
+    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
+      && [[ ${AGKOZAK_CUSTOM_PROMPT} != *%3v* ]] \
+      && [[ ${AGKOZAK_CUSTOM_PROMPT} != *_agkozak_branch_status* ]] \
       && [[ -z ${INSIDE_EMACS} ]]; then
 
       print -Pnz -- ${AGKOZAK[PROMPT]}
       local REPLY
       read -rz
       print -- ${REPLY%$'\n'*}
-      PROMPT=${AGKOZAK[PROMPT]#*\$\{AGKOZAK_PROMPT_WHITESPACE\}}
+      PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
       RPROMPT=${AGKOZAK[RPROMPT]}
 
       ############################################################
@@ -844,8 +846,9 @@ _agkozak_precmd() {
   for prmpt in PROMPT RPROMPT; do
     if [[ ${(P)${:-AGKOZAK_CUSTOM_$prmpt}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$prmpt]}}" ]]; then
       AGKOZAK[CURRENT_CUSTOM_$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
-      typeset -g $prmpt=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+      typeset -g AGKOZAK[$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
       ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
+      typeset -g $prmpt=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
     fi
   done
 

@@ -766,10 +766,10 @@ _agkozak_precmd() {
 
   # If AGKOZAK_MULTILINE changes and if AGKOZAK_MULTILINE == 0, turn off
   # AGKOZAK_LEFT_PROMPT_ONLY
-  if (( ${AGKOZAK_MULTILINE:-1} != AGKOZAK[OLD_MULTILINE] )); then
-    (( ! ${AGKOZAK_MULTILINE:-1} )) && typeset -g AGKOZAK_LEFT_PROMPT_ONLY=0
-    AGKOZAK[OLD_MULTILINE]=$AGKOZAK_MULTILINE
-  fi
+  # if (( ${AGKOZAK_MULTILINE:-1} != AGKOZAK[OLD_MULTILINE] )); then
+  #   (( ! ${AGKOZAK_MULTILINE:-1} )) && typeset -g AGKOZAK_LEFT_PROMPT_ONLY=0
+  #   AGKOZAK[OLD_MULTILINE]=$AGKOZAK_MULTILINE
+  # fi
 
   # If AGKOZAK_LEFT_PROMPT_ONLY changes, recalculate the prompt strings
   if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )); then
@@ -791,7 +791,8 @@ _agkozak_precmd() {
   fi
 
   # If AGKOZAK_MULTILINE == 1, insert a newline into the prompt
-  if (( ! ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
+  # if (( ! ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
+  if (( ! ${AGKOZAK_MULTILINE:-1} )) \
     && [[ -z $INSIDE_EMACS ]]; then
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR- }
   else

@@ -230,6 +230,7 @@ _agkozak_is_ssh() {
 # other directory.
 #
 # Globals:
+#   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_NAMED_DIRS
 # Arguments:
 #   $@ [Optional] If `-v', store the function's output in
@@ -491,6 +492,8 @@ _agkozak_has_usr1() {
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_FORCE_ASYNC_METHOD
+#   AGKOZAK_ASYNC_FD
+#   AGKOZAK_PROMPT_DEBUG
 ############################################################
 _agkozak_async_init() {
   emulate -L zsh
@@ -723,7 +726,7 @@ _agkozak_async_init() {
 # Strip color codes from a prompt string
 #
 # Arguments:
-#   $1 Name of prompt string variable (PROMPT or RPROMPT)
+#   $1 Name of prompt string variable
 ############################################################
 _agkozak_strip_colors() {
   local prompt_string=${(P)1} newprompt
@@ -930,6 +933,7 @@ _agkozak_prompt_strings() {
 #
 # Globals:
 #   AGKOZAK
+#   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
 agkozak-zsh-prompt() {
@@ -978,6 +982,9 @@ agkozak-zsh-prompt() {
 
     ############################################################
     # Update the displayed directory when the PWD changes
+    #
+    # Globals:
+    #   AGKOZAK_PROMPT_DIRTRIM
     ############################################################
     _agkozak_chpwd() {
       _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}

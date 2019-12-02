@@ -844,8 +844,11 @@ _agkozak_precmd() {
     print -Pnz -- ${AGKOZAK[PROMPT]}
     local REPLY
     read -rz
-    print -- ${REPLY%$'\n'*}
-    PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
+    while [[ ${REPLY} == *$'\n'* ]]; do
+      print -- ${REPLY%%$'\n'*}
+      REPLY=${REPLY#*$'\n'}
+    done
+    PROMPT=${AGKOZAK[PROMPT]##*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
     RPROMPT=${AGKOZAK[RPROMPT]}
 
     ############################################################

@@ -350,7 +350,7 @@ _agkozak_branch_status() {
 
     # Cache the Git version
     if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      typeset -g ${${AGKOZAK[GIT_VERSION]:=$(command git --version)}#git version }
+      : ${${AGKOZAK[GIT_VERSION]:=$(command git --version)}#git version }
     fi
 
     if (( ${AGKOZAK_SHOW_STASH:-1} )); then

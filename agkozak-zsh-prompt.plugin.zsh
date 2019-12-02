@@ -68,6 +68,7 @@ autoload -Uz is-at-least add-zle-hook-widget
 # AGKOZAK[GIT_VERSION]  The version of Git on a given system
 # AGKOZAK[HAS_COLORS]   Whether or not to display the prompt in color
 # AGKOZAK[IS_WSL]       Whether or not the system is WSL
+# AGKOZAK[OLD_MULTILINE]  Used to detect changes in AGKOZAK_MULTILINE
 # AGKOZAK[OLD_NAMED_DIRS] Used to detect changes in AGKOZAK_NAMED_DIRS
 # AGKOZAK[OLD_CUSTOM_PROMPT] Used to detect changes in AGKOZAK_CUSTOM_PROMPT
 # AGKOZAK[OLD_CUSTOM_RPROMPT] Used to detect changes in AGKOZAK_CUSTOM_RPROMPT
@@ -771,6 +772,10 @@ _agkozak_precmd() {
   emulate -L zsh
   (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
+  print -Pnz '%?'
+  typeset -g AGKOZAK_EXIT_CODE
+  read -rz AGKOZAK_EXIT_CODE
+
   # Clear the Git status display until it has been recalculated
   psvar[3]=''
 
@@ -812,10 +817,14 @@ _agkozak_precmd() {
   # Only necessary when the prompt has changed
   if (( AGKOZAK_PROMPT_DIRTRIM != AGKOZAK[OLD_PROMPT_DIRTRIM] )) \
     || (( AGKOZAK_NAMED_DIRS != AGKOZAK[OLD_NAMED_DIRS] )) \
+    || (( AGKOZAK_MULTILINE != AGKOZAK[OLD_MULTILINE] )) \
+    || (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )) \
     || [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[OLD_CUSTOM_PROMPT]}" ]] \
     || [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK[OLD_CUSTOM_RPROMPT]}" ]]; then
     AGKOZAK[OLD_PROMPT_DIRTRIM]=${AGKOZAK_PROMPT_DIRTRIM}
     AGKOZAK[OLD_NAMED_DIRS]=${AGKOZAK_NAMED_DIRS}
+    AGKOZAK[OLD_MULTILINE]=${AGKOZAK_MULTILINE}
+    AGKOZAK[OLD_LEFT_PROMPT_ONLY]=${AGKOZAK_LEFT_PROMPT_ONLY}
     AGKOZAK[OLD_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
     AGKOZAK[OLD_CUSTOM_RPROMPT]=${AGKOZAK_CUSTOM_RPROMPT}
     _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM}
@@ -835,7 +844,8 @@ _agkozak_precmd() {
   # 
   # TODO: Create a setting to disable this workaround on the offchance that
   # it causes trouble for someone. Also, document thoroughly.
-  if { { (( ${AGKOZAK_MULTILINE} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
+  if (( ${AGKOZAK_GLITCH_FIX:-1} )) && \
+    { { (( AGKOZAK_MULTILINE )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
     || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
     && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
     && [[ ${AGKOZAK[PROMPT]} != *%3v* ]] \
@@ -893,13 +903,13 @@ _agkozak_prompt_strings() {
     AGKOZAK[PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   else
     # The color left prompt
-    AGKOZAK[PROMPT]='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-    AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) .)'
+    AGKOZAK[PROMPT]='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) .)'
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-}}%3v%f.)'
     fi
     AGKOZAK[PROMPT]+='${AGKOZAK_PROMPT_WHITESPACE}'
+    AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
     AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-}}'
     AGKOZAK[PROMPT]+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
     AGKOZAK[PROMPT]+='%f '

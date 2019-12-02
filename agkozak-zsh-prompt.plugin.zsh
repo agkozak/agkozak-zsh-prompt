@@ -810,8 +810,8 @@ _agkozak_precmd() {
   # Construct and display PROMPT and RPROMPT
   #
   # Only necessary when the prompt has changed
-  if (( ${AGKOZAK_PROMPT_DIRTRIM} != AGKOZAK[OLD_PROMPT_DIRTRIM] )) \
-    || (( ${AGKOZAK_NAMED_DIRS} != AGKOZAK[OLD_NAMED_DIRS] )) \
+  if (( AGKOZAK_PROMPT_DIRTRIM != AGKOZAK[OLD_PROMPT_DIRTRIM] )) \
+    || (( AGKOZAK_NAMED_DIRS != AGKOZAK[OLD_NAMED_DIRS] )) \
     || [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[OLD_CUSTOM_PROMPT]}" ]] \
     || [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK[OLD_CUSTOM_RPROMPT]}" ]]; then
     AGKOZAK[OLD_PROMPT_DIRTRIM]=${AGKOZAK_PROMPT_DIRTRIM}
@@ -889,34 +889,34 @@ _agkozak_prompt_strings() {
   #
   # TODO: Create a setting to disable this workaround on the offchance that
   # it causes trouble for someone. Also, document thoroughly.
-  if { { (( ${AGKOZAK_MULTILINE} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
-    || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
-    && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
-    && [[ ${AGKOZAK[PROMPT]} != *%3v* ]] \
-    && [[ -z ${INSIDE_EMACS} ]]; then
+  #if { { (( ${AGKOZAK_MULTILINE} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
+  #  || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
+  #  && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
+  #  && [[ ${AGKOZAK[PROMPT]} != *%3v* ]] \
+  #  && [[ -z ${INSIDE_EMACS} ]]; then
 
-    print -Pnz -- ${AGKOZAK[PROMPT]}
-    local REPLY
-    read -rz
-    print -- ${REPLY%$'\n'*}
-    PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
-    RPROMPT=${AGKOZAK[RPROMPT]}
+  #  print -Pnz -- ${AGKOZAK[PROMPT]}
+  #  local REPLY
+  #  read -rz
+  #  print -- ${REPLY%$'\n'*}
+  #  PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
+  #  RPROMPT=${AGKOZAK[RPROMPT]}
 
-    ############################################################
-    # When the screen clears, _agkozak_precmd must be run to
-    # display the first line of the prompt
-    ############################################################
-    _agkozak_clear-screen() {
-      echoti clear
-      _agkozak_precmd
-      zle .redisplay
-    }
+  #  ############################################################
+  #  # When the screen clears, _agkozak_precmd must be run to
+  #  # display the first line of the prompt
+  #  ############################################################
+  #  _agkozak_clear-screen() {
+  #    echoti clear
+  #    _agkozak_precmd
+  #    zle .redisplay
+  #  }
 
-    zle -N clear-screen _agkozak_clear-screen
-  else
+  #  zle -N clear-screen _agkozak_clear-screen
+  #else
     PROMPT=${AGKOZAK[PROMPT]}
     RPROMPT=${AGKOZAK[RPROMPT]}
-  fi
+  # fi
 }
 
 ############################################################

@@ -162,8 +162,12 @@ fi
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
 : ${AGKOZAK_COLORS_PROMPT_CHAR:=white}
 
+: ${AGKOZAK_LEFT_PROMPT_ONLY:=0}
+: ${AGKOZAK_MULTILINE:=1}
 : ${AGKOZAK_NAMED_DIRS:=1}
 : ${AGKOZAK_PROMPT_DIRTRIM:=2}
+: ${AGKOZAK_SHOW_STASH:=1}
+: ${AGKOZAK_USER_HOST_DISPLAY:=1}
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -349,11 +353,11 @@ _agkozak_branch_status() {
     local git_status symbols i=1 k
 
     # Cache the Git version
-    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+    if (( ${AGKOZAK_SHOW_STASH} )); then
       : ${${AGKOZAK[GIT_VERSION]:=$(command git --version)}#git version }
     fi
 
-    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+    if (( ${AGKOZAK_SHOW_STASH} )); then
       if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
       else
@@ -382,7 +386,7 @@ _agkozak_branch_status() {
 
     # Check for stashed changes. If there are any, add the stash symbol to the
     # list of symbols.
-    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+    if (( ${AGKOZAK_SHOW_STASH} )); then
       if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
         case $git_status in
           *'Your stash currently has '*)
@@ -774,14 +778,14 @@ _agkozak_precmd() {
   psvar[4]=''
 
   # Choose whether or not to display username and hostname
-  if (( ${AGKOZAK_USER_HOST_DISPLAY:-1} )); then
-    psvar[5]=${AGKOZAK_USER_HOST_DISPLAY:-1}
+  if (( ${AGKOZAK_USER_HOST_DISPLAY} )); then
+    psvar[5]=${AGKOZAK_USER_HOST_DISPLAY}
   else
     psvar[5]=''
   fi
 
   # Multiline (default) or single line?
-  if (( ! ${AGKOZAK_MULTILINE:-1} )) && [[ -z $INSIDE_EMACS ]]; then
+  if (( ! ${AGKOZAK_MULTILINE} )) && [[ -z $INSIDE_EMACS ]]; then
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR- }
   else
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
@@ -814,7 +818,7 @@ _agkozak_precmd() {
     AGKOZAK[OLD_NAMED_DIRS]=${AGKOZAK_NAMED_DIRS}
     AGKOZAK[OLD_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
     AGKOZAK[OLD_CUSTOM_RPROMPT]=${AGKOZAK_CUSTOM_RPROMPT}
-    _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
+    _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM}
     _agkozak_prompt_strings
   fi
 }
@@ -844,14 +848,14 @@ _agkozak_prompt_strings() {
     AGKOZAK[PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   else
     # The color left prompt
-    AGKOZAK[PROMPT]='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
-    AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
-    AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
-    if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
-      AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
+    AGKOZAK[PROMPT]='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+    AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) .)'
+    AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
+    if (( ${AGKOZAK_LEFT_PROMPT_ONLY} )); then
+      AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-}}%3v%f.)'
     fi
     AGKOZAK[PROMPT]+='${AGKOZAK_PROMPT_WHITESPACE}'
-    AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-white}}'
+    AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-}}'
     AGKOZAK[PROMPT]+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
     AGKOZAK[PROMPT]+='%f '
   fi
@@ -860,8 +864,8 @@ _agkozak_prompt_strings() {
     AGKOZAK[RPROMPT]=${AGKOZAK_CUSTOM_RPROMPT}
   else
     # The color right prompt
-    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
-      typeset -g AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
+    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); then
+      typeset -g AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
     else
       typeset -g AGKOZAK[RPROMPT]=''
     fi
@@ -885,7 +889,7 @@ _agkozak_prompt_strings() {
   #
   # TODO: Create a setting to disable this workaround on the offchance that
   # it causes trouble for someone. Also, document thoroughly.
-  if { { (( ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); } \
+  if { { (( ${AGKOZAK_MULTILINE} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
     || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
     && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
     && [[ ${AGKOZAK[PROMPT]} != *%3v* ]] \
@@ -979,7 +983,7 @@ agkozak-zsh-prompt() {
     #   AGKOZAK_PROMPT_DIRTRIM
     ############################################################
     _agkozak_chpwd() {
-      _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
+      _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM}
     }
 
     add-zsh-hook chpwd _agkozak_chpwd
@@ -1003,7 +1007,7 @@ agkozak-zsh-prompt() {
   if [[ $TERM == 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
-    PROMPT+='$(_agkozak_prompt_dirtrim "${AGKOZAK_PROMPT_DIRTRIM:-2}")'
+    PROMPT+='$(_agkozak_prompt_dirtrim "${AGKOZAK_PROMPT_DIRTRIM}")'
     PROMPT+='$(_agkozak_branch_status) '
     PROMPT+='%# '
   else

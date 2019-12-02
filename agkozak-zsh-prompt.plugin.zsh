@@ -821,6 +821,48 @@ _agkozak_precmd() {
     _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM}
     _agkozak_prompt_strings
   fi
+
+  # ZSH multiline prompts tend to cause the last line of STDOUT to disappear
+  # if the screen is redrawn. The solution is to have a precmd function output
+  # all but the last line of the left prompt; that last part alone is held in
+  # the variable PROMPT.
+  # 
+  # The downside of this approach is that it does not work when the Git status
+  # is in the top line of the left prompt, such as when
+  # AGKOZAK_LEFT_PROMPT_ONLY == 1. The code below tries to detect if the Git
+  # status is in the left prompt so that it does not interfere with its
+  # display
+  # 
+  # TODO: Create a setting to disable this workaround on the offchance that
+  # it causes trouble for someone. Also, document thoroughly.
+  if { { (( ${AGKOZAK_MULTILINE} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
+    || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
+    && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
+    && [[ ${AGKOZAK[PROMPT]} != *%3v* ]] \
+    && [[ -z ${INSIDE_EMACS} ]]; then
+
+    print -Pnz -- ${AGKOZAK[PROMPT]}
+    local REPLY
+    read -rz
+    print -- ${REPLY%$'\n'*}
+    PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
+    RPROMPT=${AGKOZAK[RPROMPT]}
+
+    ############################################################
+    # When the screen clears, _agkozak_precmd must be run to
+    # display the first line of the prompt
+    ############################################################
+    _agkozak_clear-screen() {
+      echoti clear
+      _agkozak_precmd
+      zle .redisplay
+    }
+
+    zle -N clear-screen _agkozak_clear-screen
+  else
+    PROMPT=${AGKOZAK[PROMPT]}
+    RPROMPT=${AGKOZAK[RPROMPT]}
+  fi
 }
 
 ############################################################
@@ -875,48 +917,6 @@ _agkozak_prompt_strings() {
     _agkozak_strip_colors 'AGKOZAK[PROMPT]'
     _agkozak_strip_colors 'AGKOZAK[RPROMPT]'
   fi
-
-  # ZSH multiline prompts tend to cause the last line of STDOUT to disappear
-  # if the screen is redrawn. The solution is to have a precmd function output
-  # all but the last line of the left prompt; that last part alone is held in
-  # the variable PROMPT.
-  #
-  # The downside of this approach is that it does not work when the Git status
-  # is in the top line of the left prompt, such as when
-  # AGKOZAK_LEFT_PROMPT_ONLY == 1. The code below tries to detect if the Git
-  # status is in the left prompt so that it does not interfere with its
-  # display
-  #
-  # TODO: Create a setting to disable this workaround on the offchance that
-  # it causes trouble for someone. Also, document thoroughly.
-  #if { { (( ${AGKOZAK_MULTILINE} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
-  #  || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
-  #  && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
-  #  && [[ ${AGKOZAK[PROMPT]} != *%3v* ]] \
-  #  && [[ -z ${INSIDE_EMACS} ]]; then
-
-  #  print -Pnz -- ${AGKOZAK[PROMPT]}
-  #  local REPLY
-  #  read -rz
-  #  print -- ${REPLY%$'\n'*}
-  #  PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
-  #  RPROMPT=${AGKOZAK[RPROMPT]}
-
-  #  ############################################################
-  #  # When the screen clears, _agkozak_precmd must be run to
-  #  # display the first line of the prompt
-  #  ############################################################
-  #  _agkozak_clear-screen() {
-  #    echoti clear
-  #    _agkozak_precmd
-  #    zle .redisplay
-  #  }
-
-  #  zle -N clear-screen _agkozak_clear-screen
-  #else
-    PROMPT=${AGKOZAK[PROMPT]}
-    RPROMPT=${AGKOZAK[RPROMPT]}
-  # fi
 }
 
 ############################################################

@@ -499,15 +499,14 @@ _agkozak_async_init() {
   emulate -L zsh
   setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
-  # TODO: Consider removing this entirely. It is the sort of thing that should
-  # go in a .zshrc. Mention in documentation.
+  # TODO: Figure out if BG_NICE should be disabled in WSL2
   #
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-  # if [[ $OSTYPE == linux* ]] && [[ -e /proc/version ]] \
-  #   && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
-  #   unsetopt BG_NICE
-  #   AGKOZAK[IS_WSL]=1   # For later reference
-  # fi
+  if [[ $OSTYPE == linux* ]] && [[ -e /proc/version ]] \
+    && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
+    unsetopt BG_NICE
+    AGKOZAK[IS_WSL]=1   # For later reference
+  fi
 
   # If an asynchronous method has been passed as an argument to
   # agkozak-zsh-prompt, use it

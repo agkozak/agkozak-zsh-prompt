@@ -69,6 +69,8 @@ autoload -Uz is-at-least add-zle-hook-widget
 # AGKOZAK[HAS_COLORS]   Whether or not to display the prompt in color
 # AGKOZAK[IS_WSL]       Whether or not the system is WSL
 # AGKOZAK[OLD_NAMED_DIRS] Used to detect changes in AGKOZAK_NAMED_DIRS
+# AGKOZAK[OLD_CUSTOM_PROMPT] Used to detect changes in AGKOZAK_CUSTOM_PROMPT
+# AGKOZAK[OLD_CUSTOM_RPROMPT] Used to detect changes in AGKOZAK_CUSTOM_RPROMPT
 # AGKOZAK[OLD_PROMPT]   The left prompt before this prompt was loaded
 # AGKOZAK[OLD_PROMPT_DIRTRIM] Used to detect changes in AGKOZAK_PROMPT_DIRTRIM
 # AGKOZAK[OLD RPROMPT]  The right prompt before this prompt was loaded
@@ -124,6 +126,8 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_prompt_strings
                     agkozak-zsh-prompt'
 
+: ${AGKOZAK_PROMPT_DEBUG:=0}
+
 ############################################################
 # Display a message on STDERR if debug mode is enabled
 #
@@ -133,10 +137,10 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
 #   $1  Message to send to STDERR
 ############################################################
 _agkozak_debug_print() {
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && print -- "agkozak-zsh-prompt: $1" >&2
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && print -- "agkozak-zsh-prompt: $1" >&2
 }
 
-if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
+if (( ${AGKOZAK_PROMPT_DEBUG} )); then
   if is-at-least 5.4.0; then
     for x in ${=AGKOZAK[FUNCTIONS]}; do
       # Enable WARN_CREATE_GLOBAL for each function of the prompt
@@ -145,14 +149,6 @@ if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
   fi
   unset x
 fi
-
-############################################################
-# Legacy assignments
-#
-# No longer entirely necessary for the prompt, but included
-# just in case someone is using an older custom prompt that
-# needs them.
-############################################################
 
 # Set AGKOZAK_COLORS_* variables to any valid color
 #   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color      (default: red)
@@ -165,6 +161,9 @@ fi
 : ${AGKOZAK_COLORS_PATH:=blue}
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
 : ${AGKOZAK_COLORS_PROMPT_CHAR:=white}
+
+: ${AGKOZAK_NAMED_DIRS:=1}
+: ${AGKOZAK_PROMPT_DIRTRIM:=2}
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -239,7 +238,7 @@ _agkozak_is_ssh() {
 ############################################################
 _agkozak_prompt_dirtrim() {
   emulate -L zsh
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Process arguments
   local argument
@@ -252,7 +251,7 @@ _agkozak_prompt_dirtrim() {
   [[ $1 -ge 0 ]] || set 2
 
   # Default behavior (when AGKOZAK_NAMED_DIRS is 1)
-  if (( ${AGKOZAK_NAMED_DIRS:-1} )); then
+  if (( ${AGKOZAK_NAMED_DIRS} )); then
     local zsh_pwd
     print -Pnz '%~'
 
@@ -334,7 +333,7 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 _agkozak_branch_status() {
   emulate -L zsh
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   local ref branch
   ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
@@ -452,7 +451,7 @@ AGKOZAK[PROMPT_DIR]="${0:A:h}"
 ############################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
-    if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
+    if (( ${AGKOZAK_PROMPT_DEBUG} )); then
       source "${AGKOZAK[PROMPT_DIR]}/lib/async.zsh"
     else
       source "${AGKOZAK[PROMPT_DIR]}/lib/async.zsh" &> /dev/null
@@ -673,7 +672,7 @@ _agkozak_async_init() {
         _agkozak_branch_status >| /tmp/agkozak_zsh_prompt_$$
 
         # Signal parent process
-        if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
+        if (( ${AGKOZAK_PROMPT_DEBUG} )); then
           kill -s USR1 $$
         else
           kill -s USR1 $$ &> /dev/null
@@ -761,20 +760,12 @@ _agkozak_strip_colors() {
 #   AGKOZAK_MULTILINE
 #   AGKOZAK_PRE_PROMPT_CHAR
 #   AGKOZAK_BLANK_LINES
+#   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
-
-  # Update displayed directory when AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS
-  # changes or when first sourcing this script
-  if (( ${AGKOZAK_PROMPT_DIRTRIM:-2} != AGKOZAK[OLD_PROMPT_DIRTRIM] )) \
-    || (( ${AGKOZAK_NAMED_DIRS:-1} != AGKOZAK[OLD_NAMED_DIRS] )) \
-    || (( ! $+psvar[2] )); then
-    _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
-    AGKOZAK[OLD_PROMPT_DIRTRIM]=$AGKOZAK_PROMPT_DIRTRIM
-    AGKOZAK[OLD_NAMED_DIRS]=$AGKOZAK_NAMED_DIRS
-  fi
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Clear the Git status display until it has been recalculated
   psvar[3]=''
@@ -813,7 +804,19 @@ _agkozak_precmd() {
   esac
 
   # Construct and display PROMPT and RPROMPT
-  _agkozak_prompt_strings
+  #
+  # Only necessary when the prompt has changed
+  if (( ${AGKOZAK_PROMPT_DIRTRIM} != AGKOZAK[OLD_PROMPT_DIRTRIM] )) \
+    || (( ${AGKOZAK_NAMED_DIRS} != AGKOZAK[OLD_NAMED_DIRS] )) \
+    || [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[OLD_CUSTOM_PROMPT]}" ]] \
+    || [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK[OLD_CUSTOM_RPROMPT]}" ]]; then
+    AGKOZAK[OLD_PROMPT_DIRTRIM]=${AGKOZAK_PROMPT_DIRTRIM}
+    AGKOZAK[OLD_NAMED_DIRS]=${AGKOZAK_NAMED_DIRS}
+    AGKOZAK[OLD_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
+    AGKOZAK[OLD_CUSTOM_RPROMPT]=${AGKOZAK_CUSTOM_RPROMPT}
+    _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
+    _agkozak_prompt_strings
+  fi
 }
 
 ############################################################
@@ -927,7 +930,7 @@ _agkozak_prompt_strings() {
 ############################################################
 agkozak-zsh-prompt() {
   emulate -L zsh
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   case $1 in
     -h|--help)

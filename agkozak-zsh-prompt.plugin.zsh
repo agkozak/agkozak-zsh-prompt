@@ -127,7 +127,7 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_precmd
                     _agkozak_clear-screen
                     _agkozak_chpwd
-                    _agkozak_prompt_string
+                    _agkozak_prompt_strings
                     agkozak-zsh-prompt'
 
 ############################################################
@@ -773,10 +773,10 @@ _agkozak_precmd() {
   emulate -L zsh
   (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
-  # If a custom left prompt is enabled, make a note of that
-  if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[CURRENT_CUSTOM_PROMPT]}" ]]; then
-    AGKOZAK[LEFT_CUSTOM]=1
-  fi
+  # # If a custom left prompt is enabled, make a note of that
+  # if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[CURRENT_CUSTOM_PROMPT]}" ]]; then
+  #   AGKOZAK[LEFT_CUSTOM]=1
+  # fi
 
   # Cache the Git version for use in _agkozak_branch_status
   (( ${AGKOZAK_SHOW_STASH:-1} )) && \
@@ -793,11 +793,11 @@ _agkozak_precmd() {
   fi
 
   # If AGKOZAK_LEFT_PROMPT_ONLY changes, recalculate the prompt strings
-  if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )); then
-    unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
-    AGKOZAK[OLD_LEFT_PROMPT_ONLY]=$AGKOZAK_LEFT_PROMPT_ONLY
-    _agkozak_prompt_string
-  fi
+  # if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )); then
+  #   unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
+  #   AGKOZAK[OLD_LEFT_PROMPT_ONLY]=$AGKOZAK_LEFT_PROMPT_ONLY
+  #   _agkozak_prompt_strings
+  # fi
 
   # Clear the Git status display until it has been recalculated
   psvar[3]=''
@@ -813,8 +813,8 @@ _agkozak_precmd() {
 
   if (( ! ${AGKOZAK_MULTILINE:-1} )) && [[ -z $INSIDE_EMACS ]]; then
     # Restore the whole prompt, not the partial prompt used by the code below
-    RPROMPT=${AGKOZAK[RPROMPT]}
-    _agkozak_prompt_string
+    # RPROMPT=${AGKOZAK[RPROMPT]}
+    # _agkozak_prompt_strings
     # If AGKOZAK_MULTILINE == 0, insert a space (or whatever) into the left prompt
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR- }
   else
@@ -834,33 +834,33 @@ _agkozak_precmd() {
     #
     # TODO: Create a setting to disable this workaround on the offchance that
     # it causes trouble for someone.
-    if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
-      && [[ ${AGKOZAK_CUSTOM_PROMPT} != *%3v* ]] \
-      && [[ ${AGKOZAK_CUSTOM_PROMPT} != *_agkozak_branch_status* ]] \
-      && [[ -z ${INSIDE_EMACS} ]]; then
+    #if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
+    #  && [[ ${AGKOZAK_CUSTOM_PROMPT} != *%3v* ]] \
+    #  && [[ ${AGKOZAK_CUSTOM_PROMPT} != *_agkozak_branch_status* ]] \
+    #  && [[ -z ${INSIDE_EMACS} ]]; then
 
-      print -Pnz -- ${AGKOZAK[PROMPT]}
-      local REPLY
-      read -rz
-      print -- ${REPLY%$'\n'*}
-      PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
-      RPROMPT=${AGKOZAK[RPROMPT]}
+    #  print -Pnz -- ${AGKOZAK[PROMPT]}
+    #  local REPLY
+    #  read -rz
+    #  print -- ${REPLY%$'\n'*}
+    #  PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
+    #  RPROMPT=${AGKOZAK[RPROMPT]}
 
-      ############################################################
-      # When the screen clears, _agkozak_precmd must be run to
-      # display the first line of the prompt
-      ############################################################
-      _agkozak_clear-screen() {
-        echoti clear
-        _agkozak_precmd
-        zle .redisplay
-      }
+    #  ############################################################
+    #  # When the screen clears, _agkozak_precmd must be run to
+    #  # display the first line of the prompt
+    #  ############################################################
+    #  _agkozak_clear-screen() {
+    #    echoti clear
+    #    _agkozak_precmd
+    #    zle .redisplay
+    #  }
 
-      zle -N clear-screen _agkozak_clear-screen
-    else
-      PROMPT=${AGKOZAK[PROMPT]}
-      RPROMPT=${AGKOZAK[RPROMPT]}
-    fi
+    #  zle -N clear-screen _agkozak_clear-screen
+    #else
+    #  PROMPT=${AGKOZAK[PROMPT]}
+    #  RPROMPT=${AGKOZAK[RPROMPT]}
+    #fi
   fi
 
   # Optionally put blank lines between instances of the prompt
@@ -874,15 +874,19 @@ _agkozak_precmd() {
   # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
   # corresponding prompt is updated
 
-  local prmpt
-  for prmpt in PROMPT RPROMPT; do
-    if [[ ${(P)${:-AGKOZAK_CUSTOM_$prmpt}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$prmpt]}}" ]]; then
-      AGKOZAK[CURRENT_CUSTOM_$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
-      typeset -g AGKOZAK[$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
-      ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
-      typeset -g $prmpt=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
-    fi
-  done
+  # local prmpt
+  # for prmpt in PROMPT RPROMPT; do
+  #   if [[ ${(P)${:-AGKOZAK_CUSTOM_$prmpt}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$prmpt]}}" ]]; then
+  #     AGKOZAK[CURRENT_CUSTOM_$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+  #     typeset -g AGKOZAK[$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+  #     ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
+  #     typeset -g $prmpt=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
+  #   fi
+  # done
+
+  _agkozak_prompt_strings
+  PROMPT=${AGKOZAK[PROMPT]}
+  RPROMPT=${AGKOZAK[RPROMPT]}
 
   # Begin to calculate the Git status
   case ${AGKOZAK[ASYNC_METHOD]} in
@@ -907,7 +911,7 @@ _agkozak_precmd() {
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_COLORS_BRANCH_STATUS
 ############################################################
-_agkozak_prompt_string() {
+_agkozak_prompt_strings() {
   emulate -L zsh
 
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then
@@ -925,8 +929,8 @@ _agkozak_prompt_string() {
     AGKOZAK[PROMPT]+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
     AGKOZAK[PROMPT]+='%f '
 
-    typeset -g AGKOZAK_CUSTOM_PROMPT=${AGKOZAK[PROMPT]}
-    AGKOZAK[CURRENT_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
+    # typeset -g AGKOZAK_CUSTOM_PROMPT=${AGKOZAK[PROMPT]}
+    # AGKOZAK[CURRENT_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   fi
 
   if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
@@ -939,8 +943,8 @@ _agkozak_prompt_string() {
       typeset -g AGKOZAK[RPROMPT]=''
     fi
 
-    typeset -g AGKOZAK_CUSTOM_RPROMPT=${AGKOZAK[RPROMPT]}
-    AGKOZAK[CURRENT_CUSTOM_RPROMPT]=${AGKOZAK[RPROMPT]}
+    # typeset -g AGKOZAK_CUSTOM_RPROMPT=${AGKOZAK[RPROMPT]}
+    # AGKOZAK[CURRENT_CUSTOM_RPROMPT]=${AGKOZAK[RPROMPT]}
   fi
 
   if ! _agkozak_has_colors; then
@@ -1044,7 +1048,7 @@ agkozak-zsh-prompt() {
     # side of the screen
     (( $+VSCODE_PID )) && ZLE_RPROMPT_INDENT=6
 
-    _agkozak_prompt_string
+    _agkozak_prompt_strings
 
   fi
 

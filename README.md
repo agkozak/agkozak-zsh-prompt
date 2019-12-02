@@ -55,7 +55,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - There is now a command-line function, `agkozak-zsh-prompt`, that can be used to change asynchronous methods on the fly.
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
     - WSL now defaults to `usr1` and falls back to `subst-async`, as they are faster on WSL than `zsh-async`.
-    - The prompt tries, when it can, to work around a glitch in ZSH that causes the last line of STDOUT to disappear when the screen is redrawn (this is only a problem with multiline prompts).
+    - The prompt tries, when it can, to work around a glitch in ZSH that causes the last line of STDOUT to disappear when the screen is redrawn (this is only a problem with multiline prompts). This works in the left prompt for prompts of two or more lines.
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`.
     - In the interests of speed, `WARN_CREATE_GLOBAL` and `WARN_NESTED_VAR` are only enabled when you set `AGKOZAK_PROMPT_DEBUG=1`.
 - v3.5.0 (November 15, 2019)

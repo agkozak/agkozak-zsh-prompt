@@ -499,62 +499,52 @@ _agkozak_async_init() {
   emulate -L zsh
   setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
+  # TODO: Consider removing this entirely. It is the sort of thing that should
+  # go in a .zshrc. Mention in documentation.
+  #
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-  if [[ $OSTYPE == linux* ]] && [[ -e /proc/version ]] \
-    && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
-    unsetopt BG_NICE
-    AGKOZAK[IS_WSL]=1   # For later reference
-  fi
+  # if [[ $OSTYPE == linux* ]] && [[ -e /proc/version ]] \
+  #   && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
+  #   unsetopt BG_NICE
+  #   AGKOZAK[IS_WSL]=1   # For later reference
+  # fi
 
   # If an asynchronous method has been passed as an argument to
   # agkozak-zsh-prompt, use it
   if [[ ${AGKOZAK[ARGUMENT]} == (subst-async|usr1|zsh-async|none) ]]; then
     AGKOZAK[ASYNC_METHOD]=${AGKOZAK[ARGUMENT]}
     [[ ${AGKOZAK[ARGUMENT]} == 'zsh-async' ]] && _agkozak_load_async_lib
+  elif [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
+    AGKOZAK[ASYNC_METHOD]=${AGKOZAK_FORCE_ASYNC_METHOD}
+  
+  # Otherwise, first provide for certain quirky systems
   else
 
-    # If AGKOZAK_FORCE_ASYNC_METHOD is set, force the asynchronous method
-
-    if [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]]; then
-      if [[ $OSTYPE == (msys|cygwin) ]]; then
-        print "Warning: zsh-async does not work on $OSTYPE." >&2
-        print >&2
-      fi
-      _agkozak_load_async_lib
-    fi
-
-    if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
-      AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
-
-    # Otherwise, first provide for certain quirky systems
-    else
-
-      if [[ $OSTYPE == solaris* ]]; then
-        if [[ $ZSH_VERSION != '5.0.2' ]] && _agkozak_load_async_lib; then
-          AGKOZAK[ASYNC_METHOD]='zsh-async'
-        elif _agkozak_has_usr1; then
-          AGKOZAK[ASYNC_METHOD]='usr1'
-        else
-          AGKOZAK[ASYNC_METHOD]='subst-async'
-        fi
-
-      # SIGUSR1 method is still much faster on Windows (MSYS2/Cygwin/WSL).
-      elif [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL] )); then
-        if _agkozak_has_usr1; then
-          AGKOZAK[ASYNC_METHOD]='usr1'
-        else
-          AGKOZAK[ASYNC_METHOD]='subst-async'
-        fi
-
-      # Asynchronous methods don't work in Emacs shell mode (but they do in term
-      # and ansi-term)
-      elif [[ $TERM == 'dumb' ]]; then
-        AGKOZAK[ASYNC_METHOD]='none'
-
-      # Otherwise use subst-async
+    if [[ $OSTYPE == solaris* ]]; then
+      if [[ $ZSH_VERSION != '5.0.2' ]] && _agkozak_load_async_lib; then
+        AGKOZAK[ASYNC_METHOD]='zsh-async'
+      elif _agkozak_has_usr1; then
+        AGKOZAK[ASYNC_METHOD]='usr1'
       else
         AGKOZAK[ASYNC_METHOD]='subst-async'
       fi
+
+    # SIGUSR1 method is still much faster on Windows (MSYS2/Cygwin/WSL).
+    elif [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL] )); then
+      if _agkozak_has_usr1; then
+        AGKOZAK[ASYNC_METHOD]='usr1'
+      else
+        AGKOZAK[ASYNC_METHOD]='subst-async'
+      fi
+
+    # Asynchronous methods don't work in Emacs shell mode (but they do in term
+    # and ansi-term)
+    elif [[ $TERM == 'dumb' ]]; then
+      AGKOZAK[ASYNC_METHOD]='none'
+
+    # Otherwise use subst-async
+    else
+      AGKOZAK[ASYNC_METHOD]='subst-async'
     fi
   fi
 
@@ -777,14 +767,6 @@ _agkozak_precmd() {
   emulate -L zsh
   (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
-  # Begin to calculate the Git status
-  case ${AGKOZAK[ASYNC_METHOD]} in
-    'subst-async') _agkozak_subst_async ;;
-    'zsh-async') _agkozak_zsh_async ;;
-    'usr1') _agkozak_usr1_async ;;
-    *) psvar[3]="$(_agkozak_branch_status)" ;;
-  esac
-
   # Update displayed directory when AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS
   # changes or when first sourcing this script
   if (( ${AGKOZAK_PROMPT_DIRTRIM:-2} != AGKOZAK[OLD_PROMPT_DIRTRIM] )) \
@@ -822,6 +804,14 @@ _agkozak_precmd() {
     fi
     AGKOZAK[FIRST_PROMPT_PRINTED]=1
   fi
+
+  # Begin to calculate the Git status
+  case ${AGKOZAK[ASYNC_METHOD]} in
+    'subst-async') _agkozak_subst_async ;;
+    'zsh-async') _agkozak_zsh_async ;;
+    'usr1') _agkozak_usr1_async ;;
+    *) psvar[3]="$(_agkozak_branch_status)" ;;
+  esac
 
   # Construct and display PROMPT and RPROMPT
   _agkozak_prompt_strings

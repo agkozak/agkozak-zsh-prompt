@@ -890,10 +890,10 @@ _agkozak_prompt_strings() {
   #
   # TODO: Create a setting to disable this workaround on the offchance that
   # it causes trouble for someone. Also, document thoroughly.
-  if (( ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
-    && [[ $AGKOZAK_CUSTOM_PROMPT == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
-    && [[ ${AGKOZAK_CUSTOM_PROMPT} != *%3v* ]] \
-    && [[ ${AGKOZAK_CUSTOM_PROMPT} != *_agkozak_branch_status* ]] \
+  if { { (( ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); } \
+    || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
+    && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
+    && [[ ${AGKOZAK[PROMPT]} != *%3v* ]] \
     && [[ -z ${INSIDE_EMACS} ]]; then
 
     print -Pnz -- ${AGKOZAK[PROMPT]}

@@ -61,10 +61,6 @@ autoload -Uz is-at-least add-zle-hook-widget
 #
 # AGKOZAK[ARGUMENT]     An argument passed to the agkozak-zsh-prompt function
 # AGKOZAK[ASYNC_METHOD] Which asynchronous method is currently in use
-# AGKOZAK[CURRENT_CUSTOM_PROMPT]  The code for the current left prompt. Used to
-#                       determine if the left prompt has changed.
-# AGKOZAK[CURRENT_CUSTOM_RPROMPT] The code for the current left prompt. Used to
-#                       determine if the right prompt has changed.
 # AGKOZAK[FIRST_PROMPT_PRINTED] When AGKOZAK_BLANK_LINES=1, this variable
 #                       prevents an unnecessary blank line before the first
 #                       prompt of the session
@@ -72,8 +68,6 @@ autoload -Uz is-at-least add-zle-hook-widget
 # AGKOZAK[GIT_VERSION]  The version of Git on a given system
 # AGKOZAK[HAS_COLORS]   Whether or not to display the prompt in color
 # AGKOZAK[IS_WSL]       Whether or not the system is WSL
-# AGKOZAK[OLD_LEFT_PROMPT_ONLY] Used to detect changes in
-#                       AGKOZAK_LEFT_PROMPT_ONLY
 # AGKOZAK[OLD_NAMED_DIRS] Used to detect changes in AGKOZAK_NAMED_DIRS
 # AGKOZAK[OLD_PROMPT]   The left prompt before this prompt was loaded
 # AGKOZAK[OLD_PROMPT_DIRTRIM] Used to detect changes in AGKOZAK_PROMPT_DIRTRIM
@@ -332,6 +326,10 @@ _agkozak_prompt_dirtrim() {
 #
 # Globals:
 #   AGKOZAK
+#   AGKOZAK_PROMPT_DEBUG
+#   AGKOZAK_SHOW_STASH
+#   AGKOZAK_CUSTOM_SYMBOLS
+#   AGKOZAK_BRANCH_STATUS_SEPARATOR
 ############################################################
 _agkozak_branch_status() {
   emulate -L zsh
@@ -349,6 +347,11 @@ _agkozak_branch_status() {
 
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k
+
+    # Cache the Git version
+    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+      typeset -g ${${AGKOZAK[GIT_VERSION]:=$(command git --version)}#git version }
+    fi
 
     if (( ${AGKOZAK_SHOW_STASH:-1} )); then
       if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
@@ -758,29 +761,26 @@ _agkozak_strip_colors() {
 #
 # Globals:
 #   AGKOZAK
+#   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_SHOW_STASH
 #   AGKOZAK_PROMPT_DIRTRIM
 #   AGKOZAK_NAMED_DIRS
-#   AGKOZAK_MULTILINE
-#   AGKOZAK_LEFT_PROMPT_ONLY
 #   AGKOZAK_USER_HOST_DISPLAY
+#   AGKOZAK_MULTILINE
 #   AGKOZAK_PRE_PROMPT_CHAR
 #   AGKOZAK_BLANK_LINES
-#   AGKOZAK_CUSTOM_PROMPT
-#   AGKOZAK_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
   (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
-  # # If a custom left prompt is enabled, make a note of that
-  # if [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[CURRENT_CUSTOM_PROMPT]}" ]]; then
-  #   AGKOZAK[LEFT_CUSTOM]=1
-  # fi
-
-  # Cache the Git version for use in _agkozak_branch_status
-  (( ${AGKOZAK_SHOW_STASH:-1} )) && \
-    : ${${AGKOZAK[GIT_VERSION]:=$(command git --version)}#git version }
+  # Begin to calculate the Git status
+  case ${AGKOZAK[ASYNC_METHOD]} in
+    'subst-async') _agkozak_subst_async ;;
+    'zsh-async') _agkozak_zsh_async ;;
+    'usr1') _agkozak_usr1_async ;;
+    *) psvar[3]="$(_agkozak_branch_status)" ;;
+  esac
 
   # Update displayed directory when AGKOZAK_PROMPT_DIRTRIM or AGKOZAK_NAMED_DIRS
   # changes or when first sourcing this script
@@ -792,75 +792,24 @@ _agkozak_precmd() {
     AGKOZAK[OLD_NAMED_DIRS]=$AGKOZAK_NAMED_DIRS
   fi
 
-  # If AGKOZAK_LEFT_PROMPT_ONLY changes, recalculate the prompt strings
-  # if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )); then
-  #   unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT
-  #   AGKOZAK[OLD_LEFT_PROMPT_ONLY]=$AGKOZAK_LEFT_PROMPT_ONLY
-  #   _agkozak_prompt_strings
-  # fi
-
   # Clear the Git status display until it has been recalculated
   psvar[3]=''
 
   # It is necessary to clear the vi mode display, too
   psvar[4]=''
 
+  # Choose whether or not to display username and hostname
   if (( ${AGKOZAK_USER_HOST_DISPLAY:-1} )); then
     psvar[5]=${AGKOZAK_USER_HOST_DISPLAY:-1}
   else
     psvar[5]=''
   fi
 
+  # Multiline (default) or single line?
   if (( ! ${AGKOZAK_MULTILINE:-1} )) && [[ -z $INSIDE_EMACS ]]; then
-    # Restore the whole prompt, not the partial prompt used by the code below
-    # RPROMPT=${AGKOZAK[RPROMPT]}
-    # _agkozak_prompt_strings
-    # If AGKOZAK_MULTILINE == 0, insert a space (or whatever) into the left prompt
     typeset -g AGKOZAK_PROMPT_WHITESPACE=${AGKOZAK_PRE_PROMPT_CHAR- }
   else
-    # Otherwise use a newline
     typeset -g AGKOZAK_PROMPT_WHITESPACE=$'\n'
-
-    # ZSH multiline prompts tend to cause the last line of STDOUT to disappear
-    # if the screen is redrawn. The solution is to have a precmd function output
-    # all but the last line of the left prompt; that last part alone is held in
-    # the variable PROMPT.
-    #
-    # The downside of this approach is that it does not work when the Git status
-    # is in the top line of the left prompt, such as when
-    # AGKOZAK_LEFT_PROMPT_ONLY == 1. The code below tries to detect if the Git
-    # status is in the left prompt so that it does not interfere with its
-    # display
-    #
-    # TODO: Create a setting to disable this workaround on the offchance that
-    # it causes trouble for someone.
-    #if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
-    #  && [[ ${AGKOZAK_CUSTOM_PROMPT} != *%3v* ]] \
-    #  && [[ ${AGKOZAK_CUSTOM_PROMPT} != *_agkozak_branch_status* ]] \
-    #  && [[ -z ${INSIDE_EMACS} ]]; then
-
-    #  print -Pnz -- ${AGKOZAK[PROMPT]}
-    #  local REPLY
-    #  read -rz
-    #  print -- ${REPLY%$'\n'*}
-    #  PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
-    #  RPROMPT=${AGKOZAK[RPROMPT]}
-
-    #  ############################################################
-    #  # When the screen clears, _agkozak_precmd must be run to
-    #  # display the first line of the prompt
-    #  ############################################################
-    #  _agkozak_clear-screen() {
-    #    echoti clear
-    #    _agkozak_precmd
-    #    zle .redisplay
-    #  }
-
-    #  zle -N clear-screen _agkozak_clear-screen
-    #else
-    #  PROMPT=${AGKOZAK[PROMPT]}
-    #  RPROMPT=${AGKOZAK[RPROMPT]}
-    #fi
   fi
 
   # Optionally put blank lines between instances of the prompt
@@ -871,30 +820,8 @@ _agkozak_precmd() {
     AGKOZAK[FIRST_PROMPT_PRINTED]=1
   fi
 
-  # If AGKOZAK_CUSTOM_PROMPT or AGKOZAK_CUSTOM_RPROMPT changes, the
-  # corresponding prompt is updated
-
-  # local prmpt
-  # for prmpt in PROMPT RPROMPT; do
-  #   if [[ ${(P)${:-AGKOZAK_CUSTOM_$prmpt}} != "${(P)${:-AGKOZAK[CURRENT_CUSTOM_$prmpt]}}" ]]; then
-  #     AGKOZAK[CURRENT_CUSTOM_$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
-  #     typeset -g AGKOZAK[$prmpt]=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
-  #     ! _agkozak_has_colors && _agkozak_strip_colors $prmpt
-  #     typeset -g $prmpt=${(P)${:-AGKOZAK_CUSTOM_$prmpt}}
-  #   fi
-  # done
-
+  # Construct and display PROMPT and RPROMPT
   _agkozak_prompt_strings
-  PROMPT=${AGKOZAK[PROMPT]}
-  RPROMPT=${AGKOZAK[RPROMPT]}
-
-  # Begin to calculate the Git status
-  case ${AGKOZAK[ASYNC_METHOD]} in
-    'subst-async') _agkozak_subst_async ;;
-    'zsh-async') _agkozak_zsh_async ;;
-    'usr1') _agkozak_usr1_async ;;
-    *) psvar[3]="$(_agkozak_branch_status)" ;;
-  esac
 }
 
 ############################################################
@@ -903,17 +830,21 @@ _agkozak_precmd() {
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_LEFT_PROMPT_ONLY
 #   AGKOZAK_COLORS_EXIT_STATUS
 #   AGKOZAK_COLORS_USER_HOST
 #   AGKOZAK_COLORS_PATH
+#   AGKOZAK_COLORS_BRANCH_STATUS
+#   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_COLORS_PROMPT_CHAR
 #   AGKOZAK_PROMPT_CHAR
 #   AGKOZAK_CUSTOM_RPROMPT
-#   AGKOZAK_COLORS_BRANCH_STATUS
+#   AGKOZAK_MULTILINE
 ############################################################
 _agkozak_prompt_strings() {
   emulate -L zsh
 
+  # TODO: Document what unsetting the custom prompt strings does.
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then
     AGKOZAK[PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   else
@@ -921,16 +852,13 @@ _agkozak_prompt_strings() {
     AGKOZAK[PROMPT]='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
     AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
-    if (( ${AGKOZAK_LEFT_PROMPT_ONLY:0} )); then
+    if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi
     AGKOZAK[PROMPT]+='${AGKOZAK_PROMPT_WHITESPACE}'
     AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-white}}'
     AGKOZAK[PROMPT]+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
     AGKOZAK[PROMPT]+='%f '
-
-    # typeset -g AGKOZAK_CUSTOM_PROMPT=${AGKOZAK[PROMPT]}
-    # AGKOZAK[CURRENT_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   fi
 
   if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
@@ -942,14 +870,53 @@ _agkozak_prompt_strings() {
     else
       typeset -g AGKOZAK[RPROMPT]=''
     fi
-
-    # typeset -g AGKOZAK_CUSTOM_RPROMPT=${AGKOZAK[RPROMPT]}
-    # AGKOZAK[CURRENT_CUSTOM_RPROMPT]=${AGKOZAK[RPROMPT]}
   fi
 
   if ! _agkozak_has_colors; then
     _agkozak_strip_colors 'AGKOZAK[PROMPT]'
     _agkozak_strip_colors 'AGKOZAK[RPROMPT]'
+  fi
+
+  # ZSH multiline prompts tend to cause the last line of STDOUT to disappear
+  # if the screen is redrawn. The solution is to have a precmd function output
+  # all but the last line of the left prompt; that last part alone is held in
+  # the variable PROMPT.
+  #
+  # The downside of this approach is that it does not work when the Git status
+  # is in the top line of the left prompt, such as when
+  # AGKOZAK_LEFT_PROMPT_ONLY == 1. The code below tries to detect if the Git
+  # status is in the left prompt so that it does not interfere with its
+  # display
+  #
+  # TODO: Create a setting to disable this workaround on the offchance that
+  # it causes trouble for someone. Also, document thoroughly.
+  if (( ${AGKOZAK_MULTILINE:-1} )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )) \
+    && [[ $AGKOZAK_CUSTOM_PROMPT == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n') ]] \
+    && [[ ${AGKOZAK_CUSTOM_PROMPT} != *%3v* ]] \
+    && [[ ${AGKOZAK_CUSTOM_PROMPT} != *_agkozak_branch_status* ]] \
+    && [[ -z ${INSIDE_EMACS} ]]; then
+
+    print -Pnz -- ${AGKOZAK[PROMPT]}
+    local REPLY
+    read -rz
+    print -- ${REPLY%$'\n'*}
+    PROMPT=${AGKOZAK[PROMPT]#*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
+    RPROMPT=${AGKOZAK[RPROMPT]}
+
+    ############################################################
+    # When the screen clears, _agkozak_precmd must be run to
+    # display the first line of the prompt
+    ############################################################
+    _agkozak_clear-screen() {
+      echoti clear
+      _agkozak_precmd
+      zle .redisplay
+    }
+
+    zle -N clear-screen _agkozak_clear-screen
+  else
+    PROMPT=${AGKOZAK[PROMPT]}
+    RPROMPT=${AGKOZAK[RPROMPT]}
   fi
 }
 
@@ -1047,9 +1014,6 @@ agkozak-zsh-prompt() {
     # When VSCode is using the DOM renderer, the right prompt overflows off the
     # side of the screen
     (( $+VSCODE_PID )) && ZLE_RPROMPT_INDENT=6
-
-    _agkozak_prompt_strings
-
   fi
 
   _agkozak_debug_print "Using async method: ${AGKOZAK[ASYNC_METHOD]}"

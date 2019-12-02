@@ -66,6 +66,7 @@ autoload -Uz is-at-least add-zle-hook-widget
 #                       prompt of the session
 # AGKOZAK[FUNCTIONS]    A list of the prompt's functions
 # AGKOZAK[GIT_VERSION]  The version of Git on a given system
+# AGKOZAK[OLD_GLITCH_FIX] Used to detect changes in AGKOZAK_GLITCH_FIX
 # AGKOZAK[HAS_COLORS]   Whether or not to display the prompt in color
 # AGKOZAK[IS_WSL]       Whether or not the system is WSL
 # AGKOZAK[OLD_MULTILINE]  Used to detect changes in AGKOZAK_MULTILINE
@@ -151,6 +152,10 @@ if (( ${AGKOZAK_PROMPT_DEBUG} )); then
   unset x
 fi
 
+# Putting these default options here makes sure that the variables are in the
+# environment and can be easily manipulated at the command line using tab
+# completion
+
 # Set AGKOZAK_COLORS_* variables to any valid color
 #   AGKOZAK_COLORS_EXIT_STATUS changes the exit status color      (default: red)
 #   AGKOZAK_COLORS_USER_HOST changes the username/hostname color  (default: green)
@@ -163,11 +168,21 @@ fi
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
 : ${AGKOZAK_COLORS_PROMPT_CHAR:=white}
 
+# Whether or not to work around ZSH's deleting lines of previous output when
+# there is a multiline prompt and the screen is redrawn (default: off)
+: ${AGKOZAK_GLITCH_FIX:=0}
+# Whether or not to display the Git status in the left prompt (default: off)
 : ${AGKOZAK_LEFT_PROMPT_ONLY:=0}
+# Whether or not the left prompt is two lines (default: on)
 : ${AGKOZAK_MULTILINE:=1}
+# Whether or not to use ZSH's default display of hashed (named) directories as
+# ~foo (default: on)
 : ${AGKOZAK_NAMED_DIRS:=1}
+# The number of path elements to display (default: 2; 0 displays the whole path)
 : ${AGKOZAK_PROMPT_DIRTRIM:=2}
+# Whether or not to display the Git stash (default: on)
 : ${AGKOZAK_SHOW_STASH:=1}
+# Whether or not to display the username and hostname (default: on)
 : ${AGKOZAK_USER_HOST_DISPLAY:=1}
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
@@ -237,9 +252,9 @@ _agkozak_is_ssh() {
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_NAMED_DIRS
 # Arguments:
-#   $@ [Optional] If `-v', store the function's output in
+#   $1 [Optional] If `-v', store the function's output in
 #        psvar[2] instead of printing it to STDOUT
-#   $@ Number of directory elements to display (default: 2)
+#   $2 Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
   emulate -L zsh
@@ -758,23 +773,21 @@ _agkozak_strip_colors() {
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_PROMPT_DEBUG
-#   AGKOZAK_SHOW_STASH
-#   AGKOZAK_PROMPT_DIRTRIM
-#   AGKOZAK_NAMED_DIRS
 #   AGKOZAK_USER_HOST_DISPLAY
 #   AGKOZAK_MULTILINE
 #   AGKOZAK_PRE_PROMPT_CHAR
+#   AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_BLANK_LINES
+#   AGKOZAK_LEFT_PROMPT_ONLY
+#   AGKOZAK_PROMPT_DIRTRIM
+#   AGKOZAK_NAMED_DIRS
+#   AGKOZAK_GLITCH_FIX
 #   AGKOZAK_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
   (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
-
-  print -Pnz '%?'
-  typeset -g AGKOZAK_EXIT_CODE
-  read -rz AGKOZAK_EXIT_CODE
 
   # Clear the Git status display until it has been recalculated
   psvar[3]=''
@@ -814,17 +827,19 @@ _agkozak_precmd() {
 
   # Construct and display PROMPT and RPROMPT
   #
-  # Only necessary when the prompt has changed
+  # Only necessary when the prompt strings have changed
   if (( AGKOZAK_PROMPT_DIRTRIM != AGKOZAK[OLD_PROMPT_DIRTRIM] )) \
     || (( AGKOZAK_NAMED_DIRS != AGKOZAK[OLD_NAMED_DIRS] )) \
     || (( AGKOZAK_MULTILINE != AGKOZAK[OLD_MULTILINE] )) \
     || (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )) \
+    || (( AGKOZAK_GLITCH_FIX != AGKOZAK[OLD_GLITCH_FIX] )) \
     || [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[OLD_CUSTOM_PROMPT]}" ]] \
     || [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK[OLD_CUSTOM_RPROMPT]}" ]]; then
     AGKOZAK[OLD_PROMPT_DIRTRIM]=${AGKOZAK_PROMPT_DIRTRIM}
     AGKOZAK[OLD_NAMED_DIRS]=${AGKOZAK_NAMED_DIRS}
     AGKOZAK[OLD_MULTILINE]=${AGKOZAK_MULTILINE}
     AGKOZAK[OLD_LEFT_PROMPT_ONLY]=${AGKOZAK_LEFT_PROMPT_ONLY}
+    AGKOZAK[OLD_GLITCH_FIX]=${AGKOZAK_GLITCH_FIX}
     AGKOZAK[OLD_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
     AGKOZAK[OLD_CUSTOM_RPROMPT]=${AGKOZAK_CUSTOM_RPROMPT}
     _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM}
@@ -844,7 +859,7 @@ _agkozak_precmd() {
   # 
   # TODO: Create a setting to disable this workaround on the offchance that
   # it causes trouble for someone. Also, document thoroughly.
-  if (( ${AGKOZAK_GLITCH_FIX:-1} )) && \
+  if (( AGKOZAK_GLITCH_FIX )) && \
     { { (( AGKOZAK_MULTILINE )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
     || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
     && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
@@ -884,6 +899,7 @@ _agkozak_precmd() {
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_GLITCH_FIX
 #   AGKOZAK_LEFT_PROMPT_ONLY
 #   AGKOZAK_COLORS_EXIT_STATUS
 #   AGKOZAK_COLORS_USER_HOST
@@ -903,13 +919,19 @@ _agkozak_prompt_strings() {
     AGKOZAK[PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   else
     # The color left prompt
-    AGKOZAK[PROMPT]='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) .)'
+    AGKOZAK[PROMPT]=''
+    if (( ! AGKOZAK_GLITCH_FIX )); then
+      AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+    fi
+    AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) .)'
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-}}%3v%f.)'
     fi
     AGKOZAK[PROMPT]+='${AGKOZAK_PROMPT_WHITESPACE}'
-    AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+    if (( AGKOZAK_GLITCH_FIX )); then
+      AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+    fi
     AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-}}'
     AGKOZAK[PROMPT]+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
     AGKOZAK[PROMPT]+='%f '

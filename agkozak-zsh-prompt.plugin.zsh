@@ -872,7 +872,8 @@ _agkozak_precmd() {
     { { (( AGKOZAK_MULTILINE )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
     || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
     && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
-    && [[ ${AGKOZAK[PROMPT]} != *%3v* ]] && [[ ${AGKOZAK[PROMPT]} != *\%\?* ]] \
+    && [[ ${AGKOZAK[PROMPT]} != *%3v*$'\n'* ]] \
+    && [[ ${AGKOZAK[PROMPT]} != *\%\?*$'\n'* ]] \
     && [[ -z ${INSIDE_EMACS} ]]; then
 
     print -Pnz -- ${AGKOZAK[PROMPT]}

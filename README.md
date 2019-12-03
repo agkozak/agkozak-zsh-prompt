@@ -55,7 +55,6 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - There is now a command-line function, `agkozak-zsh-prompt`, that can be used to change asynchronous methods on the fly.
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
     - WSL now defaults to `usr1` and falls back to `subst-async`, as they are faster on WSL than `zsh-async`.
-    - Setting `AGKOZAK_GLITCH_FIX=1` works around a glitch in ZSH that causes the last line of STDOUT to disappear when there is a newline in the left prompt and the screen is redrawn. The fix involves simply `print`ing all but the last line of the left prompt and then storing the last line in `PROMPT`. All changeable elements of the left prompt must be in the last line and stored in `PROMPT`, so `AGKOZAK_LEFT_PROMPT_ONLY=1` is exempt from this glitch fix. When `AGKOZAK_GLITCH_FIX` is on, exit codes will be displayed in the last line, just before the prompt character (`%`, or whatever you have chosen to use).
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
     - In the interests of speed, `WARN_CREATE_GLOBAL` and `WARN_NESTED_VAR` are only enabled when you set `AGKOZAK_PROMPT_DEBUG=1`.
 - v3.5.0 (November 15, 2019)

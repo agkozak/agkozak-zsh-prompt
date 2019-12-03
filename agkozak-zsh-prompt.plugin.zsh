@@ -66,7 +66,6 @@ autoload -Uz is-at-least add-zle-hook-widget
 #                       prompt of the session
 # AGKOZAK[FUNCTIONS]    A list of the prompt's functions
 # AGKOZAK[GIT_VERSION]  The version of Git on a given system
-# AGKOZAK[OLD_GLITCH_FIX] Used to detect changes in AGKOZAK_GLITCH_FIX
 # AGKOZAK[HAS_COLORS]   Whether or not to display the prompt in color
 # AGKOZAK[IS_WSL]       Whether or not the system is WSL
 # AGKOZAK[OLD_MULTILINE]  Used to detect changes in AGKOZAK_MULTILINE
@@ -123,7 +122,6 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     TRAPUSR1
                     _agkozak_strip_colors
                     _agkozak_precmd
-                    _agkozak_clear-screen
                     _agkozak_chpwd
                     _agkozak_prompt_strings
                     agkozak-zsh-prompt'
@@ -168,9 +166,6 @@ fi
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
 : ${AGKOZAK_COLORS_PROMPT_CHAR:=white}
 
-# Whether or not to work around ZSH's deleting lines of previous output when
-# there is a multiline prompt and the screen is redrawn (default: off)
-: ${AGKOZAK_GLITCH_FIX:=0}
 # Whether or not to display the Git status in the left prompt (default: off)
 : ${AGKOZAK_LEFT_PROMPT_ONLY:=0}
 # Whether or not the left prompt is two lines (default: on)
@@ -787,16 +782,12 @@ _agkozak_strip_colors() {
 #   AGKOZAK_LEFT_PROMPT_ONLY
 #   AGKOZAK_PROMPT_DIRTRIM
 #   AGKOZAK_NAMED_DIRS
-#   AGKOZAK_GLITCH_FIX
 #   AGKOZAK_CUSTOM_PROMPT
 #   AGKOZAK_CUSTOM_RPROMPT
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
   (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
-
-  # Prevent function from firing twice when .zshrc is sourced from the CLI
-  (( AGKOZAK_GLITCH_FIX )) && [[ ${ZSH_EVAL_CONTEXT} == sched:* ]] && return
 
   # Clear the Git status display until it has been recalculated
   psvar[3]=''
@@ -841,65 +832,20 @@ _agkozak_precmd() {
     || (( AGKOZAK_NAMED_DIRS != AGKOZAK[OLD_NAMED_DIRS] )) \
     || (( AGKOZAK_MULTILINE != AGKOZAK[OLD_MULTILINE] )) \
     || (( AGKOZAK_LEFT_PROMPT_ONLY != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )) \
-    || (( AGKOZAK_GLITCH_FIX != AGKOZAK[OLD_GLITCH_FIX] )) \
     || [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[OLD_CUSTOM_PROMPT]}" ]] \
     || [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK[OLD_CUSTOM_RPROMPT]}" ]]; then
     AGKOZAK[OLD_PROMPT_DIRTRIM]=${AGKOZAK_PROMPT_DIRTRIM}
     AGKOZAK[OLD_NAMED_DIRS]=${AGKOZAK_NAMED_DIRS}
     AGKOZAK[OLD_MULTILINE]=${AGKOZAK_MULTILINE}
     AGKOZAK[OLD_LEFT_PROMPT_ONLY]=${AGKOZAK_LEFT_PROMPT_ONLY}
-    AGKOZAK[OLD_GLITCH_FIX]=${AGKOZAK_GLITCH_FIX}
     AGKOZAK[OLD_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
     AGKOZAK[OLD_CUSTOM_RPROMPT]=${AGKOZAK_CUSTOM_RPROMPT}
     _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM}
     _agkozak_prompt_strings
   fi
 
-  # ZSH multiline prompts tend to cause the last line of STDOUT to disappear
-  # if the screen is redrawn. The solution is to have a precmd function output
-  # all but the last line of the left prompt; that last part alone is held in
-  # the variable PROMPT.
-  # 
-  # The downside of this approach is that it does not work when the Git status
-  # is in the top line of the left prompt, such as when
-  # AGKOZAK_LEFT_PROMPT_ONLY == 1. The code below tries to detect if the Git
-  # status is in the left prompt so that it does not interfere with its
-  # display
-  # 
-  # TODO: Create a setting to disable this workaround on the offchance that
-  # it causes trouble for someone. Also, document thoroughly.
-  if (( AGKOZAK_GLITCH_FIX )) && \
-    { { (( AGKOZAK_MULTILINE )) && (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); } \
-    || (( $+AGKOZAK_CUSTOM_PROMPT )); } \
-    && [[ ${AGKOZAK[PROMPT]} == *(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')* ]] \
-    && [[ ${AGKOZAK[PROMPT]} != *%3v* ]] \
-    && [[ -z ${INSIDE_EMACS} ]]; then
-
-    print -Pnz -- ${AGKOZAK[PROMPT]}
-    local REPLY
-    read -rz
-    while [[ ${REPLY} == *$'\n'* ]]; do
-      print -- ${REPLY%%$'\n'*}
-      REPLY=${REPLY#*$'\n'}
-    done
-    PROMPT=${AGKOZAK[PROMPT]##*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
-    RPROMPT=${AGKOZAK[RPROMPT]}
-
-    ############################################################
-    # When the screen clears, _agkozak_precmd must be run to
-    # display the first line of the prompt
-    ############################################################
-    _agkozak_clear-screen() {
-      echoti clear
-      _agkozak_precmd
-      zle .redisplay
-    }
-
-    zle -N clear-screen _agkozak_clear-screen
-  else
-    PROMPT=${AGKOZAK[PROMPT]}
-    RPROMPT=${AGKOZAK[RPROMPT]}
-  fi
+  PROMPT=${AGKOZAK[PROMPT]}
+  RPROMPT=${AGKOZAK[RPROMPT]}
 }
 
 ############################################################
@@ -908,7 +854,6 @@ _agkozak_precmd() {
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_CUSTOM_PROMPT
-#   AGKOZAK_GLITCH_FIX
 #   AGKOZAK_LEFT_PROMPT_ONLY
 #   AGKOZAK_COLORS_EXIT_STATUS
 #   AGKOZAK_COLORS_USER_HOST
@@ -929,18 +874,13 @@ _agkozak_prompt_strings() {
   else
     # The color left prompt
     AGKOZAK[PROMPT]=''
-    if (( ! AGKOZAK_GLITCH_FIX )); then
-      AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-    fi
+    AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
     AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) .)'
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-}}%3v%f.)'
     fi
     AGKOZAK[PROMPT]+='${AGKOZAK_PROMPT_WHITESPACE}'
-    if (( AGKOZAK_GLITCH_FIX )); then
-      AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
-    fi
     AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-}}'
     AGKOZAK[PROMPT]+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
     AGKOZAK[PROMPT]+='%f '
@@ -1099,8 +1039,6 @@ agkozak-zsh-prompt_plugin_unload() {
   for x in ${=AGKOZAK[FUNCTIONS]}; do
     whence -w $x &> /dev/null && unfunction $x
   done
-
-  zle -N clear-screen clear-screen
 
   unset AGKOZAK AGKOZAK_ASYNC_FD AGKOZAK_OLD_OPTIONS AGKOZAK_OLD_PSVAR \
     AGKOZAK_PROMPT_WHITESPACE

@@ -951,9 +951,9 @@ _agkozak_prompt_strings() {
   else
     # The color right prompt
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); then
-      typeset -g AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
+      AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
     else
-      typeset -g AGKOZAK[RPROMPT]=''
+      AGKOZAK[RPROMPT]=''
     fi
   fi
 

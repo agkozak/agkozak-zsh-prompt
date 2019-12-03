@@ -487,7 +487,13 @@ _agkozak_load_async_lib() {
 _agkozak_has_usr1() {
   if whence -w TRAPUSR1 &> /dev/null; then
     _agkozak_debug_print 'TRAPUSR1 already defined.'
-    return 1
+    if [[ $(whence -c TRAPUSR1) == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
+      _agkozak_debug_print 'Continuing to use TRAPUSR1.'
+      return 0
+    else
+      _agkozak_debug_print 'Falling back to subst-async.'
+      return 1
+    fi
   else
     case $signals in    # Array containing names of available signals
       *USR1*) return 0 ;;

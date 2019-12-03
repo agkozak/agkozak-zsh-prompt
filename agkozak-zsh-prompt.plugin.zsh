@@ -796,7 +796,7 @@ _agkozak_precmd() {
   (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Prevent function from firing twice when .zshrc is sourced from the CLI
-  [[ ${ZSH_EVAL_CONTEXT} == sched:* ]] && return
+  (( AGKOZAK_GLITCH_FIX )) && [[ ${ZSH_EVAL_CONTEXT} == sched:* ]] && return
 
   # Clear the Git status display until it has been recalculated
   psvar[3]=''

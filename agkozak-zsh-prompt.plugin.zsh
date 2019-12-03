@@ -159,12 +159,12 @@ fi
 #   AGKOZAK_COLORS_USER_HOST changes the username/hostname color  (default: green)
 #   AGKOZAK_COLORS_PATH changes the path color                    (default: blue)
 #   AGKOZAK_COLORS_BRANCH_STATUS changes the branch status color  (default: yellow)
-#   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: white)
+#   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: default text color)
 : ${AGKOZAK_COLORS_EXIT_STATUS:=red}
 : ${AGKOZAK_COLORS_USER_HOST:=green}
 : ${AGKOZAK_COLORS_PATH:=blue}
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
-: ${AGKOZAK_COLORS_PROMPT_CHAR:=white}
+: ${AGKOZAK_COLORS_PROMPT_CHAR:=default}
 
 # Whether or not to display the Git status in the left prompt (default: off)
 : ${AGKOZAK_LEFT_PROMPT_ONLY:=0}
@@ -891,9 +891,9 @@ _agkozak_prompt_strings() {
   else
     # The color right prompt
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY} )); then
-      typeset -g AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
+      AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
     else
-      typeset -g AGKOZAK[RPROMPT]=''
+      AGKOZAK[RPROMPT]=''
     fi
   fi
 

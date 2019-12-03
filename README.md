@@ -51,6 +51,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 <details>
   <summary>Here are the latest features and updates.</summary>
+
 - v3.6.0
     - There is now a command-line function, `agkozak-zsh-prompt`, that can be used to change asynchronous methods on the fly.
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.

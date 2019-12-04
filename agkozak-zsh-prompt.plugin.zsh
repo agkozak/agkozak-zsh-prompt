@@ -68,12 +68,7 @@ autoload -Uz is-at-least add-zle-hook-widget
 # AGKOZAK[GIT_VERSION]  The version of Git on a given system
 # AGKOZAK[HAS_COLORS]   Whether or not to display the prompt in color
 # AGKOZAK[IS_WSL]       Whether or not the system is WSL
-# AGKOZAK[OLD_MULTILINE]  Used to detect changes in AGKOZAK_MULTILINE
-# AGKOZAK[OLD_NAMED_DIRS] Used to detect changes in AGKOZAK_NAMED_DIRS
-# AGKOZAK[OLD_CUSTOM_PROMPT] Used to detect changes in AGKOZAK_CUSTOM_PROMPT
-# AGKOZAK[OLD_CUSTOM_RPROMPT] Used to detect changes in AGKOZAK_CUSTOM_RPROMPT
 # AGKOZAK[OLD_PROMPT]   The left prompt before this prompt was loaded
-# AGKOZAK[OLD_PROMPT_DIRTRIM] Used to detect changes in AGKOZAK_PROMPT_DIRTRIM
 # AGKOZAK[OLD RPROMPT]  The right prompt before this prompt was loaded
 # AGKOZAK[PROMPT]       The current state of the left prompt
 # AGKOZAK[PROMPT_DIR]   The directory the prompt source code is in
@@ -122,7 +117,6 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     TRAPUSR1
                     _agkozak_strip_colors
                     _agkozak_precmd
-                    _agkozak_chpwd
                     _agkozak_prompt_strings
                     agkozak-zsh-prompt'
 
@@ -826,27 +820,8 @@ _agkozak_precmd() {
   esac
 
   # Construct and display PROMPT and RPROMPT
-  #
-  # Only necessary when the prompt strings have changed
-  if (( ${AGKOZAK_PROMPT_DIRTRIM:-2} != AGKOZAK[OLD_PROMPT_DIRTRIM] )) \
-    || (( ${AGKOZAK_NAMED_DIRS:-1} != AGKOZAK[OLD_NAMED_DIRS] )) \
-    || (( ${AGKOZAK_MULTILINE:-1} != AGKOZAK[OLD_MULTILINE] )) \
-    || (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} != AGKOZAK[OLD_LEFT_PROMPT_ONLY] )) \
-    || [[ ${AGKOZAK_CUSTOM_PROMPT} != "${AGKOZAK[OLD_CUSTOM_PROMPT]}" ]] \
-    || [[ ${AGKOZAK_CUSTOM_RPROMPT} != "${AGKOZAK[OLD_CUSTOM_RPROMPT]}" ]] \
-    || (( ! $+AGKOZAK_CUSTOM_RPROMPT )); then
-    AGKOZAK[OLD_PROMPT_DIRTRIM]=${AGKOZAK_PROMPT_DIRTRIM:-2}
-    AGKOZAK[OLD_NAMED_DIRS]=${AGKOZAK_NAMED_DIRS:-1}
-    AGKOZAK[OLD_MULTILINE]=${AGKOZAK_MULTILINE:-1}
-    AGKOZAK[OLD_LEFT_PROMPT_ONLY]=${AGKOZAK_LEFT_PROMPT_ONLY:-0}
-    AGKOZAK[OLD_CUSTOM_PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
-    AGKOZAK[OLD_CUSTOM_RPROMPT]=${AGKOZAK_CUSTOM_RPROMPT}
-    _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
-    _agkozak_prompt_strings
-  fi
-
-  PROMPT=${AGKOZAK[PROMPT]}
-  RPROMPT=${AGKOZAK[RPROMPT]}
+  _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
+  _agkozak_prompt_strings
 }
 
 ############################################################
@@ -902,15 +877,13 @@ _agkozak_prompt_strings() {
     _agkozak_strip_colors 'AGKOZAK[PROMPT]'
     _agkozak_strip_colors 'AGKOZAK[RPROMPT]'
   fi
+
+  PROMPT=${AGKOZAK[PROMPT]}
+  RPROMPT=${AGKOZAK[RPROMPT]}
 }
 
 ############################################################
 # Prompt setup
-#
-# Arguments:
-#   $1  If -h or --help, display the async method and show
-#       a help message; otherwise, the name of an async
-#       method launches the prompt using that method
 #
 # Globals:
 #   AGKOZAK
@@ -920,25 +893,6 @@ _agkozak_prompt_strings() {
 agkozak-zsh-prompt() {
   emulate -L zsh
   (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
-
-  case $1 in
-    -h|--help)
-      print "Using async method: ${AGKOZAK[ASYNC_METHOD]}" >&2
-      print >&2
-      print 'Valid arguments: -h/--help subst-async usr1 zsh-async none' >&2
-      return
-      ;;
-    subst-async) AGKOZAK[ARGUMENT]='subst-async' ;;
-    usr1) AGKOZAK[ARGUMENT]='usr1' ;;
-    zsh-async)
-      if [[ $OSTYPE == (msys|cygwin) ]]; then
-        print "Warning: zsh-async does not work on $OSTYPE." >&2
-        print >&2
-      fi
-      AGKOZAK[ARGUMENT]='zsh-async'
-      ;;
-    none) AGKOZAK[ARGUMENT]='none' ;;
-  esac
 
   _agkozak_async_init
 
@@ -960,18 +914,6 @@ agkozak-zsh-prompt() {
   else
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd _agkozak_precmd
-
-    ############################################################
-    # Update the displayed directory when the PWD changes
-    #
-    # Globals:
-    #   AGKOZAK_PROMPT_DIRTRIM
-    ############################################################
-    _agkozak_chpwd() {
-      _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
-    }
-
-    add-zsh-hook chpwd _agkozak_chpwd
   fi
 
   # Only display the HOSTNAME for an SSH connection or for a superuser
@@ -1029,7 +971,6 @@ agkozak-zsh-prompt_plugin_unload() {
   psvar=( $AGKOZAK_OLD_PSVAR )
 
   add-zsh-hook -D precmd _agkozak_precmd
-  add-zsh-hook -D chpwd _agkozak_chpwd
 
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select

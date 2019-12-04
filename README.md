@@ -149,7 +149,7 @@ If you are running ZSH v5.3+, you can take advantage of `zplugin`'s Turbo Mode t
 ```sh
 PROMPT='%m%# '  # Or whatever prompt suits you for the split second it takes for
 RPROMPT=''      # the agkozak ZSH Prompt to load
-zplugin ice atload'_agkozak_precmd' nocd silent wait
+zplugin ice atload'!_agkozak_precmd' nocd silent wait
 zplugin load agkozak/agkozak-zsh-prompt
 ```
 

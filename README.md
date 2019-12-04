@@ -53,7 +53,6 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
   <summary>Here are the latest features and updates.</summary>
 
 - v3.6.0
-    - There is now a command-line function, `agkozak-zsh-prompt`, that can be used to change asynchronous methods on the fly.
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
     - WSL now defaults to `usr1` and falls back to `subst-async`, as they are faster on WSL than `zsh-async`.
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.

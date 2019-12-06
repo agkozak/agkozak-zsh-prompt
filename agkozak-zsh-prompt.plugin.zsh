@@ -878,8 +878,8 @@ _agkozak_prompt_strings() {
     _agkozak_strip_colors 'AGKOZAK[RPROMPT]'
   fi
 
-  PROMPT=${AGKOZAK[PROMPT]}
-  RPROMPT=${AGKOZAK[RPROMPT]}
+  typeset -g PROMPT=${AGKOZAK[PROMPT]}
+  typeset -g RPROMPT=${AGKOZAK[RPROMPT]}
 }
 
 ############################################################

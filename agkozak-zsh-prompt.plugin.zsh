@@ -59,7 +59,6 @@ autoload -Uz is-at-least add-zle-hook-widget
 # AGKOZAK is an associative array for storing internal information that is discarded when the
 # prompt is unloaded.
 #
-# AGKOZAK[ARGUMENT]     An argument passed to the agkozak-zsh-prompt function
 # AGKOZAK[ASYNC_METHOD] Which asynchronous method is currently in use
 # AGKOZAK[FIRST_PROMPT_PRINTED] When AGKOZAK_BLANK_LINES=1, this variable
 #                       prevents an unnecessary blank line before the first
@@ -78,9 +77,6 @@ autoload -Uz is-at-least add-zle-hook-widget
 # AGKOZAK[USR1_ASYNC_WORKER]  When non-zero, the PID of the asynchronous
 #                       function handling Git Status (usr1 method)
 typeset -gA AGKOZAK
-
-# In case an argument is passed when the script is sourced
-AGKOZAK[ARGUMENT]=$1
 
 # Options to reset if the prompt is unloaded
 typeset -gA AGKOZAK_OLD_OPTIONS
@@ -522,12 +518,7 @@ _agkozak_async_init() {
     AGKOZAK[IS_WSL]=1   # For later reference
   fi
 
-  # If an asynchronous method has been passed as an argument to
-  # agkozak-zsh-prompt, use it
-  if [[ ${AGKOZAK[ARGUMENT]} == (subst-async|usr1|zsh-async|none) ]]; then
-    AGKOZAK[ASYNC_METHOD]=${AGKOZAK[ARGUMENT]}
-    [[ ${AGKOZAK[ARGUMENT]} == 'zsh-async' ]] && _agkozak_load_async_lib
-  elif [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
+  if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
     AGKOZAK[ASYNC_METHOD]=${AGKOZAK_FORCE_ASYNC_METHOD}
 
   # Otherwise, first provide for certain quirky systems

@@ -127,10 +127,10 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
 #   $1  Message to send to STDERR
 ############################################################
 _agkozak_debug_print() {
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && print -- "agkozak-zsh-prompt: $1" >&2
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && print -- "agkozak-zsh-prompt: $1" >&2
 }
 
-if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
+if (( ${AGKOZAK_PROMPT_DEBUG} )); then
   if is-at-least 5.4.0; then
     for x in ${=AGKOZAK[FUNCTIONS]}; do
       # Enable WARN_CREATE_GLOBAL for each function of the prompt
@@ -243,7 +243,7 @@ _agkozak_is_ssh() {
 ############################################################
 _agkozak_prompt_dirtrim() {
   emulate -L zsh
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Process arguments
   local argument
@@ -338,7 +338,7 @@ _agkozak_prompt_dirtrim() {
 ############################################################
 _agkozak_branch_status() {
   emulate -L zsh
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   local ref branch
   ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
@@ -456,7 +456,7 @@ AGKOZAK[PROMPT_DIR]="${0:A:h}"
 ############################################################
 _agkozak_load_async_lib() {
   if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
-    if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
+    if (( ${AGKOZAK_PROMPT_DEBUG} )); then
       source "${AGKOZAK[PROMPT_DIR]}/lib/async.zsh"
     else
       source "${AGKOZAK[PROMPT_DIR]}/lib/async.zsh" &> /dev/null
@@ -678,7 +678,7 @@ _agkozak_async_init() {
         _agkozak_branch_status >| /tmp/agkozak_zsh_prompt_$$
 
         # Signal parent process
-        if (( ${AGKOZAK_PROMPT_DEBUG:-0} )); then
+        if (( ${AGKOZAK_PROMPT_DEBUG} )); then
           kill -s USR1 $$
         else
           kill -s USR1 $$ &> /dev/null
@@ -772,7 +772,7 @@ _agkozak_strip_colors() {
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Clear the Git status display until it has been recalculated
   psvar[3]=''
@@ -883,7 +883,7 @@ _agkozak_prompt_strings() {
 ############################################################
 agkozak-zsh-prompt() {
   emulate -L zsh
-  (( ${AGKOZAK_PROMPT_DEBUG:-0} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( ${AGKOZAK_PROMPT_DEBUG} )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   _agkozak_async_init
 

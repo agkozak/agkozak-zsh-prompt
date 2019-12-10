@@ -157,14 +157,6 @@ The prompt now supports `zplugin`'s `unload` feature; you may restore the shell 
 
     zplugin unload agkozak/agkozak-zsh-prompt
 
-## Command-Line Invocation
-
-Normally, sourcing the script or loading it with a framework should be sufficient, but if you are interested experimenting with [the agkozak ZSH Prompt's asynchronous methods](#asynchronous-methods), you may do so with the `agkozak-zsh-prompt` command. Passing it the parameters `subst-async`, `usr1`, `zsh-async`, or `none` will cause the prompt to the desired method, e.g.
-
-    agkozak-zsh-prompt usr1
-
-Running `agkozak-zsh-prompt -h` will display the options available, as well as which asynchronous method is currently in use.
-
 ## Local and Remote Sessions
 
 When a session is local, only the username is shown; when it is remote over SSH (or `mosh`), the hostname is also shown:

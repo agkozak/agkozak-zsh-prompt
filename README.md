@@ -55,6 +55,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - v3.6.0
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
     - WSL now defaults to `usr1` and falls back to `subst-async`, as they are faster on WSL than `zsh-async`.
+    - Due to a glitch in ZSH, multiline prompts can sometimes cause the last line of `STDOUT` before the prompt to disappear if the screen is redrawn. A fix has been implemented that involves `print`ing the first line or lines of the prompt and then storing the last line of the prompt in the variable `PROMPT`. This has necessitated moving the exit status indicator of the standard multiline prompt to the same line as the prompt character. Modes such as `AGKOZAK_LEFT_PROMPT_ONLY=1` are exempt from the fix, and the prompt tries to detect custom prompts for which it is not applicable. If you find that your custom prompt is not updating the way you expected it to, please see if setting `AGKOZAK_GLITCH_FIX=1` fixes the problem; then open [an issue](https://github.com/agkozak/agkozak-zsh-prompt/issues) so that I may make the prompt better at detecting dynamic prompt elements.
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
     - In the interests of speed, `WARN_CREATE_GLOBAL` and `WARN_NESTED_VAR` are only enabled when you set `AGKOZAK_PROMPT_DEBUG=1`.
 - v3.5.0 (November 15, 2019)
@@ -352,12 +353,12 @@ If you prefer not to have stashed changes displayed, you may set `AGKOZAK_SHOW_S
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as
 
 ```sh
-# Exit status
-AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 # Username and hostname
-AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
+AGKOZAK_CUSTOM_PROMPT='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
 AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b\n'
+# Exit status
+AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{red}(%?%)%f%b )'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
@@ -380,22 +381,6 @@ So far, you will have used only the following code:
 The same result could be achieved by starting with the default code given at the top of this section and altering it to produce
 
 ```sh
-# Exit status 
-AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
-# Username and hostname
-AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
-# Path and Git status (followed by newline)
-AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b%(3V.%F{243}%3v%f.)\n'
-# Prompt character
-AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
-
-# Time
-AGKOZAK_CUSTOM_RPROMPT='%*'
-```
-
-Obviously, this code is considerably harder to read, but you might use it if you wanted to do something much less supported by the basic configuration options, such as displaying the exit status immediately before the prompt character:
-
-```sh
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path and Git status (followed by newline)
@@ -409,7 +394,25 @@ AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 AGKOZAK_CUSTOM_RPROMPT='%*'
 ```
 
-*Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, it may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.*
+Obviously, this code is considerably harder to read, but you might use it if you wanted to do something much less supported by the basic configuration options, such as omitting the hostname entirely and displaying the path before the username:
+
+```sh
+# Path
+AGKOZAK_CUSTOM_PROMPT='%B%F{blue}%2v%f%b '
+# Username
+AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%(!.%b%s.%f%b)'
+# Git status (followed by newline)
+AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
+# Exit status
+AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{red}(%?%)%f%b )'
+# Prompt character
+AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
+
+# Time
+AGKOZAK_CUSTOM_RPROMPT='%*'
+```
+
+*Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, it may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`. If you want to return to the basic settings, simply `unset AGKOZAK_CUSTOM_PROMPT AGKOZAK_CUSTOM_RPROMPT`.*
 
 For some examples of prompt configurations that people have created using `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT`, see ["Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT"](#using-agkozak_custom_prompt-and-agkozak_custom_rprompt).
 

@@ -113,6 +113,8 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     TRAPUSR1
                     _agkozak_strip_colors
                     _agkozak_precmd
+                    _agkozak_fix_glitch
+                    _agkozak_clear-screen
                     _agkozak_prompt_strings
                     agkozak-zsh-prompt'
 
@@ -830,24 +832,29 @@ _agkozak_precmd() {
 #   AGKOZAK_COLORS_PROMPT_CHAR
 #   AGKOZAK_PROMPT_CHAR
 #   AGKOZAK_CUSTOM_RPROMPT
+#   AGKOZAK_GLITCH_FIX
 #   AGKOZAK_MULTILINE
 ############################################################
 _agkozak_prompt_strings() {
   emulate -L zsh
 
-  # TODO: Document what unsetting the custom prompt strings does.
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then
     AGKOZAK[PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
   else
     # The color left prompt
     AGKOZAK[PROMPT]=''
-    AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
+    if (( ! AGKOZAK_MULTILINE )); then
+      AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
+    fi
     AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi
     AGKOZAK[PROMPT]+='${AGKOZAK_PROMPT_WHITESPACE}'
+    if (( AGKOZAK_MULTILINE )); then
+      AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
+    fi
     AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-default}}'
     AGKOZAK[PROMPT]+='%(4V.${AGKOZAK_PROMPT_CHAR[3]:-:}.%(!.${AGKOZAK_PROMPT_CHAR[2]:-%#}.${AGKOZAK_PROMPT_CHAR[1]:-%#}))'
     AGKOZAK[PROMPT]+='%f '
@@ -869,7 +876,75 @@ _agkozak_prompt_strings() {
     _agkozak_strip_colors 'AGKOZAK[RPROMPT]'
   fi
 
-  typeset -g PROMPT=${AGKOZAK[PROMPT]}
+  # When a ZSH $PROMPT has newlines embedded in it, the last line of STDOUT
+  # before the prompt can disappear if the screen is for any reason redrawn. A
+  # solution is to have a precmd function output all but the last line of the
+  # prompt; that last part alone is held in the variable PROMPT.
+  #
+  # The downside of this approach is that it cannot be used when dynamic
+  # elements such as the Git status are in the top line of the prompt (e.g. when
+  # AGKOZAK_LEFT_PROMPT_ONLY == 1. The function _agkozak_fix_glitch decides
+  # whether or not to apply the "glitch fix." Note that it can be circumvented
+  # entirely by setting AGKOZAK_GLITCH_FIX=0.
+
+  ##########################################################
+  # Should the glitch fix be applied?
+  ##########################################################
+  _agkozak_fix_glitch() {
+    # Not if the Git status would be `print'ed
+    [[ ${AGKOZAK[PROMPT]} == *%3v*$'\n'* ]] && return 1
+    # Not if the exit code would be `print'ed
+    [[ ${AGKOZAK[PROMPT]} == *\%\?*$'\n'* ]] && return 1
+    # Not if some other quickly-changing prompt elements are present
+    [[ ${AGKOZAK[PROMPT]} == *(\%\*|\%D\{*\%S)* ]] && return 1
+    # Not if in Emacs - TODO: Necessary?
+    (( $+INSIDE_EMACS )) && return 1
+
+    # The glitch fix can be disabled with AGKOZAK_GLITCH_FIX=0
+    if (( ${AGKOZAK_GLITCH_FIX:-1} )); then
+      # The default prompt
+      if (( AGKOZAK_MULTILINE )) && (( ! AGKOZAK_LEFT_PROMPT_ONLY )) \
+        && (( ! $+AGKOZAK_CUSTOM_PROMPT )); then
+        return 0
+      # If a custom prompt has one or more newlines in it
+      elif [[ ${AGKOZAK_CUSTOM_PROMPT} == *$'\n'* ]] \
+        || { [[ ${AGKOZAK_CUSTOM_PROMPT} == *\$\{AGKOZAK_PROMPT_WHITESPACE\} ]] \
+        && [[ ${AGKOZAK_PROMPT_WHITESPACE} == $'\n' ]]; }; then
+        return 0
+      else
+        return 1
+      fi
+    else
+      return 1
+    fi
+  }
+
+  if _agkozak_fix_glitch; then
+    print -Pnz ${AGKOZAK[PROMPT]}
+    local REPLY
+    read -rz
+    while [[ ${REPLY} == *$'\n'* ]]; do
+      print -- ${REPLY%%$'\n'*}
+      REPLY=${REPLY#*$'\n'}
+    done
+    typeset -g PROMPT=${AGKOZAK[PROMPT]##*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
+
+    ########################################################
+    # When the screen clears, _agkozak_precmd must be run to
+    # display the first line of the prompt
+    ########################################################
+    (( ! $+functions[_agkozak_clear-screen] )) && {
+      _agkozak_clear-screen() {
+        echoti clear
+        _agkozak_precmd
+        zle .redisplay
+      }
+      zle -N clear-screen _agkozak_clear-screen
+    }
+  else
+    typeset -g PROMPT=${AGKOZAK[PROMPT]}
+  fi
+
   typeset -g RPROMPT=${AGKOZAK[RPROMPT]}
 }
 
@@ -972,6 +1047,8 @@ agkozak-zsh-prompt_plugin_unload() {
   for x in ${=AGKOZAK[FUNCTIONS]}; do
     whence -w $x &> /dev/null && unfunction $x
   done
+
+  zle -N clear-screen clear-screen
 
   unset AGKOZAK AGKOZAK_ASYNC_FD AGKOZAK_OLD_OPTIONS AGKOZAK_OLD_PSVAR \
     AGKOZAK_PROMPT_WHITESPACE

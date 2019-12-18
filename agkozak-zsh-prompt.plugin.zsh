@@ -921,10 +921,13 @@ _agkozak_prompt_strings() {
 
   if _agkozak_fix_glitch; then
 
+    (( $+terminfo )) || zmodload zsh/terminfo
+
     # Workaround for zplugin turbo mode loading
     if (( ! AGKOZAK[CR_PRINTED] )); then
       PROMPT='' RPROMPT=''
-      print -n $'\r\e[2K'
+      echoti cr
+      echoti el
       AGKOZAK[CR_PRINTED]=1
     fi
 
@@ -941,15 +944,16 @@ _agkozak_prompt_strings() {
     # When the screen clears, _agkozak_precmd must be run to
     # display the first line of the prompt
     ########################################################
-    (( ! $+functions[_agkozak_clear-screen] )) && {
+    if (( ! $+functions[_agkozak_clear-screen] )); then
+
       _agkozak_clear-screen() {
-        # TODO: Make sure zsh/terminfo module is loaded
         echoti clear
         _agkozak_precmd
         zle .redisplay
       }
+
       zle -N clear-screen _agkozak_clear-screen
-    }
+    fi
   else
     typeset -g PROMPT=${AGKOZAK[PROMPT]}
   fi

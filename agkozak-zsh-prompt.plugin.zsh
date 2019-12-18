@@ -922,7 +922,11 @@ _agkozak_prompt_strings() {
   if _agkozak_fix_glitch; then
 
     # Workaround for zplugin turbo mode loading
-    (( ! AGKOZAK[CR_PRINTED] )) && print -n $'\r' && AGKOZAK[CR_PRINTED]=1
+    if (( ! AGKOZAK[CR_PRINTED] )); then
+      PROMPT='' RPROMPT=''
+      print -n $'\r\e[2K'
+      AGKOZAK[CR_PRINTED]=1
+    fi
 
     print -Pnz ${AGKOZAK[PROMPT]}
     local REPLY
@@ -939,6 +943,7 @@ _agkozak_prompt_strings() {
     ########################################################
     (( ! $+functions[_agkozak_clear-screen] )) && {
       _agkozak_clear-screen() {
+        # TODO: Make sure zsh/terminfo module is loaded
         echoti clear
         _agkozak_precmd
         zle .redisplay

@@ -920,6 +920,10 @@ _agkozak_prompt_strings() {
   }
 
   if _agkozak_fix_glitch; then
+
+    # Workaround for zplugin turbo mode loading
+    (( ! AGKOZAK[CR_PRINTED] )) && print -n $'\r' && AGKOZAK[CR_PRINTED]=1
+
     print -Pnz ${AGKOZAK[PROMPT]}
     local REPLY
     read -rz

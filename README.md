@@ -23,7 +23,6 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 - [News](#news)
 - [Installation](#installation)
-- [Command-Line Invocation](#command-line-invocation)
 - [Local and Remote Sessions](#local-and-remote-sessions)
 - [Abbreviated Paths](#abbreviated-paths)
 - [Git Branch and Status](#git-branch-and-status)
@@ -143,15 +142,6 @@ Run the command
     zplugin load agkozak/agkozak-zsh-prompt
 
 to try out the prompt; add the same command to your `.zshrc` to load it automatically.
-
-If you are running ZSH v5.3+, you can take advantage of `zplugin`'s Turbo Mode to load the prompt asynchronously:
-
-```sh
-PROMPT='%m%# '  # Or whatever prompt suits you for the split second it takes for
-RPROMPT=''      # the agkozak ZSH Prompt to load
-zplugin ice atload'_agkozak_precmd' nocd silent wait
-zplugin load agkozak/agkozak-zsh-prompt
-```
 
 The prompt now supports `zplugin`'s `unload` feature; you may restore the shell to its state before loading the prompt by running
 

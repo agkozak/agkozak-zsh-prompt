@@ -23,7 +23,6 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 - [News](#news)
 - [Installation](#installation)
-- [Command-Line Invocation](#command-line-invocation)
 - [Local and Remote Sessions](#local-and-remote-sessions)
 - [Abbreviated Paths](#abbreviated-paths)
 - [Git Branch and Status](#git-branch-and-status)

@@ -481,7 +481,7 @@ AGKOZAK[PROMPT_DIR]="${0:A:h}"
 #   AGKOZAK_PROMPT_DEBUG
 ############################################################
 _agkozak_load_async_lib() {
-  if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
+  if ! whence async_init &> /dev/null; then      # Don't load zsh-async twice
     if (( AGKOZAK_PROMPT_DEBUG )); then
       source "${AGKOZAK[PROMPT_DIR]}/lib/async.zsh"
     else
@@ -496,7 +496,7 @@ _agkozak_load_async_lib() {
 # Is SIGUSR1 is available and not already in use by ZSH?
 ############################################################
 _agkozak_has_usr1() {
-  if whence -w TRAPUSR1 &> /dev/null; then
+  if whence TRAPUSR1 &> /dev/null; then
     _agkozak_debug_print 'TRAPUSR1 already defined.'
     if [[ $(whence -c TRAPUSR1) == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
       _agkozak_debug_print 'Continuing to use TRAPUSR1.'
@@ -677,7 +677,7 @@ _agkozak_async_init() {
       _agkozak_usr1_async() {
         emulate -L zsh
 
-        if [[ "$(builtin which TRAPUSR1)" == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
+        if [[ "$(whence -c TRAPUSR1)" == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK[USR1_ASYNC_WORKER] )); then
             kill -s HUP "${AGKOZAK[USR1_ASYNC_WORKER]}" &> /dev/null || :
@@ -734,7 +734,7 @@ _agkozak_async_init() {
         zle && zle .reset-prompt
       }
 
-      AGKOZAK[TRAPUSR1_FUNCTION]="$(builtin which TRAPUSR1)"
+      AGKOZAK[TRAPUSR1_FUNCTION]="$(whence -c TRAPUSR1)"
       ;;
   esac
 }
@@ -993,7 +993,7 @@ agkozak-zsh-prompt_plugin_unload() {
   fi
 
   for x in ${=AGKOZAK[FUNCTIONS]}; do
-    whence -w $x &> /dev/null && unfunction $x
+    whence $x &> /dev/null && unfunction $x
   done
 
   unset AGKOZAK AGKOZAK_ASYNC_FD AGKOZAK_OLD_OPTIONS AGKOZAK_OLD_PSVAR \

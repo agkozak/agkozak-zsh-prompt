@@ -763,8 +763,8 @@ _agkozak_strip_colors() {
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_USER_HOST_DISPLAY
 #   AGKOZAK_MULTILINE
-#   AGKOZAK_PRE_PROMPT_CHAR
 #   AGKOZAK_PROMPT_WHITESPACE
+#   AGKOZAK_PRE_PROMPT_CHAR
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
@@ -819,6 +819,7 @@ _agkozak_precmd() {
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_CUSTOM_PROMPT
+#   AGKOZAK_MULTILINE
 #   AGKOZAK_COLORS_EXIT_STATUS
 #   AGKOZAK_COLORS_USER_HOST
 #   AGKOZAK_COLORS_PATH
@@ -829,7 +830,6 @@ _agkozak_precmd() {
 #   AGKOZAK_PROMPT_CHAR
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_GLITCH_FIX
-#   AGKOZAK_MULTILINE
 ############################################################
 _agkozak_prompt_strings() {
   emulate -L zsh

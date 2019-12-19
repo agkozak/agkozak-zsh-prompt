@@ -52,10 +52,11 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
   <summary>Here are the latest features and updates.</summary>
 
 - v3.6.0
+    - Custom prompts can now access not just the default Git status indicator, which looks like ` (master *!)`, but also its individual parts. `psvar[6]` (`%6v` in a prompt string) stores just the branch, e.g. `master`, while `psvar[7]` (`%7v` in a prompt string) stores just the Git symbols, e.g. `*!`.
+    - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
     - WSL now defaults to `usr1` and falls back to `subst-async`, as they are faster on WSL than `zsh-async`.
     - Due to a glitch in ZSH, multiline prompts can sometimes cause the last line of `STDOUT` before the prompt to disappear if the screen is redrawn. A fix has been implemented that involves `print`ing the first line or lines of the prompt and then storing the last line of the prompt in the variable `PROMPT`. This has necessitated moving the exit status indicator of the standard multiline prompt to the same line as the prompt character. Modes such as `AGKOZAK_LEFT_PROMPT_ONLY=1` are exempt from the fix, and the prompt tries to detect custom prompts for which it is not applicable. If you find that your custom prompt is not updating the way you expected it to, please see if setting `AGKOZAK_GLITCH_FIX=1` fixes the problem; then open [an issue](https://github.com/agkozak/agkozak-zsh-prompt/issues) so that I may make the prompt better at detecting dynamic prompt elements.
-    - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
     - In the interests of speed, `WARN_CREATE_GLOBAL` and `WARN_NESTED_VAR` are only enabled when you set `AGKOZAK_PROMPT_DEBUG=1`.
 - v3.5.0 (November 15, 2019)
     - The prompt now supports the [zdharma ZSH plugin unload function standard](https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
@@ -143,15 +144,6 @@ Run the command
     zplugin load agkozak/agkozak-zsh-prompt
 
 to try out the prompt; add the same command to your `.zshrc` to load it automatically.
-
-If you are running ZSH v5.3+, you can take advantage of `zplugin`'s Turbo Mode to load the prompt asynchronously:
-
-```sh
-PROMPT='%m%# '  # Or whatever prompt suits you for the split second it takes for
-RPROMPT=''      # the agkozak ZSH Prompt to load
-zplugin ice atload'_agkozak_precmd' nocd silent wait
-zplugin load agkozak/agkozak-zsh-prompt
-```
 
 The prompt now supports `zplugin`'s `unload` feature; you may restore the shell to its state before loading the prompt by running
 

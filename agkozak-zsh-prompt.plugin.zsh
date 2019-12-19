@@ -46,13 +46,19 @@
 #                                           thereof
 #
 # psvar[3]      %3v                         Current working Git branch, along
-#                                           with indicator of changes made
+#                                           with indicator of changes made,
+#                                           surrounded by parentheses and
+#                                           preceded by $AGKOZAK_PRE_PROMPT_CHAR
 #
 # psvar[4]      %4v                         Equals 'vicmd' when vi command mode
 #                                           is enabled; otherwise empty
 #
 # psvar[5]      %5v                         Empty only when
 #                                           AGKOZAK_USER_HOST_DISPLAY is 0
+#
+# psvar[6]      %6v                         Just the branch name
+#
+# psvar[7]      %7v                         Just the Git symbols
 
 autoload -Uz is-at-least add-zle-hook-widget
 
@@ -98,6 +104,7 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_is_ssh
                     _agkozak_prompt_dirtrim
                     _agkozak_branch_status
+                    _agkozak_set_git_psvars
                     _agkozak_zle-keymap-select
                     TRAPWINCH
                     _agkozak_vi_mode_indicator
@@ -260,16 +267,16 @@ _agkozak_prompt_dirtrim() {
   # Default behavior (when AGKOZAK_NAMED_DIRS is 1)
   if (( ${AGKOZAK_NAMED_DIRS:-1} )); then
     local zsh_pwd
-    print -Pnz '%~'
+    print -Pnz -- '%~'
 
     # IF AGKOZAK_PROMPT_DIRTRIM is not 0, trim directory
     if (( $1 )); then
       read -rz zsh_pwd
       case $zsh_pwd in
-        \~) print -Pnz $zsh_pwd ;;
-        \~/*) print -Pnz "%($(( $1 + 2 ))~|~/.../%${1}~|%~)" ;;
-        \~*) print -Pnz "%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
-        *) print -Pnz "%($(( $1 + 1 ))/|.../%${1}d|%d)" ;;
+        \~) print -Pnz -- $zsh_pwd ;;
+        \~/*) print -Pnz -- "%($(( $1 + 2 ))~|~/.../%${1}~|%~)" ;;
+        \~*) print -Pnz -- "%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
+        *) print -Pnz -- "%($(( $1 + 1 ))/|.../%${1}d|%d)" ;;
       esac
     fi
 
@@ -290,7 +297,7 @@ _agkozak_prompt_dirtrim() {
         case $PWD in
           ${HOME}) print -nz '~' ;;
           ${HOME}*) print -nz "~${dir}" ;;
-          *) print -nz "$PWD" ;;
+          *) print -nz -- "$PWD" ;;
         esac
       else
         local lopped_path i
@@ -311,7 +318,7 @@ _agkozak_prompt_dirtrim() {
       case $PWD in
         ${HOME}) print -nz '~' ;;
         ${HOME}*) print -nz "~${dir}" ;;
-        *) print -nz "$PWD" ;;
+        *) print -nz -- "$PWD" ;;
       esac
     fi
   fi
@@ -321,9 +328,9 @@ _agkozak_prompt_dirtrim() {
 
   # Argument -v stores the output to psvar[2]; otherwise send to STDOUT
   if (( var )); then
-    psvar[2]=$output
+    psvar[2]=${output}
   else
-    print $output
+    print -- ${output}
   fi
 }
 
@@ -405,7 +412,27 @@ _agkozak_branch_status() {
 
     [[ -n $symbols ]] && symbols=" ${symbols}"
 
-    printf '%s(%s%s)' "${AGKOZAK_BRANCH_STATUS_SEPARATOR- }" "$branch" "$symbols"
+    printf -- '%s(%s%s)' "${AGKOZAK_BRANCH_STATUS_SEPARATOR- }" "$branch" \
+      "$symbols"
+  fi
+}
+
+############################################################
+# Set psvar[3] to be the Git branch and status in
+# parentheses, psvar[6] to be just the Git branch, and
+# psvar[7] to be just the Git symbols.
+#
+# Arguments:
+#   $1  The Git branch and status string (the output of
+#         _agkozak_branch_status)
+############################################################
+_agkozak_set_git_psvars() {
+  psvar[3]="$1"
+  psvar[6]=${${${1#*\(}% *}%\)}
+  if [[ ${1#*\(} == *' '* ]]; then
+    psvar[7]=${${1%\)}##* }
+  else
+    psvar[7]=''
   fi
 }
 
@@ -457,7 +484,7 @@ AGKOZAK[PROMPT_DIR]="${0:A:h}"
 #   AGKOZAK_PROMPT_DEBUG
 ############################################################
 _agkozak_load_async_lib() {
-  if ! whence -w async_init &> /dev/null; then      # Don't load zsh-async twice
+  if ! whence async_init &> /dev/null; then      # Don't load zsh-async twice
     if (( AGKOZAK_PROMPT_DEBUG )); then
       source "${AGKOZAK[PROMPT_DIR]}/lib/async.zsh"
     else
@@ -472,7 +499,7 @@ _agkozak_load_async_lib() {
 # Is SIGUSR1 is available and not already in use by ZSH?
 ############################################################
 _agkozak_has_usr1() {
-  if whence -w TRAPUSR1 &> /dev/null; then
+  if whence TRAPUSR1 &> /dev/null; then
     _agkozak_debug_print 'TRAPUSR1 already defined.'
     if [[ $(whence -c TRAPUSR1) == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
       _agkozak_debug_print 'Continuing to use TRAPUSR1.'
@@ -592,7 +619,8 @@ _agkozak_async_init() {
   ############################################################
   # ZLE callback handler
   #
-  # Read Git status from file descriptor and set psvar[3]
+  # Read Git status from file descriptor and set the relevant
+  # psvars
   #
   # Arguments:
   #   $1  File descriptor
@@ -610,7 +638,7 @@ _agkozak_async_init() {
     zle -F ${FD}; exec {FD}<&-
 
     # Make the changes visible
-    psvar[3]="$response"
+    _agkozak_set_git_psvars "$response"
     zle && zle .reset-prompt
   }
 
@@ -628,12 +656,12 @@ _agkozak_async_init() {
       }
 
       ############################################################
-      # Set RPROMPT and stop worker
+      # Update the prompts and stop worker
       ############################################################
       _agkozak_zsh_async_callback() {
         emulate -L zsh
 
-        psvar[3]=$3
+        _agkozak_set_git_psvars "$3"
         zle && zle .reset-prompt
         async_stop_worker agkozak_git_status_worker -n
       }
@@ -652,7 +680,7 @@ _agkozak_async_init() {
       _agkozak_usr1_async() {
         emulate -L zsh
 
-        if [[ "$(builtin which TRAPUSR1)" == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
+        if [[ "$(whence -c TRAPUSR1)" == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK[USR1_ASYNC_WORKER] )); then
             kill -s HUP "${AGKOZAK[USR1_ASYNC_WORKER]}" &> /dev/null || :
@@ -664,7 +692,7 @@ _agkozak_async_init() {
         else
           _agkozak_debug_print 'TRAPUSR1 has been redefined. Switching to subst-async mode.'
           AGKOZAK[ASYNC_METHOD]='subst-async'
-          psvar[3]="$(_agkozak_branch_status)"
+          _agkozak_set_git_psvars "$(_agkozak_branch_status)"
         fi
       }
 
@@ -689,9 +717,9 @@ _agkozak_async_init() {
 
       ############################################################
       # On SIGUSR1, fetch Git status from temprary file and store
-      # it in psvar[3]. This function caches its own code in
-      # AGKOZAK[TRAPUSR1_FUNCTION] so that it can tell if it has
-      # been redefined by another script.
+      # it in the relevant psvars. This function caches its own
+      # code in AGKOZAK[TRAPUSR1_FUNCTION] so that it can tell if
+      # it has been redefined by another script.
       #
       # Globals:
       #   AGKOZAK
@@ -699,8 +727,8 @@ _agkozak_async_init() {
       TRAPUSR1() {
         emulate -L zsh
 
-        # Set prompt from contents of temporary file
-        psvar[3]=$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")
+        # Set prompts from contents of temporary file
+        _agkozak_set_git_psvars "$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")"
 
         # Reset asynchronous process number
         AGKOZAK[USR1_ASYNC_WORKER]=0
@@ -709,7 +737,7 @@ _agkozak_async_init() {
         zle && zle .reset-prompt
       }
 
-      AGKOZAK[TRAPUSR1_FUNCTION]="$(builtin which TRAPUSR1)"
+      AGKOZAK[TRAPUSR1_FUNCTION]="$(whence -c TRAPUSR1)"
       ;;
   esac
 }
@@ -773,7 +801,7 @@ _agkozak_precmd() {
   (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Clear the Git status display until it has been recalculated
-  psvar[3]=''
+  _agkozak_set_git_psvars ''
 
   # It is necessary to clear the vi mode display, too
   psvar[4]=''
@@ -805,7 +833,7 @@ _agkozak_precmd() {
     'subst-async') _agkozak_subst_async ;;
     'zsh-async') _agkozak_zsh_async ;;
     'usr1') _agkozak_usr1_async ;;
-    *) psvar[3]="$(_agkozak_branch_status)" ;;
+    *) _agkozak_set_git_psvars "$(_agkozak_branch_status)" ;;
   esac
 
   # Construct and display PROMPT and RPROMPT
@@ -861,7 +889,7 @@ _agkozak_prompt_strings() {
   else
     # The color right prompt
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
-      AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
+      AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     else
       AGKOZAK[RPROMPT]=''
     fi
@@ -1054,7 +1082,7 @@ agkozak-zsh-prompt_plugin_unload() {
   fi
 
   for x in ${=AGKOZAK[FUNCTIONS]}; do
-    whence -w $x &> /dev/null && unfunction $x
+    whence $x &> /dev/null && unfunction $x
   done
 
   zle -N clear-screen clear-screen

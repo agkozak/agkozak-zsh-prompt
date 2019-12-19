@@ -104,6 +104,7 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_is_ssh
                     _agkozak_prompt_dirtrim
                     _agkozak_branch_status
+                    _agkozak_set_git_psvars
                     _agkozak_zle-keymap-select
                     TRAPWINCH
                     _agkozak_vi_mode_indicator

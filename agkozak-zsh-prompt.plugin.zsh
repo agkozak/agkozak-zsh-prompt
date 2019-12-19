@@ -425,8 +425,8 @@ _agkozak_branch_status() {
 _agkozak_set_git_psvars() {
   psvar[3]="$1"
   psvar[6]=${${${1#*\(}% *}%\)}
-  if [[ $1 == *' '* ]]; then
-    psvar[7]=${${1#*\(* }%\)}
+  if [[ ${1#*\(} == *' '* ]]; then
+    psvar[7]=${${1%\)}##* }
   else
     psvar[7]=''
   fi

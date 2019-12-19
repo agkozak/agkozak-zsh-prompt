@@ -880,7 +880,7 @@ _agkozak_prompt_strings() {
   else
     # The color right prompt
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
-      AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)'
+      AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     else
       AGKOZAK[RPROMPT]=''
     fi

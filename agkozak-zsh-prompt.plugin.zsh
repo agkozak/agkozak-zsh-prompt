@@ -535,13 +535,15 @@ _agkozak_async_init() {
   # TODO: Figure out if BG_NICE should be disabled in WSL2
   #
   # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-  if [[ $OSTYPE == linux* ]] && [[ -e /proc/version ]] \
+  if [[ ${OSTYPE} == linux* ]] && [[ -e /proc/version ]] \
     && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
     unsetopt BG_NICE
     AGKOZAK[IS_WSL]=1   # For later reference
   fi
 
-  if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
+  if [[ ${AGKOZAK_FORCE_ASYNC_METHOD} == (subst-async|zsh-async|usr1|none) ]]; then
+    [[ ${AGKOZAK_FORCE_ASYNC_METHOD} == 'zsh-async' ]] \
+      && _agkozak_load_async_lib
     AGKOZAK[ASYNC_METHOD]=${AGKOZAK_FORCE_ASYNC_METHOD}
 
   # Otherwise, first provide for certain quirky systems

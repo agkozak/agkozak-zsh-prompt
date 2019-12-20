@@ -810,12 +810,8 @@ _agkozak_precmd() {
   fi
 
   # Optionally put blank lines between instances of the prompt
-  if (( AGKOZAK_BLANK_LINES )); then
-    if (( AGKOZAK[FIRST_PROMPT_PRINTED] )); then
-      print
-    fi
-    AGKOZAK[FIRST_PROMPT_PRINTED]=1
-  fi
+  (( AGKOZAK_BLANK_LINES )) && (( AGKOZAK[FIRST_PROMPT_PRINTED] )) && print
+  AGKOZAK[FIRST_PROMPT_PRINTED]=1
 
   # Begin to calculate the Git status
   case ${AGKOZAK[ASYNC_METHOD]} in

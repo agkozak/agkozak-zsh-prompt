@@ -922,7 +922,7 @@ agkozak-zsh-prompt() {
   fi
 
   # Don't use ZSH hooks in Emacs classic shell
-  if (( $+INSIDE_EMACS )) && [[ $TERM == 'dumb' ]]; then
+  if (( $+INSIDE_EMACS )) && [[ ${TERM} == 'dumb' ]]; then
     :
   else
     autoload -Uz add-zsh-hook
@@ -938,13 +938,11 @@ agkozak-zsh-prompt() {
 
   # The DragonFly BSD console and Emacs shell can't handle bracketed paste.
   # Avoid the ugly ^[[?2004 control sequence.
-  if [[ $TERM == 'cons25' ]] || [[ $TERM == 'dumb' ]]; then
-    unset zle_bracketed_paste
-  fi
+  [[ ${TERM} == (cons25|dumb) ]] && unset zle_bracketed_paste
 
   # The Emacs shell has only limited support for some ZSH features, so use a
   # more limited prompt.
-  if [[ $TERM == 'dumb' ]]; then
+  if [[ ${TERM} == 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
     PROMPT+='$(_agkozak_prompt_dirtrim "${AGKOZAK_PROMPT_DIRTRIM:-2}")'

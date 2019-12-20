@@ -197,12 +197,8 @@ _agkozak_has_colors() {
       *-256color) AGKOZAK[HAS_COLORS]=1 ;;
       vt100|dumb) AGKOZAK[HAS_COLORS]=0 ;;
       *)
-        local colors
-        case $OSTYPE in
-          freebsd*|dragonfly*) colors=$(tput Co) ;;
-          *) colors=$(tput colors) ;;
-        esac
-        AGKOZAK[HAS_COLORS]=$(( colors >= 8 ))
+        [[ ${modules[zsh/terminfo]} == loaded ]] || zmodload zsh/terminfo
+        AGKOZAK[HAS_COLORS]=$(( ${terminfo[colors]:-0} >= 8 ))
         ;;
     esac
   fi
@@ -359,7 +355,7 @@ _agkozak_branch_status() {
   esac
   branch=${ref#refs/heads/}
 
-  if [[ -n $branch ]]; then
+  if [[ -n ${branch} ]]; then
     local git_status symbols i=1 k
 
     # Cache the Git version
@@ -538,16 +534,18 @@ _agkozak_async_init() {
   emulate -L zsh
   setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
-  # TODO: Figure out if BG_NICE should be disabled in WSL2
-  #
-  # WSL should have BG_NICE disabled, since it does not have a Linux kernel
-  if [[ $OSTYPE == linux* ]] && [[ -e /proc/version ]] \
+  # Detect the Windows Subsystem for Linux
+  if [[ ${OSTYPE} == linux* ]] \
     && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
+    # WSL1 should have BG_NICE disabled, since it does not have a Linux kernel
+    # TODO: Determine what to do for WSL2
     unsetopt BG_NICE
     AGKOZAK[IS_WSL]=1   # For later reference
   fi
 
-  if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
+  if [[ ${AGKOZAK_FORCE_ASYNC_METHOD} == (subst-async|zsh-async|usr1|none) ]]; then
+    [[ ${AGKOZAK_FORCE_ASYNC_METHOD} == 'zsh-async' ]] \
+      && _agkozak_load_async_lib
     AGKOZAK[ASYNC_METHOD]=${AGKOZAK_FORCE_ASYNC_METHOD}
 
   # Otherwise, first provide for certain quirky systems
@@ -699,20 +697,13 @@ _agkozak_async_init() {
       ############################################################
       # Calculate Git status and store it in a temporary file;
       # then kill own process, sending SIGUSR1
-      #
-      # Globals:
-      #   AGKOZAK_PROMPT_DEBUG
       ############################################################
       _agkozak_usr1_async_worker() {
         # Save Git branch status to temporary file
         _agkozak_branch_status >| /tmp/agkozak_zsh_prompt_$$
 
         # Signal parent process
-        if (( AGKOZAK_PROMPT_DEBUG )); then
-          kill -s USR1 $$
-        else
-          kill -s USR1 $$ &> /dev/null
-        fi
+        kill -s USR1 $$ &> /dev/null
       }
 
       ############################################################
@@ -728,7 +719,7 @@ _agkozak_async_init() {
         emulate -L zsh
 
         # Set prompts from contents of temporary file
-        _agkozak_set_git_psvars "$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")"
+        _agkozak_set_git_psvars "$(< /tmp/agkozak_zsh_prompt_$$)"
 
         # Reset asynchronous process number
         AGKOZAK[USR1_ASYNC_WORKER]=0
@@ -821,12 +812,8 @@ _agkozak_precmd() {
   fi
 
   # Optionally put blank lines between instances of the prompt
-  if (( AGKOZAK_BLANK_LINES )); then
-    if (( AGKOZAK[FIRST_PROMPT_PRINTED] )); then
-      print
-    fi
-    AGKOZAK[FIRST_PROMPT_PRINTED]=1
-  fi
+  (( AGKOZAK_BLANK_LINES )) && (( AGKOZAK[FIRST_PROMPT_PRINTED] )) && print
+  AGKOZAK[FIRST_PROMPT_PRINTED]=1
 
   # Begin to calculate the Git status
   case ${AGKOZAK[ASYNC_METHOD]} in
@@ -1012,7 +999,7 @@ agkozak-zsh-prompt() {
   fi
 
   # Don't use ZSH hooks in Emacs classic shell
-  if (( $+INSIDE_EMACS )) && [[ $TERM == 'dumb' ]]; then
+  if (( $+INSIDE_EMACS )) && [[ ${TERM} == 'dumb' ]]; then
     :
   else
     autoload -Uz add-zsh-hook
@@ -1028,13 +1015,11 @@ agkozak-zsh-prompt() {
 
   # The DragonFly BSD console and Emacs shell can't handle bracketed paste.
   # Avoid the ugly ^[[?2004 control sequence.
-  if [[ $TERM == 'cons25' ]] || [[ $TERM == 'dumb' ]]; then
-    unset zle_bracketed_paste
-  fi
+  [[ ${TERM} == (cons25|dumb) ]] && unset zle_bracketed_paste
 
   # The Emacs shell has only limited support for some ZSH features, so use a
   # more limited prompt.
-  if [[ $TERM == 'dumb' ]]; then
+  if [[ ${TERM} == 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
     PROMPT+='$(_agkozak_prompt_dirtrim "${AGKOZAK_PROMPT_DIRTRIM:-2}")'

@@ -353,7 +353,7 @@ _agkozak_branch_status() {
   esac
   branch=${ref#refs/heads/}
 
-  if [[ -n $branch ]]; then
+  if [[ -n ${branch} ]]; then
     local git_status symbols i=1 k
 
     # Cache the Git version
@@ -695,20 +695,13 @@ _agkozak_async_init() {
       ############################################################
       # Calculate Git status and store it in a temporary file;
       # then kill own process, sending SIGUSR1
-      #
-      # Globals:
-      #   AGKOZAK_PROMPT_DEBUG
       ############################################################
       _agkozak_usr1_async_worker() {
         # Save Git branch status to temporary file
         _agkozak_branch_status >| /tmp/agkozak_zsh_prompt_$$
 
         # Signal parent process
-        if (( AGKOZAK_PROMPT_DEBUG )); then
-          kill -s USR1 $$
-        else
-          kill -s USR1 $$ &> /dev/null
-        fi
+        kill -s USR1 $$ &> /dev/null
       }
 
       ############################################################
@@ -724,7 +717,7 @@ _agkozak_async_init() {
         emulate -L zsh
 
         # Set prompts from contents of temporary file
-        _agkozak_set_git_psvars "$(print -n -- "$(< /tmp/agkozak_zsh_prompt_$$)")"
+        _agkozak_set_git_psvars "$(< /tmp/agkozak_zsh_prompt_$$)"
 
         # Reset asynchronous process number
         AGKOZAK[USR1_ASYNC_WORKER]=0

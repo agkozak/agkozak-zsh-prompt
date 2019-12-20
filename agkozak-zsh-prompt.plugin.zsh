@@ -195,7 +195,7 @@ _agkozak_has_colors() {
       *-256color) AGKOZAK[HAS_COLORS]=1 ;;
       vt100|dumb) AGKOZAK[HAS_COLORS]=0 ;;
       *)
-        [[ ${modules[terminfo]} == loaded ]] || zmodload zsh/terminfo
+        [[ ${modules[zsh/terminfo]} == loaded ]] || zmodload zsh/terminfo
         AGKOZAK[HAS_COLORS]=$(( ${terminfo[colors]:-0} >= 8 ))
         ;;
     esac

@@ -188,12 +188,8 @@ _agkozak_has_colors() {
       *-256color) AGKOZAK[HAS_COLORS]=1 ;;
       vt100|dumb) AGKOZAK[HAS_COLORS]=0 ;;
       *)
-        local colors
-        case $OSTYPE in
-          freebsd*|dragonfly*) colors=$(tput Co) ;;
-          *) colors=$(tput colors) ;;
-        esac
-        AGKOZAK[HAS_COLORS]=$(( colors >= 8 ))
+        [[ ${modules[terminfo]} == loaded ]] || zmodload zsh/terminfo
+        AGKOZAK[HAS_COLORS]=$(( ${terminfo[colors]:-0} >= 8 ))
         ;;
     esac
   fi

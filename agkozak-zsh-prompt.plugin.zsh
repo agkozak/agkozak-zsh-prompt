@@ -260,19 +260,20 @@ _agkozak_prompt_dirtrim() {
   done
   [[ $1 -ge 0 ]] || set 2
 
+  local output
+
   # Default behavior (when AGKOZAK_NAMED_DIRS is 1)
   if (( ${AGKOZAK_NAMED_DIRS:-1} )); then
     local zsh_pwd
-    print -Pnz -- '%~'
+    zsh_pwd=${(%):-%~}
 
     # IF AGKOZAK_PROMPT_DIRTRIM is not 0, trim directory
     if (( $1 )); then
-      read -rz zsh_pwd
       case $zsh_pwd in
-        \~) print -Pnz -- $zsh_pwd ;;
-        \~/*) print -Pnz -- "%($(( $1 + 2 ))~|~/.../%${1}~|%~)" ;;
-        \~*) print -Pnz -- "%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)" ;;
-        *) print -Pnz -- "%($(( $1 + 1 ))/|.../%${1}d|%d)" ;;
+        \~) output=${(%)zsh_pwd} ;;
+        \~/*) output="${(%):-%($(( $1 + 2 ))~|~/.../%${1}~|%~)}" ;;
+        \~*) output="${(%):-%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)}" ;;
+        *) output="${(%):-%($(( $1 + 1 ))/|.../%${1}d|%d)}" ;;
       esac
     fi
 
@@ -291,9 +292,9 @@ _agkozak_prompt_dirtrim() {
       dir_count=$(( ${#dir} - ${#${dir//\//}} ))
       if (( dir_count <= $1 )); then
         case $PWD in
-          ${HOME}) print -nz '~' ;;
-          ${HOME}*) print -nz "~${dir}" ;;
-          *) print -nz -- "$PWD" ;;
+          ${HOME}) output='~' ;;
+          ${HOME}*) output="~${dir}" ;;
+          *) output="$PWD" ;;
         esac
       else
         local lopped_path i
@@ -304,29 +305,26 @@ _agkozak_prompt_dirtrim() {
           (( i++ ))
         done
         case $PWD in
-          ${HOME}*) print -nz "~/...${dir#${lopped_path}}" ;;
-          *) print -nz -f '...%s' "${PWD#${lopped_path}}" ;;
+          ${HOME}*) output="~/...${dir#${lopped_path}}" ;;
+          *) output="...${PWD#${lopped_path}}" ;;
         esac
       fi
 
     # If AGKOZAK_PROMPT_DIRTRIM is 0
     else
       case $PWD in
-        ${HOME}) print -nz '~' ;;
-        ${HOME}*) print -nz "~${dir}" ;;
-        *) print -nz -- "$PWD" ;;
+        ${HOME}) output='~' ;;
+        ${HOME}*) output="~${dir}" ;;
+        *) output="$PWD" ;;
       esac
     fi
   fi
-
-  local output
-  read -rz output
 
   # Argument -v stores the output to psvar[2]; otherwise send to STDOUT
   if (( var )); then
     psvar[2]=${output}
   else
-    print -- ${output}
+    print -n -- ${output}
   fi
 }
 
@@ -768,9 +766,7 @@ _agkozak_strip_colors() {
     esac
   done
 
-  print -nz -- "${(qq)newprompt}"
-  read -rz $1
-  typeset -g $1=${(PQQ)1}
+  typeset -g $1=${newprompt}
 }
 
 ############################################################

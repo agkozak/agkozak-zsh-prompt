@@ -938,12 +938,11 @@ _agkozak_prompt_strings() {
       AGKOZAK[CR_PRINTED]=1
     fi
 
-    print -Pnz ${AGKOZAK[PROMPT]}
-    local REPLY
-    read -rz
-    while [[ ${REPLY} == *$'\n'* ]]; do
-      print -- ${REPLY%%$'\n'*}
-      REPLY=${REPLY#*$'\n'}
+    local printed_prompt
+    printed_prompt=${(%)${(e)AGKOZAK[PROMPT]}}
+    while [[ ${printed_prompt} == *$'\n'* ]]; do
+      print -- ${printed_prompt%%$'\n'*}
+      printed_prompt=${printed_prompt#*$'\n'}
     done
     typeset -g PROMPT=${AGKOZAK[PROMPT]##*(\$\{AGKOZAK_PROMPT_WHITESPACE\}|$'\n')}
 

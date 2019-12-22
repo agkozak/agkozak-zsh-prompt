@@ -71,7 +71,6 @@ autoload -Uz is-at-least add-zle-hook-widget
 #                       prompt of the session
 # AGKOZAK[FUNCTIONS]    A list of the prompt's functions
 # AGKOZAK[GIT_VERSION]  The version of Git on a given system
-# AGKOZAK[HAS_COLORS]   Whether or not to display the prompt in color
 # AGKOZAK[IS_WSL]       Whether or not the system is WSL
 # AGKOZAK[OLD_PROMPT]   The left prompt before this prompt was loaded
 # AGKOZAK[OLD RPROMPT]  The right prompt before this prompt was loaded
@@ -190,17 +189,14 @@ setopt PROMPT_SUBST NO_PROMPT_BANG
 #   AGKOZAK
 ############################################################
 _agkozak_has_colors() {
-  if (( ! ${+AGKOZAK[HAS_COLORS]} )); then
     case $TERM in
-      *-256color) AGKOZAK[HAS_COLORS]=1 ;;
-      vt100|dumb) AGKOZAK[HAS_COLORS]=0 ;;
+      *-256color) return 0 ;;
+      vt100|dumb) return 1 ;;
       *)
         [[ ${modules[zsh/terminfo]} == loaded ]] || zmodload zsh/terminfo
-        AGKOZAK[HAS_COLORS]=$(( ${terminfo[colors]:-0} >= 8 ))
+        (( ${terminfo[colors]:-0} >= 8 ))
         ;;
     esac
-  fi
-  (( AGKOZAK[HAS_COLORS] ))
 }
 
 ############################################################

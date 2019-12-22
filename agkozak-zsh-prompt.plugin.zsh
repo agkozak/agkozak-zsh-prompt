@@ -92,8 +92,8 @@ AGKOZAK_OLD_OPTIONS=(
 
 # Store previous prompts and psvars for the unload function
 typeset -ga AGKOZAK_OLD_PSVAR
-AGKOZAK[OLD_PROMPT]=${PROMPT}
-AGKOZAK[OLD_RPROMPT]=${RPROMPT}
+AGKOZAK[OLD_PROMPT]=$PROMPT
+AGKOZAK[OLD_RPROMPT]=$RPROMPT
 AGKOZAK_OLD_PSVAR=( ${psvar[@]} )
 
 # Names of prompt functions. Used to enable WARN_NESTED_VAR in debug mode
@@ -208,7 +208,7 @@ _agkozak_has_colors() {
 # her username and hostname in inverse video.
 ############################################################
 _agkozak_is_ssh() {
-  [[ -n "${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-}" ]]
+  [[ -n ${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-} ]]
 }
 
 ############################################################
@@ -275,7 +275,7 @@ _agkozak_prompt_dirtrim() {
   else
     local dir dir_count
     case $HOME in
-      /) dir=${PWD} ;;
+      /) dir=$PWD ;;
       *) dir=${PWD#$HOME} ;;
     esac
 
@@ -283,16 +283,16 @@ _agkozak_prompt_dirtrim() {
     if (( $1 > 0 )); then
 
       # The number of directory elements is the number of slashes in ${PWD#$HOME}
-      dir_count=$(( ${#dir} - ${#${dir//\//}} ))
+      dir_count=$(( $#dir - ${#${dir//\//}} ))
       if (( dir_count <= $1 )); then
         case $PWD in
-          ${HOME}) output='~' ;;
+          $HOME) output='~' ;;
           ${HOME}*) output="~${dir}" ;;
           *) output="$PWD" ;;
         esac
       else
         local lopped_path i
-        lopped_path=${dir}
+        lopped_path=$dir
         i=0
         while (( i != $1 )); do
           lopped_path=${lopped_path%\/*}
@@ -307,7 +307,7 @@ _agkozak_prompt_dirtrim() {
     # If AGKOZAK_PROMPT_DIRTRIM is 0
     else
       case $PWD in
-        ${HOME}) output='~' ;;
+        $HOME) output='~' ;;
         ${HOME}*) output="~${dir}" ;;
         *) output="$PWD" ;;
       esac
@@ -316,9 +316,9 @@ _agkozak_prompt_dirtrim() {
 
   # Argument -v stores the output to psvar[2]; otherwise send to STDOUT
   if (( var )); then
-    psvar[2]=${output}
+    psvar[2]=$output
   else
-    print -n -- ${output}
+    print -n -- $output
   fi
 }
 
@@ -347,7 +347,7 @@ _agkozak_branch_status() {
   esac
   branch=${ref#refs/heads/}
 
-  if [[ -n ${branch} ]]; then
+  if [[ -n $branch ]]; then
     local git_status symbols i=1 k
 
     # Cache the Git version
@@ -526,7 +526,7 @@ _agkozak_async_init() {
   setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
   # Detect the Windows Subsystem for Linux
-  if [[ ${OSTYPE} == linux* ]] \
+  if [[ $OSTYPE == linux* ]] \
     && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
     # WSL1 should have BG_NICE disabled, since it does not have a Linux kernel
     # TODO: Determine what to do for WSL2
@@ -537,7 +537,7 @@ _agkozak_async_init() {
   if [[ ${AGKOZAK_FORCE_ASYNC_METHOD} == (subst-async|zsh-async|usr1|none) ]]; then
     [[ ${AGKOZAK_FORCE_ASYNC_METHOD} == 'zsh-async' ]] \
       && _agkozak_load_async_lib
-    AGKOZAK[ASYNC_METHOD]=${AGKOZAK_FORCE_ASYNC_METHOD}
+    AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
 
   # Otherwise, first provide for certain quirky systems
   else
@@ -588,15 +588,15 @@ _agkozak_async_init() {
     typeset -g AGKOZAK_ASYNC_FD=13371
 
     if [[ $OSTYPE == (msys|cygwin) ]]; then
-      exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status; command true)
+      exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status; command true)
     elif [[ $OSTYPE == solaris* ]]; then
-      exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
+      exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status)
       command sleep 0.01
     elif [[ $ZSH_VERSION == 5.0.[0-2] ]]; then
-      exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
+      exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status)
       command sleep 0.02
     else
-      exec {AGKOZAK_ASYNC_FD}< <(_agkozak_branch_status)
+      exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status)
 
       # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
       command true
@@ -618,13 +618,13 @@ _agkozak_async_init() {
     emulate -L zsh
     setopt LOCAL_OPTIONS NO_IGNORE_BRACES
 
-    local FD="$1" response
+    local fd="$1" response
 
     # Read data from $FD descriptor
-    IFS='' builtin read -rs -d $'\0' -u "$FD" response
+    IFS='' builtin read -rs -d $'\0' -u "$fd" response
 
     # Withdraw callback and close the file descriptor
-    zle -F ${FD}; exec {FD}<&-
+    zle -F ${fd}; exec {fd}<&-
 
     # Make the changes visible
     _agkozak_set_git_psvars "$response"
@@ -759,7 +759,7 @@ _agkozak_strip_colors() {
     esac
   done
 
-  typeset -g $1=${newprompt}
+  typeset -g $1=$newprompt
 }
 
 ############################################################
@@ -839,7 +839,7 @@ _agkozak_prompt_strings() {
 
   # TODO: Document what unsetting the custom prompt strings does.
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then
-    AGKOZAK[PROMPT]=${AGKOZAK_CUSTOM_PROMPT}
+    AGKOZAK[PROMPT]=$AGKOZAK_CUSTOM_PROMPT
   else
     # The color left prompt
     AGKOZAK[PROMPT]=''
@@ -856,7 +856,7 @@ _agkozak_prompt_strings() {
   fi
 
   if (( $+AGKOZAK_CUSTOM_RPROMPT )); then
-    AGKOZAK[RPROMPT]=${AGKOZAK_CUSTOM_RPROMPT}
+    AGKOZAK[RPROMPT]=$AGKOZAK_CUSTOM_RPROMPT
   else
     # The color right prompt
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
@@ -902,7 +902,7 @@ agkozak-zsh-prompt() {
   fi
 
   # Don't use ZSH hooks in Emacs classic shell
-  if (( $+INSIDE_EMACS )) && [[ ${TERM} == 'dumb' ]]; then
+  if (( $+INSIDE_EMACS )) && [[ $TERM == 'dumb' ]]; then
     :
   else
     autoload -Uz add-zsh-hook
@@ -918,11 +918,11 @@ agkozak-zsh-prompt() {
 
   # The DragonFly BSD console and Emacs shell can't handle bracketed paste.
   # Avoid the ugly ^[[?2004 control sequence.
-  [[ ${TERM} == (cons25|dumb) ]] && unset zle_bracketed_paste
+  [[ $TERM == (cons25|dumb) ]] && unset zle_bracketed_paste
 
   # The Emacs shell has only limited support for some ZSH features, so use a
   # more limited prompt.
-  if [[ ${TERM} == 'dumb' ]]; then
+  if [[ $TERM == 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
     PROMPT+='$(_agkozak_prompt_dirtrim "${AGKOZAK_PROMPT_DIRTRIM:-2}")'

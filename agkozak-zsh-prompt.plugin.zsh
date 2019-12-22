@@ -433,8 +433,7 @@ _agkozak_zle-keymap-select() {
   emulate -L zsh
 
   [[ $KEYMAP == 'vicmd' ]] && psvar[4]='vicmd' || psvar[4]=''
-  zle .reset-prompt
-  zle -R
+  zle && { zle .reset-prompt; zle -R; }
 }
 
 ############################################################

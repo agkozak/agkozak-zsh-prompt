@@ -520,8 +520,8 @@ _agkozak_async_init() {
   setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
   # Detect the Windows Subsystem for Linux
-  if [[ $OSTYPE == linux* ]] \
-    && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
+  if (( $+WSL_DISTRO_NAME )) || { [[ $OSTYPE == linux* ]] \
+    && [[ -n ${(M)${(f)"$(</proc/version)"}:#*(Microsoft|WSL)*} ]]; }; then
     # WSL1 should have BG_NICE disabled, since it does not have a Linux kernel
     # TODO: Determine what to do for WSL2
     unsetopt BG_NICE

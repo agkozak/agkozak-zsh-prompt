@@ -539,8 +539,6 @@ _agkozak_async_init() {
     if [[ $OSTYPE == solaris* ]]; then
       if [[ $ZSH_VERSION != '5.0.2' ]] && _agkozak_load_async_lib; then
         AGKOZAK[ASYNC_METHOD]='zsh-async'
-      elif _agkozak_has_usr1; then
-        AGKOZAK[ASYNC_METHOD]='usr1'
       else
         AGKOZAK[ASYNC_METHOD]='subst-async'
       fi

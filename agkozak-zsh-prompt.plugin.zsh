@@ -350,11 +350,6 @@ _agkozak_branch_status() {
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k
 
-    # Cache the Git version
-    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      : ${${AGKOZAK[GIT_VERSION]:=$(command git --version)}#git version }
-    fi
-
     if (( ${AGKOZAK_SHOW_STASH:-1} )); then
       if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
@@ -778,6 +773,11 @@ _agkozak_strip_colors() {
 _agkozak_precmd() {
   emulate -L zsh
   (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
+  # Cache the Git version
+  if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+    : ${AGKOZAK[GIT_VERSION]:=${"$(command git --version)"#git version }}
+  fi
 
   # Clear the Git status display until it has been recalculated
   _agkozak_set_git_psvars ''

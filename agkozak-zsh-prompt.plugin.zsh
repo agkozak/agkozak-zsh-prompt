@@ -70,7 +70,6 @@ autoload -Uz is-at-least add-zle-hook-widget
 #                       prevents an unnecessary blank line before the first
 #                       prompt of the session
 # AGKOZAK[FUNCTIONS]    A list of the prompt's functions
-# AGKOZAK[GIT_VERSION]  The version of Git on a given system
 # AGKOZAK[IS_WSL]       Whether or not the system is WSL
 # AGKOZAK[OLD_PROMPT]   The left prompt before this prompt was loaded
 # AGKOZAK[OLD RPROMPT]  The right prompt before this prompt was loaded
@@ -332,6 +331,7 @@ _agkozak_prompt_dirtrim() {
 #   AGKOZAK
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_SHOW_STASH
+#   AGKOZAK_GIT_VERSION
 #   AGKOZAK_CUSTOM_SYMBOLS
 #   AGKOZAK_BRANCH_STATUS_SEPARATOR
 ############################################################
@@ -352,13 +352,8 @@ _agkozak_branch_status() {
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k
 
-    # Cache the Git version
     if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      : ${${AGKOZAK[GIT_VERSION]:=$(command git --version)}#git version }
-    fi
-
-    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
+      if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
       else
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
@@ -387,7 +382,7 @@ _agkozak_branch_status() {
     # Check for stashed changes. If there are any, add the stash symbol to the
     # list of symbols.
     if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
+      if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
         case $git_status in
           *'Your stash currently has '*)
             symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
@@ -528,8 +523,8 @@ _agkozak_async_init() {
   setopt LOCAL_OPTIONS EXTENDED_GLOB NO_LOCAL_TRAPS
 
   # Detect the Windows Subsystem for Linux
-  if [[ $OSTYPE == linux* ]] \
-    && [[ -n ${(M)${(f)"$(</proc/version)"}:#*Microsoft*} ]]; then
+  if (( $+WSL_DISTRO_NAME )) || { [[ $OSTYPE == linux* ]] \
+    && [[ -n ${(M)${(f)"$(</proc/version)"}:#*(Microsoft|WSL)*} ]]; }; then
     # WSL1 should have BG_NICE disabled, since it does not have a Linux kernel
     # TODO: Determine what to do for WSL2
     unsetopt BG_NICE
@@ -537,8 +532,7 @@ _agkozak_async_init() {
   fi
 
   if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
-    [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] \
-      && _agkozak_load_async_lib
+    [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
     AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
 
   # Otherwise, first provide for certain quirky systems
@@ -771,6 +765,7 @@ _agkozak_strip_colors() {
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_PROMPT_DEBUG
+#   AGKOZAK_GIT_VERSION
 #   AGKOZAK_USER_HOST_DISPLAY
 #   AGKOZAK_MULTILINE
 #   AGKOZAK_PROMPT_WHITESPACE
@@ -781,6 +776,12 @@ _agkozak_strip_colors() {
 _agkozak_precmd() {
   emulate -L zsh
   (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
+  # Cache the Git version
+  if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+    typeset -gx AGKOZAK_GIT_VERSION
+    : ${AGKOZAK_GIT_VERSION:=${"$(command git --version)"#git version }}
+  fi
 
   # Clear the Git status display until it has been recalculated
   _agkozak_set_git_psvars ''
@@ -1038,10 +1039,8 @@ agkozak-zsh-prompt_plugin_unload() {
   setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
   local x
 
-  [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] \
-    && unsetopt PROMPT_SUBST
-  [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] \
-    && setopt PROMPT_BANG
+  [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] && unsetopt PROMPT_SUBST
+  [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] && setopt PROMPT_BANG
 
   PROMPT=${AGKOZAK[OLD_PROMPT]}
   RPROMPT=${AGKOZAK[OLD_RPROMPT]}

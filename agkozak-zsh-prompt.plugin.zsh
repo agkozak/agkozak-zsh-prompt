@@ -398,7 +398,7 @@ _agkozak_branch_status() {
       fi
     fi
 
-    [[ -n $symbols ]] && symbols=" ${symbols}"
+    [[ -n $symbols ]] && symbols=" $symbols"
 
     printf -- '%s(%s%s)' "${AGKOZAK_BRANCH_STATUS_SEPARATOR- }" "$branch" \
       "$symbols"
@@ -534,8 +534,8 @@ _agkozak_async_init() {
     AGKOZAK[IS_WSL]=1   # For later reference
   fi
 
-  if [[ ${AGKOZAK_FORCE_ASYNC_METHOD} == (subst-async|zsh-async|usr1|none) ]]; then
-    [[ ${AGKOZAK_FORCE_ASYNC_METHOD} == 'zsh-async' ]] \
+  if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
+    [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] \
       && _agkozak_load_async_lib
     AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
 

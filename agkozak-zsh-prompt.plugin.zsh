@@ -329,6 +329,7 @@ _agkozak_prompt_dirtrim() {
 #   AGKOZAK
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_SHOW_STASH
+#   AGKOZAK_GIT_VERSION
 #   AGKOZAK_CUSTOM_SYMBOLS
 #   AGKOZAK_BRANCH_STATUS_SEPARATOR
 ############################################################
@@ -762,6 +763,7 @@ _agkozak_strip_colors() {
 # Globals:
 #   AGKOZAK
 #   AGKOZAK_PROMPT_DEBUG
+#   AGKOZAK_GIT_VERSION
 #   AGKOZAK_USER_HOST_DISPLAY
 #   AGKOZAK_MULTILINE
 #   AGKOZAK_PROMPT_WHITESPACE

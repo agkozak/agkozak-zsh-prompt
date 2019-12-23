@@ -70,7 +70,6 @@ autoload -Uz is-at-least add-zle-hook-widget
 #                       prevents an unnecessary blank line before the first
 #                       prompt of the session
 # AGKOZAK[FUNCTIONS]    A list of the prompt's functions
-# AGKOZAK[GIT_VERSION]  The version of Git on a given system
 # AGKOZAK[IS_WSL]       Whether or not the system is WSL
 # AGKOZAK[OLD_PROMPT]   The left prompt before this prompt was loaded
 # AGKOZAK[OLD RPROMPT]  The right prompt before this prompt was loaded
@@ -351,7 +350,7 @@ _agkozak_branch_status() {
     local git_status symbols i=1 k
 
     if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
+      if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
       else
         git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
@@ -380,7 +379,7 @@ _agkozak_branch_status() {
     # Check for stashed changes. If there are any, add the stash symbol to the
     # list of symbols.
     if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      if is-at-least 2.14 ${AGKOZAK[GIT_VERSION]}; then
+      if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
         case $git_status in
           *'Your stash currently has '*)
             symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
@@ -776,7 +775,8 @@ _agkozak_precmd() {
 
   # Cache the Git version
   if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-    : ${AGKOZAK[GIT_VERSION]:=${"$(command git --version)"#git version }}
+    typeset -gx AGKOZAK_GIT_VERSION
+    : ${AGKOZAK_GIT_VERSION:=${"$(command git --version)"#git version }}
   fi
 
   # Clear the Git status display until it has been recalculated

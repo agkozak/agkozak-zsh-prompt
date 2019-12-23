@@ -910,9 +910,9 @@ _agkozak_prompt_strings() {
         && (( ! $+AGKOZAK_CUSTOM_PROMPT )); then
         return 0
       # If a custom prompt has one or more newlines in it
-      elif [[ ${AGKOZAK_CUSTOM_PROMPT} == *$'\n'* ]] \
-        || { [[ ${AGKOZAK_CUSTOM_PROMPT} == *\$\{AGKOZAK_PROMPT_WHITESPACE\} ]] \
-        && [[ ${AGKOZAK_PROMPT_WHITESPACE} == $'\n' ]]; }; then
+      elif [[ $AGKOZAK_CUSTOM_PROMPT == *$'\n'* ]] \
+        || { [[ $AGKOZAK_CUSTOM_PROMPT == *\$\{AGKOZAK_PROMPT_WHITESPACE\} ]] \
+        && [[ $AGKOZAK_PROMPT_WHITESPACE == $'\n' ]]; }; then
         return 0
       else
         return 1
@@ -936,7 +936,7 @@ _agkozak_prompt_strings() {
 
     local printed_prompt
     printed_prompt=${(%)${(e)AGKOZAK[PROMPT]}}
-    while [[ ${printed_prompt} == *$'\n'* ]]; do
+    while [[ $printed_prompt == *$'\n'* ]]; do
       print -- ${printed_prompt%%$'\n'*}
       printed_prompt=${printed_prompt#*$'\n'}
     done

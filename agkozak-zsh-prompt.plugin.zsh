@@ -664,7 +664,7 @@ _agkozak_async_init() {
         emulate -L zsh
 
         # Make sure TRAPUSR1 has not been redefined
-        if [[ "${functions[TRAPUSR1]}" == *_agkozak* ]]; then
+        if [[ ${functions[TRAPUSR1]} == *_agkozak* ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK[USR1_ASYNC_WORKER] )); then
             kill -s HUP "${AGKOZAK[USR1_ASYNC_WORKER]}" &> /dev/null || :

@@ -535,8 +535,7 @@ _agkozak_async_init() {
   fi
 
   if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
-    [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] \
-      && _agkozak_load_async_lib
+    [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
     AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
 
   # Otherwise, first provide for certain quirky systems
@@ -951,10 +950,8 @@ agkozak-zsh-prompt_plugin_unload() {
   setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
   local x
 
-  [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] \
-    && unsetopt PROMPT_SUBST
-  [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] \
-    && setopt PROMPT_BANG
+  [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] && unsetopt PROMPT_SUBST
+  [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] && setopt PROMPT_BANG
 
   PROMPT=${AGKOZAK[OLD_PROMPT]}
   RPROMPT=${AGKOZAK[OLD_RPROMPT]}

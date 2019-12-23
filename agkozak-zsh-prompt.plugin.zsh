@@ -485,7 +485,7 @@ _agkozak_load_async_lib() {
 _agkozak_has_usr1() {
   if whence TRAPUSR1 &> /dev/null; then
     _agkozak_debug_print 'TRAPUSR1 already defined.'
-    if [[ $(whence -c TRAPUSR1) == "${AGKOZAK[TRAPUSR1_FUNCTION]}" ]]; then
+    if [[ ${functions[TRAPUSR1]} == *_agkozak* ]]; then
       _agkozak_debug_print 'Continuing to use TRAPUSR1.'
       return 0
     else
@@ -666,7 +666,7 @@ _agkozak_async_init() {
         emulate -L zsh
 
         # Make sure TRAPUSR1 has not been redefined
-        if [[ "${functions[TRAPUSR1]}" == *_agkozak* ]]; then
+        if [[ ${functions[TRAPUSR1]} == *_agkozak* ]]; then
           # Kill running child process if necessary
           if (( AGKOZAK[USR1_ASYNC_WORKER] )); then
             kill -s HUP "${AGKOZAK[USR1_ASYNC_WORKER]}" &> /dev/null || :

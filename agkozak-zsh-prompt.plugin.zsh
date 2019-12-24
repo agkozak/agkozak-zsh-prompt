@@ -481,14 +481,13 @@ _agkozak_load_async_lib() {
 # Is SIGUSR1 is available and not already in use by ZSH?
 ############################################################
 _agkozak_has_usr1() {
-  if whence TRAPUSR1 &> /dev/null; then
-    _agkozak_debug_print 'TRAPUSR1 already defined.'
-    if [[ ${functions[TRAPUSR1]} == *_agkozak* ]]; then
-      _agkozak_debug_print 'Continuing to use TRAPUSR1.'
+  if (( ${+functions[TRAPUSR1]} )); then
+    _agkozak_debug_print 'TRAPUSR1 function already defined.'
+    if [[ ${functions[TRAPUSR1]} = *_agkozak* ]]; then
+      _agkozak_debug_print "Continuing to use agkozak-zsh-prompt's TRAPUSR1 function."
       return 0
     else
       _agkozak_debug_print 'Falling back to subst-async.'
-      return 1
     fi
   else
     case $signals in    # Array containing names of available signals

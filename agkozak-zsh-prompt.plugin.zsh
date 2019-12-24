@@ -134,7 +134,11 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
 #   $1  Message to send to STDERR
 ############################################################
 _agkozak_debug_print() {
-  (( AGKOZAK_PROMPT_DEBUG )) && print -- "agkozak-zsh-prompt: $1" >&2
+  if (( AGKOZAK_PROMPT_DEBUG )); then
+    _agkozak_has_colors && print -Pn '%F{red}' >&2
+    print -- "agkozak-zsh-prompt: $1" >&2
+    _agkozak_has_colors && print -Pn '%f' >&2
+  fi
 }
 
 if (( AGKOZAK_PROMPT_DEBUG )); then
@@ -468,7 +472,9 @@ AGKOZAK[PROMPT_DIR]="${0:A:h}"
 #   AGKOZAK_PROMPT_DEBUG
 ############################################################
 _agkozak_load_async_lib() {
-  if ! whence async_init &> /dev/null; then      # Don't load zsh-async twice
+  if (( ${+functions[async_init]} )); then
+    _agkozak_debug_print 'zsh-async already loaded.'
+  else
     if (( AGKOZAK_PROMPT_DEBUG )); then
       source "${AGKOZAK[PROMPT_DIR]}/lib/async.zsh"
     else
@@ -483,14 +489,13 @@ _agkozak_load_async_lib() {
 # Is SIGUSR1 is available and not already in use by ZSH?
 ############################################################
 _agkozak_has_usr1() {
-  if whence TRAPUSR1 &> /dev/null; then
-    _agkozak_debug_print 'TRAPUSR1 already defined.'
-    if [[ ${functions[TRAPUSR1]} == *_agkozak* ]]; then
-      _agkozak_debug_print 'Continuing to use TRAPUSR1.'
+  if (( ${+functions[TRAPUSR1]} )); then
+    _agkozak_debug_print 'TRAPUSR1 function already defined.'
+    if [[ ${functions[TRAPUSR1]} = *_agkozak* ]]; then
+      _agkozak_debug_print "Continuing to use agkozak-zsh-prompt's TRAPUSR1 function."
       return 0
     else
       _agkozak_debug_print 'Falling back to subst-async.'
-      return 1
     fi
   else
     case $signals in    # Array containing names of available signals
@@ -634,7 +639,8 @@ _agkozak_async_init() {
       ############################################################
       _agkozak_zsh_async() {
         async_start_worker agkozak_git_status_worker -n
-        async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
+        async_register_callback agkozak_git_status_worker \
+          _agkozak_zsh_async_callback
         async_job agkozak_git_status_worker _agkozak_branch_status
       }
 
@@ -676,7 +682,7 @@ _agkozak_async_init() {
         else
           _agkozak_debug_print 'TRAPUSR1 has been redefined. Switching to subst-async mode.'
           AGKOZAK[ASYNC_METHOD]='subst-async'
-          _agkozak_set_git_psvars "$(_agkozak_branch_status)"
+          _agkozak_precmd
         fi
       }
 
@@ -1054,7 +1060,7 @@ agkozak-zsh-prompt_plugin_unload() {
   fi
 
   for x in ${=AGKOZAK[FUNCTIONS]}; do
-    whence $x &> /dev/null && unfunction $x
+    (( ${+functions[$x]} )) && unfunction $x
   done
 
   zle -N clear-screen clear-screen

@@ -916,7 +916,7 @@ agkozak-zsh-prompt() {
 
   # Only display the HOSTNAME for an SSH connection or for a superuser
   if _agkozak_is_ssh || (( EUID == 0 )); then
-    psvar[1]="@${HOST%%.*}"
+    psvar[1]="@${(@):-%m}"
   else
     psvar[1]=''
   fi

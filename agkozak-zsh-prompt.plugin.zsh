@@ -132,7 +132,11 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
 #   $1  Message to send to STDERR
 ############################################################
 _agkozak_debug_print() {
-  (( AGKOZAK_PROMPT_DEBUG )) && print -- "agkozak-zsh-prompt: $1" >&2
+  if (( AGKOZAK_PROMPT_DEBUG )); then
+    _agkozak_has_colors && print -Pn '%F{red}' >&2
+    print -- "agkozak-zsh-prompt: $1" >&2
+    _agkozak_has_colors && print -Pn '%f' >&2
+  fi
 }
 
 if (( AGKOZAK_PROMPT_DEBUG )); then
@@ -633,7 +637,8 @@ _agkozak_async_init() {
       ############################################################
       _agkozak_zsh_async() {
         async_start_worker agkozak_git_status_worker -n
-        async_register_callback agkozak_git_status_worker _agkozak_zsh_async_callback
+        async_register_callback agkozak_git_status_worker \
+          _agkozak_zsh_async_callback
         async_job agkozak_git_status_worker _agkozak_branch_status
       }
 

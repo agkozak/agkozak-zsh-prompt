@@ -675,7 +675,7 @@ _agkozak_async_init() {
         else
           _agkozak_debug_print 'TRAPUSR1 has been redefined. Switching to subst-async mode.'
           AGKOZAK[ASYNC_METHOD]='subst-async'
-          _agkozak_set_git_psvars "$(_agkozak_branch_status)"
+          _agkozak_precmd
         fi
       }
 

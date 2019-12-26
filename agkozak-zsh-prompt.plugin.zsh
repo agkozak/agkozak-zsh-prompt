@@ -391,7 +391,8 @@ _agkozak_branch_status() {
             ;;
         esac
       else
-        if command git rev-parse --verify refs/stash &> /dev/null; then
+        if LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git rev-parse --verify \
+          refs/stash &> /dev/null; then
           symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
         fi
       fi

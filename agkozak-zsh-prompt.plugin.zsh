@@ -783,7 +783,7 @@ _agkozak_precmd() {
   # Cache the Git version
   if (( ${AGKOZAK_SHOW_STASH:-1} )); then
     typeset -gx AGKOZAK_GIT_VERSION
-    : ${AGKOZAK_GIT_VERSION:=${"$(command git --version)"#git version }}
+    : ${AGKOZAK_GIT_VERSION:=${"$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git --version)"#git version }}
   fi
 
   # Clear the Git status display until it has been recalculated

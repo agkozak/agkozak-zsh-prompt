@@ -135,7 +135,8 @@ _agkozak_debug_print() {
   if (( AGKOZAK_PROMPT_DEBUG )); then
     _agkozak_has_colors && print -Pn '%F{red}' >&2
     print -n -- "agkozak-zsh-prompt: $1" >&2
-    _agkozak_has_colors && print -P '%f' >&2
+    _agkozak_has_colors && print -Pn '%f' >&2
+    print >&2
   fi
 }
 

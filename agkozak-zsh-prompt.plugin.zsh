@@ -498,7 +498,7 @@ _agkozak_has_usr1() {
       _agkozak_debug_print 'Falling back to subst-async.'
     fi
   else
-    case $signals in    # Array containing names of available signals
+    case ${signals[@]} in    # Array containing names of available signals
       *USR1*) return 0 ;;
       *)
         _agkozak_debug_print 'SIGUSR1 not available.'

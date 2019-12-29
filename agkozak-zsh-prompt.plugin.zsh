@@ -399,7 +399,7 @@ _agkozak_branch_status() {
       fi
     fi
 
-    [[ -n $symbols ]] && symbols=" $symbols"
+    [[ -n $symbols ]] && symbols=" ${symbols}"
 
     printf -- '%s(%s%s)' "${AGKOZAK_BRANCH_STATUS_SEPARATOR- }" "$branch" \
       "$symbols"

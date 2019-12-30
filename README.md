@@ -504,6 +504,40 @@ AGKOZAK_USER_HOST_DISPLAY=0
 
 ### Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT
 
+#### My "Zenburn" Custom Prompt
+
+![My "Zenburn" Custom Prompt](img/custom_agkozak_zenburn.png)
+
+```sh
+# Make sure the zsh/terminfo module is loaded
+[[ ${modules[zsh/terminfo]} == 'loaded' ]] || zmodload zsh/terminfo
+# If there are 256 colors, use the following colors; otherwise use the defaults
+if (( ${terminfo[colors]:-0} >= 256 )); then
+  AGKOZAK_COLORS_USER_HOST=108
+  AGKOZAK_COLORS_PATH=116
+  AGKOZAK_COLORS_BRANCH_STATUS=228
+  AGKOZAK_COLORS_EXIT_STATUS=174
+  AGKOZAK_COLORS_CMD_EXEC_TIME=245
+fi
+AGKOZAK_CUSTOM_PROMPT=''
+# Exit status
+AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+# Username and hostname
+AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+# Path
+AGKOZAK_CUSTOM_PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(8V! %F{${AGKOZAK_COLORS_CMD_EXEC_TIME}}%b%8vs%b%f!)'
+# Git status
+AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)\n'
+# SHLVL and prompt character
+AGKOZAK_CUSTOM_PROMPT+='[%L] %(4V.:.%#) '
+AGKOZAK_COLORS_BRANCH_STATUS=228
+
+# No right prompt
+AGKOZAK_CUSTOM_RPROMPT=''
+```
+
 #### [gnumoksha](https://github.com/gnumoksha/dotfiles/blob/e48d195c58abbedee65976b41d9cdf35a4716c7a/shell/zsh/agkozak-settings.zsh)
 
 ![gnumoksha](img/custom_gnumoksha.png)

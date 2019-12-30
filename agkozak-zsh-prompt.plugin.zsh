@@ -59,6 +59,12 @@
 # psvar[6]      %6v                         Just the branch name
 #
 # psvar[7]      %7v                         Just the Git symbols
+#
+# psvar[8]      %8v                         The number of seconds the last
+#                                           command ran for; only displayed if
+#                                           that time exceeded
+#                                           AGKOZAK_CMD_EXEC_TIME (setting the
+#                                           latter to 0 turns off the display)
 
 # EPOCHSECONDS is needed to display command execution time
 (( $+EPOCHSECONDS )) || zmodload zsh/datetime

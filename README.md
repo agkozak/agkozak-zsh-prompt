@@ -11,6 +11,7 @@ The agkozak ZSH Prompt is an asynchronous color Git prompt for ZSH that uses bas
 * username
 * whether a session is local, or remote over SSH or `mosh`
 * an abbreviated path
+* the execution time of the last command
 * Git branch and status
 * the exit status of the last command, if it was not zero
 * if `vi` line editing is enabled, whether insert or command mode is active
@@ -52,6 +53,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
   <summary>Here are the latest features and updates.</summary>
 
 - v3.6.0
+    - There is now a command execution time indicator that appears when the command execution time is above a certain threshold (default: 5 seconds). You may change the threshold by setting `AGKOZAK_CMD_EXEC_TIME` to the number of seconds beyond which you would like to see the time displayed; you may disable the display entirely by setting `AGKOZAK_CMD_EXEC_TIME=0`. The color of the indicator can be set using the variable `AGKOZAK_COLORS_CMD_EXEC_TIME`.
     - Custom prompts can now access not just the default Git status indicator, which looks like ` (master *!)`, but also its individual parts. `psvar[6]` (`%6v` in a prompt string) stores just the branch, e.g. `master`, while `psvar[7]` (`%7v` in a prompt string) stores just the Git symbols, e.g. `*!`.
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.

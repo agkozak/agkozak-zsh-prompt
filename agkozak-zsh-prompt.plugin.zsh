@@ -170,7 +170,7 @@ fi
 : ${AGKOZAK_COLORS_PATH:=blue}
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
 : ${AGKOZAK_COLORS_PROMPT_CHAR:=default}
-: ${AGKOZAK_COLORS_CMD_EXEC_TIME:=magenta}
+: ${AGKOZAK_COLORS_CMD_EXEC_TIME:=default}
 
 # Whether or not to display the Git status in the left prompt (default: off)
 : ${AGKOZAK_LEFT_PROMPT_ONLY:=0}
@@ -880,7 +880,7 @@ _agkozak_prompt_strings() {
     AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
     if (( AGKOZAK_CMD_EXEC_TIME )); then
-      AGKOZAK[PROMPT]+='%(8V! %F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-magenta}}%b...%8vs%b%f!)'
+      AGKOZAK[PROMPT]+='%(8V! %F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}%b...%8vs%b%f!)'
     fi
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'

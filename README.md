@@ -550,7 +550,10 @@ AGKOZAK_CUSTOM_RPROMPT+='%F{32}%*'
 # Current history event number, time, and date
 AGKOZAK_CUSTOM_PROMPT='%F{blue}%h%f%F{yellow} %D{%H:%M:%S}%f%F{cyan} %D{%a %b-%d}%f'
 AGKOZAK_CUSTOM_PROMPT+=' %(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
-AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b%(3V.%F{yellow}%3v%f.)'
+AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
+AGKOZAK_CUSTOM_PROMPT+='%(3V.%F{yellow}%3v%f.)'
 # Exit status
 AGKOZAK_CUSTOM_PROMPT+=' %(?..%B%F{red}(%?%)%f%b )'
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
@@ -566,6 +569,8 @@ AGKOZAK_CUSTOM_RPROMPT=''
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b):'
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(8V![%8vs]!)'
 # Use > as the prompt character when in vi command mode
 AGKOZAK_CUSTOM_PROMPT+='%(4V.>.%(!.#.$))'
 ```
@@ -589,6 +594,8 @@ krbprinc() {
 AGKOZAK_CUSTOM_PROMPT=''
 _agkozak_is_ssh && AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B)%m%(!.%b%s.%b) '
 AGKOZAK_CUSTOM_PROMPT+='%F{blue}%2v%f%b'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{green}%3v%f.)\n'
 AGKOZAK_CUSTOM_PROMPT+='$(krbprinc) '
 

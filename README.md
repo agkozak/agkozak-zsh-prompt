@@ -355,7 +355,9 @@ AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
-AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b\n'
+AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+=$'%(8V! %8vs!)\n'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
@@ -382,8 +384,12 @@ The same result could be achieved by starting with the default code given at the
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
-# Path and Git status (followed by newline)
-AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b%(3V.%F{243}%3v%f.)\n'
+# Path
+AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
+# Git status (followed by newline)
+AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
@@ -391,14 +397,18 @@ AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 AGKOZAK_CUSTOM_RPROMPT='%*'
 ```
 
-Obviously, this code is considerably harder to read, but you might use it if you wanted to do something much less supported by the basic configuration options, such as displaying the exit status immediately before the prompt character:
+Obviously, this code is considerably harder to read, but you might use it if you wanted to do something not supported by the basic configuration options, such as displaying the exit status immediately before the prompt character:
 
 ```sh
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
-# Path and Git status (followed by newline)
-AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b%(3V.%F{243}%3v%f.)\n'
-# Exit status
+# Path
+AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
+# Git status (followed by newline)
+AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
+# Exit status 
 AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{red}(%?%)%f%b )'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '

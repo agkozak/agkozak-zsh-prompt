@@ -552,7 +552,7 @@ AGKOZAK_CUSTOM_PROMPT='%F{blue}%h%f%F{yellow} %D{%H:%M:%S}%f%F{cyan} %D{%a %b-%d
 AGKOZAK_CUSTOM_PROMPT+=' %(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b%(3V.%F{yellow}%3v%f.)'
 # Exit status
-AGKOZAK_CUSTOM_PROMPT+=' %(?..%B%F{red}(%?%)%f%b)'
+AGKOZAK_CUSTOM_PROMPT+=' %(?..%B%F{red}(%?%)%f%b )'
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
 AGKOZAK_CUSTOM_RPROMPT=''

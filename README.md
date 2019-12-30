@@ -26,6 +26,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - [Installation](#installation)
 - [Local and Remote Sessions](#local-and-remote-sessions)
 - [Abbreviated Paths](#abbreviated-paths)
+- [Command Execution Time](#command-execution-time)
 - [Git Branch and Status](#git-branch-and-status)
 - [Exit Status](#exit-status)
 - [`vi` Editing Mode](#vi-editing-mode)
@@ -192,6 +193,10 @@ if you have executed
     hash -d wp-content=/var/www/html/wp-content
 
 then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `/var/www/html/wp-content/plugins/redirection/actions` will be represented as `~wp-content/.../redirection/actions`. If you prefer to have named directories displayed just like any others, set `AGKOZAK_NAMED_DIRS=0`.
+
+## Command Execution Time
+
+The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which defaults to `default` (the default text color).
 
 ## Git Branch and Status
 
@@ -583,10 +588,12 @@ Option | Default | Meaning
 --- | --- | ---
 [`AGKOZAK_BLANK_LINES`](#blank-lines-between-prompts) | `0` | Display a blank line before displaying the prompt
 [`AGKOZAK_BRANCH_STATUS_SEPARATOR`](#AGKOZAK_BRANCH_STATUS_SEPARATOR) | ` ` | Character or characters preceding the Git status indicator
+[`AGKOZAK_CMD_EXEC_TIME`](#command-execution-time) | `5` | Threshold beyond which to display command execution time (in seconds)
 [`AGKOZAK_COLORS_BRANCH_STATUS`](#custom-colors) | `yellow` | Color of Git status
+[`AGKOZAK_COLORS_CMD_EXEC_TIME`](#command-execution-time) | `default` | Color of command execution time
 [`AGKOZAK_COLORS_EXIT_STATUS`](#custom-colors) | `red` | Color of exit status
 [`AGKOZAK_COLORS_PATH`](#custom-colors) | `blue` | Color of path
-[`AGKOZAK_COLORS_PROMPT_CHAR`](#custom-colors) | `white` | Color of prompt character
+[`AGKOZAK_COLORS_PROMPT_CHAR`](#custom-colors) | `default` | Color of prompt character
 [`AGKOZAK_COLORS_USER_HOST`](#custom-colors) | `green` | Color of username and hostname
 [`AGKOZAK_CUSTOM_PROMPT`](#advanced-customization) | | Code for custom left prompt
 [`AGKOZAK_CUSTOM_RPROMPT`](#advanced-customization) | | Code for custom right prompt

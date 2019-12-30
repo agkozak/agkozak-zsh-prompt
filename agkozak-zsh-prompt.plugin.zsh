@@ -289,6 +289,8 @@ _agkozak_prompt_dirtrim() {
         \~*) output="${(%):-%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)}" ;;
         *) output="${(%):-%($(( $1 + 1 ))/|.../%${1}d|%d)}" ;;
       esac
+    else
+      output=$zsh_pwd
     fi
 
   # If AGKOZAK_NAMED_DIRS is 0

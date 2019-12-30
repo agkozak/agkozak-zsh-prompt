@@ -60,6 +60,9 @@
 #
 # psvar[7]      %7v                         Just the Git symbols
 
+# EPOCHSECONDS is needed to display command execution time
+(( $+EPOCHSECONDS )) || zmodload zsh/datetime
+
 autoload -Uz is-at-least add-zle-hook-widget
 
 # AGKOZAK is an associative array for storing internal information that is discarded when the
@@ -160,11 +163,14 @@ fi
 #   AGKOZAK_COLORS_PATH changes the path color                    (default: blue)
 #   AGKOZAK_COLORS_BRANCH_STATUS changes the branch status color  (default: yellow)
 #   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: default text color)
+#   AGKOZAK_COLORS_CMD_EXEC_TIME changes the command executime time color
+#                                                                 (default: magenta)
 : ${AGKOZAK_COLORS_EXIT_STATUS:=red}
 : ${AGKOZAK_COLORS_USER_HOST:=green}
 : ${AGKOZAK_COLORS_PATH:=blue}
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
 : ${AGKOZAK_COLORS_PROMPT_CHAR:=default}
+: ${AGKOZAK_COLORS_CMD_EXEC_TIME:=magenta}
 
 # Whether or not to display the Git status in the left prompt (default: off)
 : ${AGKOZAK_LEFT_PROMPT_ONLY:=0}
@@ -179,6 +185,10 @@ fi
 : ${AGKOZAK_SHOW_STASH:=1}
 # Whether or not to display the username and hostname (default: on)
 : ${AGKOZAK_USER_HOST_DISPLAY:=1}
+
+# Threshold for showing command execution time (default: 5 seconds; 0 turns the
+# display off
+: ${AGKOZAK_CMD_EXEC_TIME:=5}
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -763,6 +773,14 @@ _agkozak_strip_colors() {
 }
 
 ############################################################
+# Runs right before each command is about to be executed.
+# Used to calculate command execution time.
+############################################################
+_agkozak_preexec() {
+  typeset -gi AGKOZAK_CMD_START_TIME=$EPOCHSECONDS
+}
+
+############################################################
 # Runs right before each prompt is displayed; hooks into
 # precmd
 #
@@ -780,6 +798,14 @@ _agkozak_strip_colors() {
 _agkozak_precmd() {
   emulate -L zsh
   (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+
+  # Calculate the time it took to run the last command
+  psvar[8]=''
+  if (( AGKOZAK_CMD_START_TIME )) && (( AGKOZAK_CMD_EXEC_TIME )); then
+    local cmd_exec_time=$(( EPOCHSECONDS - AGKOZAK_CMD_START_TIME ))
+    (( cmd_exec_time >= AGKOZAK_CMD_EXEC_TIME )) && psvar[8]=$cmd_exec_time
+  fi
+  typeset -gi AGKOZAK_CMD_START_TIME=0
 
   # Cache the Git version
   if (( ${AGKOZAK_SHOW_STASH:-1} )); then
@@ -853,6 +879,9 @@ _agkozak_prompt_strings() {
     AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
     AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
+    if (( AGKOZAK_CMD_EXEC_TIME )); then
+      AGKOZAK[PROMPT]+='%(8V! %F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-magenta}}%b...%8vs%b%f!)'
+    fi
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi
@@ -913,6 +942,7 @@ agkozak-zsh-prompt() {
     :
   else
     autoload -Uz add-zsh-hook
+    add-zsh-hook preexec _agkozak_preexec
     add-zsh-hook precmd _agkozak_precmd
   fi
 

@@ -531,6 +531,8 @@ AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{32})%n%1v%(!.%b%s.%f%b)'
 # Display the current history event number
 AGKOZAK_CUSTOM_PROMPT+=' %B%F{13}%h%f%b'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
 AGKOZAK_CUSTOM_PROMPT+=$'\n%F{13}%(4V.:.%#)%f '
 
 AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.) '

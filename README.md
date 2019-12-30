@@ -60,6 +60,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
     - `usr1` has been made faster by eliminating a subshell. It has been disabled as a default async method on Solaris and its derivates, however, as it is a bit unstable. WSL now defaults to `usr1` and falls back to `subst-async`, as they are faster on WSL than `zsh-async`.
     - In the interests of speed, `WARN_CREATE_GLOBAL` and `WARN_NESTED_VAR` are only enabled when you set `AGKOZAK_PROMPT_DEBUG=1`.
+    - I have provided the code for [my own "Zenburn" custom prompt](#my-zenburn-custom-prompt).
 - v3.5.0 (November 15, 2019)
     - The prompt now supports the [zdharma ZSH plugin unload function standard](https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
     - For debugging purposes, `WARN_CREATE_GLOBAL` is now applied to individual functions whether or not debugging mode is enabled. On ZSH v5.4.0+ and when `AGKOZAK_PROMPT_DEBUG` is set to `1`, all functions have `WARN_NESTED_VAR` applied to them.

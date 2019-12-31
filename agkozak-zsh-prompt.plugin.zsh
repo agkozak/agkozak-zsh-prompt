@@ -126,6 +126,7 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_usr1_async_worker
                     TRAPUSR1
                     _agkozak_strip_colors
+                    _agkozak_preexec
                     _agkozak_precmd
                     _agkozak_prompt_strings
                     agkozak-zsh-prompt'
@@ -1004,6 +1005,7 @@ agkozak-zsh-prompt_plugin_unload() {
 
   psvar=( $AGKOZAK_OLD_PSVAR )
 
+  add-zsh-hook -D preexec _agkozak_preexec
   add-zsh-hook -D precmd _agkozak_precmd
 
   if is-at-least 5.3; then

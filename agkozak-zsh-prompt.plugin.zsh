@@ -197,6 +197,9 @@ fi
 # display off
 : ${AGKOZAK_CMD_EXEC_TIME:=5}
 
+# Characters to put around the command execution time (default: nothing )
+AGKOZAK_CMD_EXEC_CHARS=()
+
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
 ######################################################################
@@ -810,9 +813,23 @@ _agkozak_precmd() {
 
   # Calculate the time it took to run the last command
   psvar[8]=''
+  psvar[9]=''
   if (( AGKOZAK_CMD_START_TIME )) && (( AGKOZAK_CMD_EXEC_TIME )); then
     local cmd_exec_time=$(( EPOCHSECONDS - AGKOZAK_CMD_START_TIME ))
-    (( cmd_exec_time >= AGKOZAK_CMD_EXEC_TIME )) && psvar[8]=$cmd_exec_time
+    if (( cmd_exec_time >= AGKOZAK_CMD_EXEC_TIME )); then
+      psvar[8]=$cmd_exec_time
+      # Pretty printing routine borrowed from pure
+      # Compare https://github.com/sindresorhus/pure/blob/c031f6574af3f8afb43920e32ce02ee6d46ab0e9/pure.zsh#L31-L39
+      local days=$(( cmd_exec_time / 60 / 60 / 24 ))
+      local hours=$(( cmd_exec_time / 60 / 60 % 24 ))
+      local minutes=$(( cmd_exec_time / 60 % 60 ))
+      local seconds=$(( cmd_exec_time % 60 ))
+      (( days )) && psvar[9]+="${days}d "
+      (( hours )) && psvar[9]+="${hours}h "
+      (( minutes )) && psvar[9]+="${minutes}m "
+      psvar[9]+="${seconds}s"
+    fi
+
   fi
   typeset -gi AGKOZAK_CMD_START_TIME=0
 
@@ -889,7 +906,7 @@ _agkozak_prompt_strings() {
     AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
     if (( AGKOZAK_CMD_EXEC_TIME )); then
-      AGKOZAK[PROMPT]+='%(8V! %F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}%8vs%f!)'
+      AGKOZAK[PROMPT]+='%(9V. %F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}${AGKOZAK_CMD_EXEC_CHARS[1]}%9v${AGKOZAK_CMD_EXEC_CHARS[2]}%f.)'
     fi
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'

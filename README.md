@@ -197,7 +197,11 @@ then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `
 
 ## Command Execution Time
 
-The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which defaults to `default` (the default text color).
+The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which defaults to `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_CHARS`, can contain two strings to prepend and append to the command execution time string; for example,
+
+    AGKOZAK_CMD_EXEC_CHARS=( '[' ']' )
+
+will surround the time string with square brackets.
 
 ## Git Branch and Status
 
@@ -358,7 +362,7 @@ AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 # Command execution time
-AGKOZAK_CUSTOM_PROMPT+=$'%(8V! %8vs!)\n'
+AGKOZAK_CUSTOM_PROMPT+=$'%(9V. %9v.)\n'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
@@ -388,7 +392,7 @@ AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 # Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
+AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
 # Git status (followed by newline)
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
 # Prompt character
@@ -406,7 +410,7 @@ AGKOZAK_CUSTOM_PROMPT='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 # Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
+AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
 # Git status (followed by newline)
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
 # Exit status 
@@ -528,7 +532,7 @@ AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
 # Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(8V! %F{${AGKOZAK_COLORS_CMD_EXEC_TIME}}%b%8vs%b%f!)'
+AGKOZAK_CUSTOM_PROMPT+='%(9V. %F{${AGKOZAK_COLORS_CMD_EXEC_TIME}}%b%9vs%b%f.)'
 # Git status
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)\n'
 # SHLVL and prompt character
@@ -567,7 +571,7 @@ AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{32})%n%1v%(!.%b%s.%f%b)'
 # Display the current history event number
 AGKOZAK_CUSTOM_PROMPT+=' %B%F{13}%h%f%b'
 # Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
+AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
 AGKOZAK_CUSTOM_PROMPT+=$'\n%F{13}%(4V.:.%#)%f '
 
 AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.) '
@@ -587,7 +591,7 @@ AGKOZAK_CUSTOM_PROMPT='%F{blue}%h%f%F{yellow} %D{%H:%M:%S}%f%F{cyan} %D{%a %b-%d
 AGKOZAK_CUSTOM_PROMPT+=' %(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 # Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
+AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
 AGKOZAK_CUSTOM_PROMPT+='%(3V.%F{yellow}%3v%f.)'
 # Exit status
 AGKOZAK_CUSTOM_PROMPT+=' %(?..%B%F{red}(%?%)%f%b )'
@@ -605,7 +609,7 @@ AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b):'
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 # Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(8V![%8vs]!)'
+AGKOZAK_CUSTOM_PROMPT+='%(9V.[%9v].)'
 # Use > as the prompt character when in vi command mode
 AGKOZAK_CUSTOM_PROMPT+='%(4V.>.%(!.#.$))'
 ```
@@ -630,7 +634,7 @@ AGKOZAK_CUSTOM_PROMPT=''
 _agkozak_is_ssh && AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B)%m%(!.%b%s.%b) '
 AGKOZAK_CUSTOM_PROMPT+='%F{blue}%2v%f%b'
 # Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(8V! %8vs!)'
+AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{green}%3v%f.)\n'
 AGKOZAK_CUSTOM_PROMPT+='$(krbprinc) '
 

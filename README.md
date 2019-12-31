@@ -54,7 +54,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
   <summary>Here are the latest features and updates.</summary>
 
 - v3.6.0
-    - There is now a command execution time indicator that appears when the command execution time is above a certain threshold (default: 5 seconds). You may change the threshold by setting `AGKOZAK_CMD_EXEC_TIME` to the number of seconds beyond which you would like to see the time displayed; you may disable the display entirely by setting `AGKOZAK_CMD_EXEC_TIME=0`. The color of the indicator can be set using the variable `AGKOZAK_COLORS_CMD_EXEC_TIME`. An array, `AGKOZAK_CMD_EXEC_CHARS`, can store strings to prepend and append to the time string (e.g. `AGKOZAK_CMD_EXEC_CHARS=( '<' '>' )`.
+    - There is now a command execution time indicator that appears when the command execution time is above a certain threshold (default: 5 seconds). You may change the threshold by setting `AGKOZAK_CMD_EXEC_TIME` to the number of seconds beyond which you would like to see the time displayed; you may disable the display entirely by setting `AGKOZAK_CMD_EXEC_TIME=0`. The color of the indicator can be set using the variable `AGKOZAK_COLORS_CMD_EXEC_TIME`. An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can store strings to prepend and append to the time string (e.g. `AGKOZAK_CMD_EXEC_TIME_CHARS=( '<' '>' )`.
     - Custom prompts can now access not just the default Git status indicator, which looks like ` (master *!)`, but also its individual parts. `psvar[6]` (`%6v` in a prompt string) stores just the branch, e.g. `master`, while `psvar[7]` (`%7v` in a prompt string) stores just the Git symbols, e.g. `*!`.
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
@@ -197,9 +197,9 @@ then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `
 
 ## Command Execution Time
 
-The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which defaults to `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_CHARS`, can contain two strings to prepend and append to the command execution time string; for example,
+The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which defaults to `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can contain two strings to prepend and append to the command execution time string; for example,
 
-    AGKOZAK_CMD_EXEC_CHARS=( '[' ']' )
+    AGKOZAK_CMD_EXEC_TIME_CHARS=( '[' ']' )
 
 will surround the time string with square brackets.
 
@@ -646,7 +646,7 @@ Option | Default | Meaning
 --- | --- | ---
 [`AGKOZAK_BLANK_LINES`](#blank-lines-between-prompts) | `0` | Display a blank line before displaying the prompt
 [`AGKOZAK_BRANCH_STATUS_SEPARATOR`](#AGKOZAK_BRANCH_STATUS_SEPARATOR) | ` ` | Character or characters preceding the Git status indicator
-[`AGKOZAK_CMD_EXEC_CHARS`](#command-execution-time) | `( '' '' )` | Strings to prepend and append to the command execution time indicator
+[`AGKOZAK_CMD_EXEC_TIME_CHARS`](#command-execution-time) | `( '' '' )` | Strings to prepend and append to the command execution time indicator
 [`AGKOZAK_CMD_EXEC_TIME`](#command-execution-time) | `5` | Threshold beyond which to display command execution time (in seconds)
 [`AGKOZAK_COLORS_BRANCH_STATUS`](#custom-colors) | `yellow` | Color of Git status
 [`AGKOZAK_COLORS_CMD_EXEC_TIME`](#command-execution-time) | `default` | Color of command execution time indicator

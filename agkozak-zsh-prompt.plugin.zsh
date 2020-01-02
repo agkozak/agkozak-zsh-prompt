@@ -65,6 +65,10 @@
 #                                           that time exceeded
 #                                           AGKOZAK_CMD_EXEC_TIME (setting the
 #                                           latter to 0 turns off the display)
+#
+# psvar[9]      %9v                         psvar[8] pretty-printed as days,
+#                                           hours, minutes, and seconds, thus:
+#                                           1d 2h 3m 4s
 
 # EPOCHSECONDS is needed to display command execution time
 (( $+EPOCHSECONDS )) || zmodload zsh/datetime

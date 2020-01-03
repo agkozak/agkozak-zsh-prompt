@@ -263,7 +263,8 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
     AGKOZAK_COLORS_USER_HOST=green
     AGKOZAK_COLORS_PATH=blue
     AGKOZAK_COLORS_BRANCH_STATUS=yellow
-    AGKOZAK_COLORS_PROMPT_CHAR=white
+    AGKOZAK_COLORS_PROMPT_CHAR=default      # Default text color
+    AGKOZAK_COLORS_CMD_EXEC_TIME=default    # Default text color
 
 ![Custom colors](img/colors.gif)
 

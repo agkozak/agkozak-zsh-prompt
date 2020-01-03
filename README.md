@@ -47,6 +47,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - [Using Basic Configuration Settings](#using-basic-configuration-settings)
     - [Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT](#using-agkozak_custom_prompt-and-agkozak_custom_rprompt)
 - [Options Index](#options-index)
+- [`psvar` Index](#psvar-index)
 
 ## News
 
@@ -54,8 +55,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
   <summary>Here are the latest features and updates.</summary>
 
 - v3.6.0
-    - There is now a command execution time indicator that appears when the command execution time is above a certain threshold (default: 5 seconds). You may change the threshold by setting `AGKOZAK_CMD_EXEC_TIME` to the number of seconds beyond which you would like to see the time displayed; you may disable the display entirely by setting `AGKOZAK_CMD_EXEC_TIME=0`. The color of the indicator can be set using the variable `AGKOZAK_COLORS_CMD_EXEC_TIME`. An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can store strings to prepend and append to the time string (e.g. `AGKOZAK_CMD_EXEC_TIME_CHARS=( '<' '>' )`.
-    - Custom prompts can now access not just the default Git status indicator, which looks like ` (master *!)`, but also its individual parts. `psvar[6]` (`%6v` in a prompt string) stores just the branch, e.g. `master`, while `psvar[7]` (`%7v` in a prompt string) stores just the Git symbols, e.g. `*!`.
+    - There is now a [command execution time indicator](#command-execution-time).
+    - Custom prompts can now easily access not just the default Git status indicator, which looks like ` (master *!)`, but also its individual parts. `psvar[6]` (`%6v` in a prompt string) stores just the branch, e.g. `master`, while `psvar[7]` (`%7v` in a prompt string) stores just the Git symbols, e.g. `*!`. This prompt's documentation now includes [a table of such `psvar`s](#psvar-index).
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
     - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
     - `usr1` has been made faster by eliminating a subshell. It has been disabled as a default async method on Solaris and its derivates, however, as it is a bit unstable. WSL now defaults to `usr1` and falls back to `subst-async`, as they are faster on WSL than `zsh-async`.
@@ -197,7 +198,7 @@ then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `
 
 ## Command Execution Time
 
-The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which defaults to `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can contain two strings to prepend and append to the command execution time string; for example,
+The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which is normally `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can contain two strings to prepend and append to the command execution time string; for example,
 
     AGKOZAK_CMD_EXEC_TIME_CHARS=( '[' ']' )
 
@@ -666,6 +667,20 @@ Option | Default | Meaning
 [`AGKOZAK_PROMPT_DIRTRIM`](#abbreviated-paths) | `2` | Number of directory elements to display; `0` turns off directory trimming
 [`AGKOZAK_SHOW_STASH`](#agkozak_show_stash) | `1` | Display stashed changes
 [`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display) | `1` | Display the username and hostname
+
+# `psvar` Index
+
+`psvar` Element | Prompt String Equivalent | Usage
+--- | --- | ---
+`psvar[1]` | `%1v` | "@" sign and abbreviated hostname, displayed for SSH connection (e.g. `@machine`)
+`psvar[2]` | `%2v` | Working directory or abbreviation thereof
+`psvar[3]` | `%3v` | Working Git branch and indicator of changes made, surrounded by parentheses and preceded by `AGKOZAK_PRE_PROMPT_CHAR` (usually a space), e.g. ` (master !?)`
+`psvar[4]` | `%4v` | `vicmd` when vi command mode is enabled; otherwise empty
+`psvar[5]` | `%5v` | Empty only when `AGKOZAK_USER_HOST_DISPLAY` is `0` (deprecated; kept for legacy custom prompts)
+`psvar[6]` | `%6v` | Just the Git branch name, e.g. `master`
+`psvar[7]` | `%7v` | Just the Git symbols, e.g. `!?`
+`psvar[8]` | `%8v` | Previous command's execution time in seconds; only set if `AGKOZAK_CMD_EXEC_TIME` > 0 and if the execution time exceeded `AGKOZAK_CMD_EXEC_TIME`
+`psvar[9]` | `%9v` | `psvar[8]` pretty-printed as days, hours, minutes, and seconds, thus: `1d 2h 3m 4s`
 
 <hr>
 

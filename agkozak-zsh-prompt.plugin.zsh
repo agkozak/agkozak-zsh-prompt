@@ -55,6 +55,7 @@
 #
 # psvar[5]      %5v                         Empty only when
 #                                           AGKOZAK_USER_HOST_DISPLAY is 0
+#                                           (legacy; deprecated)
 #
 # psvar[6]      %6v                         Just the branch name
 #
@@ -850,6 +851,7 @@ _agkozak_precmd() {
   psvar[4]=''
 
   # Choose whether or not to display username and hostname
+  # Legacy code to provide %5v for custom prompts that use it.
   if (( ${AGKOZAK_USER_HOST_DISPLAY:-1} )); then
     psvar[5]=${AGKOZAK_USER_HOST_DISPLAY:-1}
   else
@@ -906,7 +908,9 @@ _agkozak_prompt_strings() {
     # The color left prompt
     AGKOZAK[PROMPT]=''
     AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
-    AGKOZAK[PROMPT]+='%(5V.%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) .)'
+    if (( AGKOZAK_USER_HOST_DISPLAY )); then
+      AGKOZAK[PROMPT]+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) '
+    fi
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
     if (( AGKOZAK_CMD_EXEC_TIME )); then
       AGKOZAK[PROMPT]+='%(9V. %F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}${AGKOZAK_CMD_EXEC_TIME_CHARS[1]}%9v${AGKOZAK_CMD_EXEC_TIME_CHARS[2]}%f.)'

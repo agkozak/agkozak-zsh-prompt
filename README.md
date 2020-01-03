@@ -196,6 +196,8 @@ then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `
 
 ## Command Execution Time
 
+![Command Execution Time](img/command_execution_time.gif)
+
 The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which is normally `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can contain two strings to prepend and append to the command execution time string; for example,
 
     AGKOZAK_CMD_EXEC_TIME_CHARS=( '[' ']' )

@@ -197,10 +197,11 @@ fi
 : ${AGKOZAK_SHOW_STASH:=1}
 # Whether or not to display the username and hostname (default: on)
 : ${AGKOZAK_USER_HOST_DISPLAY:=1}
-
 # Threshold for showing command execution time (default: 5 seconds; 0 turns the
 # display off
 : ${AGKOZAK_CMD_EXEC_TIME:=5}
+# Whether or not to put blank lines in between instances of the prompt
+: ${AGKOZAK_BLANK_LINES:=0}
 
 # Characters to put around the command execution time (default: nothing )
 AGKOZAK_CMD_EXEC_TIME_CHARS=()

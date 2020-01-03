@@ -58,8 +58,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - There is now a [command execution time indicator](#command-execution-time).
     - Custom prompts can now easily access not just the default Git status indicator, which looks like ` (master *!)`, but also its individual parts. `psvar[6]` (`%6v` in a prompt string) stores just the branch, e.g. `master`, while `psvar[7]` (`%7v` in a prompt string) stores just the Git symbols, e.g. `*!`. This prompt's documentation now includes [a table of such `psvar`s](#psvar-index).
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
-    - `subst-async` has been tweaked a bit to provide stability and speed on all systems.
-    - `usr1` has been made faster by eliminating a subshell. It has been disabled as a default async method on Solaris and its derivates, however, as it is a bit unstable. WSL now defaults to `usr1` and falls back to `subst-async`, as they are faster on WSL than `zsh-async`.
+    - Asynchronous method improvements: `subst-async` has been tweaked to provide more stability and speed on all systems. `usr1` has been made faster through the elimination of a subshell. It is now the default asynchronous method on WSL, while its use has been deprecated on Solaris and its derivatives.
     - In the interests of speed, `WARN_CREATE_GLOBAL` and `WARN_NESTED_VAR` are only enabled when you set `AGKOZAK_PROMPT_DEBUG=1`.
     - I have provided the code for [my own "Zenburn" custom prompt](#my-zenburn-custom-prompt).
 - v3.5.0 (November 15, 2019)

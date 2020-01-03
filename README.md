@@ -291,6 +291,8 @@ If you would like to have the Git status displayed in the left prompt (with no r
 
     AGKOZAK_LEFT_PROMPT_ONLY=1
 
+*Note: it is possible to combine `AGKOZAK_MULTILINE=0` with `AGKOZAK_LEFT_PROMPT_ONLY=1`, but the result may be visually unappealing.*
+
 ![Left-prompt-only mode](img/AGKOZAK_LEFT_PROMPT_ONLY.gif)
 
 ### Custom Prompt Character

@@ -56,7 +56,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 - v3.6.0
     - There is now a [command execution time indicator](#command-execution-time).
-    - There are more `psvar` elements available to custom prompts. See the [new documentation of `psvar` prompt strings](#psvar-index).
+    - There are more `psvar` elements available to custom prompts. See [the new documentation of `psvar` prompt strings](#psvar-index).
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
     - Asynchronous method improvements: `subst-async` has been tweaked to provide more stability and speed on all systems. `usr1` has been made faster through the elimination of a subshell. It is now the default asynchronous method on all Windows environments.
     - I have provided the code for [my own "Zenburn" custom prompt](#my-zenburn-custom-prompt).
@@ -417,7 +417,7 @@ AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
 # Git status (followed by newline)
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
-# Exit status 
+# Exit status
 AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{red}(%?%)%f%b )'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '

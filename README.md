@@ -58,7 +58,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - There is now a [command execution time indicator](#command-execution-time).
     - There are more `psvar` elements available to custom prompts. See [the new documentation of `psvar` prompt strings](#psvar-index).
     - By popular demand, it is now possible to use `AGKOZAK_LEFT_PROMPT_ONLY=1` with `AGKOZAK_MULTILINE=0`, although the two options together may be visually unappealing on a slow system or when working with very large Git repos.
-    - Asynchronous method improvements: `subst-async` has been tweaked to provide more stability and speed on all systems. `usr1` has been made faster through the elimination of a subshell. It is now the default asynchronous method on all Windows environments.
+    - Asynchronous method improvements: `subst-async` has been tweaked to provide more stability and speed on all systems. `usr1` has been made faster through the elimination of a subshell. It is now the default asynchronous method in all Windows environments.
     - I have provided the code for [my own "Zenburn" custom prompt](#my-zenburn-custom-prompt).
 - v3.5.0 (November 15, 2019)
     - The prompt now supports the [zdharma ZSH plugin unload function standard](https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.

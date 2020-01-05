@@ -585,25 +585,6 @@ AGKOZAK_CUSTOM_RPROMPT+='%B%F{blue}%~%f%b '
 AGKOZAK_CUSTOM_RPROMPT+='%F{32}%*'
 ```
 
-#### [ccb012100](https://github.com/ccb012100/linux-configs/blob/f31f11794deb3365dd78427d03bb51284392a35b/.zshrc)
-
-![ccb012100](img/custom_ccb012100.png)
-
-```sh
-# Current history event number, time, and date
-AGKOZAK_CUSTOM_PROMPT='%F{blue}%h%f%F{yellow} %D{%H:%M:%S}%f%F{cyan} %D{%a %b-%d}%f'
-AGKOZAK_CUSTOM_PROMPT+=' %(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
-AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
-# Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
-AGKOZAK_CUSTOM_PROMPT+='%(3V.%F{yellow}%3v%f.)'
-# Exit status
-AGKOZAK_CUSTOM_PROMPT+=' %(?..%B%F{red}(%?%)%f%b )'
-AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
-
-AGKOZAK_CUSTOM_RPROMPT=''
-```
-
 #### [AGitBoy](https://github.com/agkozak/agkozak-zsh-prompt/issues/15)
 
 ![AGitBoy](img/custom_AGitBoy.png)

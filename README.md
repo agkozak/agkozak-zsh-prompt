@@ -55,7 +55,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
   <summary>Here are the latest features and updates.</summary>
 
 - v3.7.0
-    - I have moved the command execution time indicator back towards the beginning of the prompt, right after the exit status indicator. TODO: Update advanced custom prompts.
+    - I have moved the command execution time indicator back towards the beginning of the prompt, right after the exit status indicator. TODO: Update advanced custom prompts and update feature demo.
 - v3.6.0 (January 4, 2020)
     - There is now a [command execution time indicator](#command-execution-time).
     - There are more `psvar` elements available to custom prompts. See [the new documentation of `psvar` prompt strings](#psvar-index).

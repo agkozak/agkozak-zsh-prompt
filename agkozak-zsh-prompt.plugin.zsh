@@ -839,6 +839,8 @@ _agkozak_precmd() {
   fi
   typeset -gi AGKOZAK_CMD_START_TIME=0
 
+  psvar[10]=${${VIRTUAL_ENV:t}:-${CONDA_DEFAULT_ENV//[$'\t\r\n']/}}
+
   # Cache the Git version
   if (( ${AGKOZAK_SHOW_STASH:-1} )); then
     typeset -gx AGKOZAK_GIT_VERSION
@@ -913,6 +915,7 @@ _agkozak_prompt_strings() {
       AGKOZAK[PROMPT]+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) '
     fi
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
+    AGKOZAK[PROMPT]+='%(10V. %F{${AGKOZAK_COLORS_VENV:-green}}[%10v]%f.)'
     if (( AGKOZAK_CMD_EXEC_TIME )); then
       AGKOZAK[PROMPT]+='%(9V. %F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}${AGKOZAK_CMD_EXEC_TIME_CHARS[1]}%9v${AGKOZAK_CMD_EXEC_TIME_CHARS[2]}%f.)'
     fi

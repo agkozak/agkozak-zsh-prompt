@@ -847,8 +847,17 @@ _agkozak_precmd() {
   typeset -gi AGKOZAK_CMD_START_TIME=0
 
   # Prompt element for virtualenv/pipenv/conda
-  psvar[10]=${${VIRTUAL_ENV:t}:-${CONDA_DEFAULT_ENV//[$'\t\r\n']/}}
-  (( PIPENV_ACTIVE )) && psvar[10]=${psvar[10]%-*}
+  if (( PIPENV_ACTIVE )); then
+    # If PIPENV_VENV_IN_PROJECT has been used
+    if [[ ${VIRTUAL_ENV:t} == '.venv' ]]; then
+      psvar[10]=${${VIRTUAL_ENV%\/\.venv}:t}
+    # Otherwise, remove the hash
+    else
+      psvar[10]=${${VIRTUAL_ENV%-*}:t}
+    fi
+  else
+    psvar[10]=${${VIRTUAL_ENV:t}:-${CONDA_DEFAULT_ENV//[$'\t\r\n']/}}
+  fi
 
   # Cache the Git version
   if (( ${AGKOZAK_SHOW_STASH:-1} )); then

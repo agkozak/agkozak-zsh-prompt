@@ -70,6 +70,9 @@
 # psvar[9]      %9v                         psvar[8] pretty-printed as days,
 #                                           hours, minutes, and seconds, thus:
 #                                           1d 2h 3m 4s
+#
+# psvar[10]     %10v                        Name of virtualenv or conda
+#                                           environment
 
 # EPOCHSECONDS is needed to display command execution time
 (( $+EPOCHSECONDS )) || zmodload zsh/datetime
@@ -177,12 +180,14 @@ fi
 #   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: default text color)
 #   AGKOZAK_COLORS_CMD_EXEC_TIME changes the command executime time color
 #                                                                 (default: magenta)
+#   AGKOZAK_COLORS_VIRTUALENV changes the virtualenv/conda color (default: green)
 : ${AGKOZAK_COLORS_EXIT_STATUS:=red}
 : ${AGKOZAK_COLORS_USER_HOST:=green}
 : ${AGKOZAK_COLORS_PATH:=blue}
 : ${AGKOZAK_COLORS_BRANCH_STATUS:=yellow}
 : ${AGKOZAK_COLORS_PROMPT_CHAR:=default}
 : ${AGKOZAK_COLORS_CMD_EXEC_TIME:=default}
+: ${AGKOZAK_COLORS_VIRTUALENV:=green}
 
 # Whether or not to display the Git status in the left prompt (default: off)
 : ${AGKOZAK_LEFT_PROMPT_ONLY:=0}
@@ -916,7 +921,7 @@ _agkozak_prompt_strings() {
       AGKOZAK[PROMPT]+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) '
     fi
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
-    AGKOZAK[PROMPT]+='%(10V. %F{${AGKOZAK_COLORS_VENV:-green}}[%10v]%f.)'
+    AGKOZAK[PROMPT]+='%(10V. %F{${AGKOZAK_COLORS_VIRTUALENV:-green}}[%10v]%f.)'
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi

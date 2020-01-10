@@ -847,6 +847,8 @@ _agkozak_precmd() {
   typeset -gi AGKOZAK_CMD_START_TIME=0
 
   # Prompt element for virtualenv/pipenv/conda
+  #
+  # pipenv
   if (( PIPENV_ACTIVE )); then
     # If PIPENV_VENV_IN_PROJECT has been used
     if [[ ${VIRTUAL_ENV:t} == '.venv' ]]; then
@@ -855,6 +857,7 @@ _agkozak_precmd() {
     else
       psvar[10]=${${VIRTUAL_ENV%-*}:t}
     fi
+  # virtualenv/venv/conda
   else
     psvar[10]=${${VIRTUAL_ENV:t}:-${CONDA_DEFAULT_ENV//[$'\t\r\n']/}}
   fi

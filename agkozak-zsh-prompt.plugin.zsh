@@ -207,6 +207,8 @@ fi
 : ${AGKOZAK_CMD_EXEC_TIME:=5}
 # Whether or not to put blank lines in between instances of the prompt
 : ${AGKOZAK_BLANK_LINES:=0}
+# Whether or not to display the virtualenv or conda environment
+: ${AGKOZAK_SHOW_VIRTUALENV:=1}
 
 # Characters to put around the command execution time (default: nothing )
 AGKOZAK_CMD_EXEC_TIME_CHARS=()
@@ -921,7 +923,9 @@ _agkozak_prompt_strings() {
       AGKOZAK[PROMPT]+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) '
     fi
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
-    AGKOZAK[PROMPT]+='%(10V. %F{${AGKOZAK_COLORS_VIRTUALENV:-green}}[%10v]%f.)'
+    if (( ${AGKOZAK_SHOW_VIRTUALENV:-1} )); then
+      AGKOZAK[PROMPT]+='%(10V. %F{${AGKOZAK_COLORS_VIRTUALENV:-green}}[%10v]%f.)'
+    fi
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi

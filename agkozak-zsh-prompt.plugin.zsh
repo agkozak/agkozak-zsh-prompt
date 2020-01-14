@@ -846,7 +846,7 @@ _agkozak_precmd() {
   fi
   typeset -gi AGKOZAK_CMD_START_TIME=0
 
-  # Prompt element for virtualenv/pipenv/conda
+  # Prompt element for virtualenv/pipenv/poetry/conda
   #
   # pipenv
   if (( PIPENV_ACTIVE )); then
@@ -857,6 +857,9 @@ _agkozak_precmd() {
     else
       psvar[10]=${${VIRTUAL_ENV%-*}:t}
     fi
+  # poetry
+  elif (( POETRY_ACTIVE )); then
+    psvar[10]=${${${VIRTUAL_ENV%-*}%-*}:t}
   # virtualenv/venv/conda
   else
     psvar[10]=${${VIRTUAL_ENV:t}:-${CONDA_DEFAULT_ENV//[$'\t\r\n']/}}

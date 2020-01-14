@@ -848,17 +848,16 @@ _agkozak_precmd() {
 
   # Prompt element for virtualenv/pipenv/poetry/conda
   #
+  # pipenv/poetry: when the virtualenv is in the project directory
+  if [[ ${VIRTUAL_ENV:t} == '.venv' ]]; then
+    psvar[10]=${VIRTUAL_ENV:h:t}
   # pipenv
-  if (( PIPENV_ACTIVE )); then
-    # If PIPENV_VENV_IN_PROJECT has been used
-    if [[ ${VIRTUAL_ENV:t} == '.venv' ]]; then
-      psvar[10]=${${VIRTUAL_ENV%\/\.venv}:t}
-    # Otherwise, remove the hash
-    else
-      psvar[10]=${${VIRTUAL_ENV%-*}:t}
-    fi
+  elif (( PIPENV_ACTIVE )); then
+    # Remove the hash
+    psvar[10]=${${VIRTUAL_ENV%-*}:t}
   # poetry
   elif (( POETRY_ACTIVE )); then
+    # Remove the hash and version number
     psvar[10]=${${${VIRTUAL_ENV%-*}%-*}:t}
   # virtualenv/venv/conda
   else

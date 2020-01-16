@@ -11,6 +11,7 @@ The agkozak ZSH Prompt is an asynchronous color Git prompt for ZSH that uses bas
 * username
 * whether a session is local, or remote over SSH or `mosh`
 * an abbreviated path
+* any activate virtual environment
 * the execution time of the last command
 * Git branch and status
 * the exit status of the last command, if it was not zero

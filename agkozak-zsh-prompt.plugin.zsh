@@ -865,6 +865,7 @@ _agkozak_precmd() {
   fi
 
   # Cache the Git version
+  # It's important to have this run once before _agkozak_branch_status runs
   if (( ${AGKOZAK_SHOW_STASH:-1} )); then
     typeset -gx AGKOZAK_GIT_VERSION
     : ${AGKOZAK_GIT_VERSION:=${"$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git --version)"#git version }}

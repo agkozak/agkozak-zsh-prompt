@@ -29,6 +29,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - [Command Execution Time](#command-execution-time)
 - [Git Branch and Status](#git-branch-and-status)
 - [Exit Status](#exit-status)
+- [Virtual Environments](#virtual-environments)
 - [`vi` Editing Mode](#vi-editing-mode)
 - [Asynchronous Methods](#asynchronous-methods)
 - [Customization](#customization)
@@ -55,7 +56,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
   <summary>Here are the latest features and updates.</summary>
 
 - v3.7.0
-    - I have moved the command execution time indicator back towards the beginning of the prompt, right after the exit status indicator. TODO: Update advanced custom prompts and update feature demo.
+    - The agkozak ZSH prompt now includes an indicator for Python virtual environments created with `virtualenv`, `python -m venv`, `pipenv`, `poetry`, and `conda`.
+    - I have moved the command execution time indicator back towards the beginning of the prompt, right after the exit status indicator.
 - v3.6.0 (January 4, 2020)
     - There is now a [command execution time indicator](#command-execution-time).
     - There are more `psvar` elements available to custom prompts. See [the new documentation of `psvar` prompt strings](#psvar-index).
@@ -229,6 +231,10 @@ Stashed changes | $
 If the exit status of the most recently executed command is other than zero (zero indicating success), the exit status will be displayed at the beginning of the left prompt:
 
 ![Exit status](img/exit-status.png)
+
+## Virtual Environments
+
+If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`.
 
 ## `vi` Editing Mode
 
@@ -652,6 +658,7 @@ Option | Default | Meaning
 [`AGKOZAK_PROMPT_DEBUG`](#asynchronous-methods) | `0` | Show debugging information
 [`AGKOZAK_PROMPT_DIRTRIM`](#abbreviated-paths) | `2` | Number of directory elements to display; `0` turns off directory trimming
 [`AGKOZAK_SHOW_STASH`](#agkozak_show_stash) | `1` | Display stashed changes
+[`AGKOZAK_SHOW_VIRTUALENV`](#virtual-environments) | `1` | Display virtual environments
 [`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display) | `1` | Display the username and hostname
 
 # `psvar` Index
@@ -667,6 +674,7 @@ Option | Default | Meaning
 `psvar[7]` | `%7v` | Just the Git symbols, e.g. `!?`
 `psvar[8]` | `%8v` | Previous command's execution time in seconds; only set if `AGKOZAK_CMD_EXEC_TIME` > 0 and if the execution time exceeded `AGKOZAK_CMD_EXEC_TIME`
 `psvar[9]` | `%9v` | `psvar[8]` pretty-printed as days, hours, minutes, and seconds, thus: `1d 2h 3m 4s`
+`psvar[10]` | `%10v` | Name of any virtual environment that has been activated
 
 <hr>
 

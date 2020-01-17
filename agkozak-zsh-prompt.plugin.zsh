@@ -71,8 +71,8 @@
 #                                           hours, minutes, and seconds, thus:
 #                                           1d 2h 3m 4s
 #
-# psvar[10]     %10v                        Name of virtualenv, pipenv, or conda
-#                                           environment
+# psvar[10]     %10v                        Name of virtual environment
+#
 
 # EPOCHSECONDS is needed to display command execution time
 (( $+EPOCHSECONDS )) || zmodload zsh/datetime
@@ -180,7 +180,7 @@ fi
 #   AGKOZAK_COLORS_PROMPT_CHAR changes the prompt character color (default: default text color)
 #   AGKOZAK_COLORS_CMD_EXEC_TIME changes the command executime time color
 #                                                                 (default: magenta)
-#   AGKOZAK_COLORS_VIRTUALENV changes the virtualenv/pipenv/conda color (default: green)
+#   AGKOZAK_COLORS_VIRTUALENV changes the virtual environment color (default: green)
 : ${AGKOZAK_COLORS_EXIT_STATUS:=red}
 : ${AGKOZAK_COLORS_USER_HOST:=green}
 : ${AGKOZAK_COLORS_PATH:=blue}
@@ -207,7 +207,7 @@ fi
 : ${AGKOZAK_CMD_EXEC_TIME:=5}
 # Whether or not to put blank lines in between instances of the prompt
 : ${AGKOZAK_BLANK_LINES:=0}
-# Whether or not to display the virtualenv/pipenv/conda environment
+# Whether or not to display the virtual environment
 : ${AGKOZAK_SHOW_VIRTUALENV:=1}
 
 # Characters to put around the command execution time (default: nothing )
@@ -846,7 +846,7 @@ _agkozak_precmd() {
   fi
   typeset -gi AGKOZAK_CMD_START_TIME=0
 
-  # Prompt element for virtualenv/pipenv/poetry/conda
+  # Prompt element for virtualenv/venv/pipenv/poetry/conda
   #
   # pipenv/poetry: when the virtualenv is in the project directory
   if [[ ${VIRTUAL_ENV:t} == '.venv' ]]; then

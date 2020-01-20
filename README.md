@@ -136,6 +136,19 @@ Add the line
 
 to your `.zshrc` somewhere before the line that says `zgen save`.
 
+### For [Zinit](https://github.com/zdharma/zinit) (formerly `zplugin`) users
+
+Run the command 
+
+    zinit load agkozak/agkozak-zsh-prompt
+
+to try out the prompt; add the same command to your `.zshrc` to load it automatically.
+
+The prompt now supports `zinit`'s `unload` feature; you may restore the shell to its state before loading the prompt by running
+
+    zinit unload agkozak/agkozak-zsh-prompt
+
+
 ### For [zplug](https://github.com/zplug/zplug) users
 
 Add the line
@@ -143,18 +156,6 @@ Add the line
     zplug "agkozak/agkozak-zsh-prompt"
 
 to your `.zshrc` somewhere before the line that says `zplug load`.
-
-### For [zplugin](https://github.com/zdharma/zplugin) users
-
-Run the command 
-
-    zplugin load agkozak/agkozak-zsh-prompt
-
-to try out the prompt; add the same command to your `.zshrc` to load it automatically.
-
-The prompt now supports `zplugin`'s `unload` feature; you may restore the shell to its state before loading the prompt by running
-
-    zplugin unload agkozak/agkozak-zsh-prompt
 
 ## Local and Remote Sessions
 

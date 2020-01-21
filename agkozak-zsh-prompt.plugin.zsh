@@ -212,6 +212,8 @@ fi
 
 # Characters to put around the command execution time (default: nothing )
 AGKOZAK_CMD_EXEC_TIME_CHARS=()
+# Characters to put around the virtual environment name (default: square brackets)
+AGKOZAK_VIRTUALENV_CHARS=( '[' ']' )
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 
@@ -940,7 +942,7 @@ _agkozak_prompt_strings() {
     fi
     AGKOZAK[PROMPT]+='%B%F{${AGKOZAK_COLORS_PATH:-blue}}%2v%f%b'
     if (( ${AGKOZAK_SHOW_VIRTUALENV:-1} )); then
-      AGKOZAK[PROMPT]+='%(10V. %F{${AGKOZAK_COLORS_VIRTUALENV:-green}}[%10v]%f.)'
+      AGKOZAK[PROMPT]+='%(10V. %F{${AGKOZAK_COLORS_VIRTUALENV:-green}}${AGKOZAK_VIRTUALENV_CHARS[1]-[}%10v${AGKOZAK_VIRTUALENV_CHARS[2]-]}%f.)'
     fi
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'

@@ -220,7 +220,15 @@ then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `
 
 ![Virtual environments](img/virtual_environments.gif)
 
-If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`. The color of the indicator can be changed using the variable `AGKOZAK_COLORS_VIRTUALENV` (default: `green`).
+If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`. The color of the indicator can be changed using the variable `AGKOZAK_COLORS_VIRTUALENV` (default: `green`). The virtual environment name is normally surrounded by square brackets, but the characters used can be changed using the array `AGKOZAK_VIRTUALENV_CHARS`; for example
+
+    AGKOZAK_VIRTUALENV_CHARS=( '(' ')' )
+
+will use parentheses, while
+
+    AGKOZAK_VIRTUALENV_CHARS=( '' '' )
+
+will display just the virtual environment name without any surrounding characters.
 
 ## Git Branch and Status
 
@@ -675,6 +683,7 @@ Option | Default | Meaning
 [`AGKOZAK_SHOW_STASH`](#agkozak_show_stash) | `1` | Display stashed changes
 [`AGKOZAK_SHOW_VIRTUALENV`](#virtual-environments) | `1` | Display virtual environments
 [`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display) | `1` | Display the username and hostname
+[`AGKOZAK_VIRTUALENV_CHARS`](#virtual-environments) | `( '[' ']' )` | Characters to put around the virtual environment name
 
 # `psvar` Index
 

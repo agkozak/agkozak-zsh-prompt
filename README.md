@@ -157,6 +157,22 @@ Add the line
 
 to your `.zshrc` somewhere before the line that says `zplug load`.
 
+## Exit Status
+
+If the exit status of the most recently executed command is other than zero (zero indicating success), the exit status will be displayed at the beginning of the left prompt:
+
+![Exit status](img/exit-status.png)
+
+## Command Execution Time
+
+![Command Execution Time](img/command_execution_time.gif)
+
+The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which is normally `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can contain two strings to prepend and append to the command execution time string; for example,
+
+    AGKOZAK_CMD_EXEC_TIME_CHARS=( '[' ']' )
+
+will surround the time string with square brackets.
+
 ## Local and Remote Sessions
 
 When a session is local, only the username is shown; when it is remote over SSH (or `mosh`), the hostname is also shown:
@@ -200,15 +216,9 @@ if you have executed
 
 then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `/var/www/html/wp-content/plugins/redirection/actions` will be represented as `~wp-content/.../redirection/actions`. If you prefer to have named directories displayed just like any others, set `AGKOZAK_NAMED_DIRS=0`.
 
-## Command Execution Time
+## Virtual Environments
 
-![Command Execution Time](img/command_execution_time.gif)
-
-The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which is normally `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can contain two strings to prepend and append to the command execution time string; for example,
-
-    AGKOZAK_CMD_EXEC_TIME_CHARS=( '[' ']' )
-
-will surround the time string with square brackets.
+If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`.
 
 ## Git Branch and Status
 
@@ -227,16 +237,6 @@ Modified | !
 Renamed | >
 Untracked | ?
 Stashed changes | $
-
-## Exit Status
-
-If the exit status of the most recently executed command is other than zero (zero indicating success), the exit status will be displayed at the beginning of the left prompt:
-
-![Exit status](img/exit-status.png)
-
-## Virtual Environments
-
-If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`.
 
 ## `vi` Editing Mode
 

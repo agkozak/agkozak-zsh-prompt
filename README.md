@@ -373,12 +373,12 @@ If you would like to make further customizations to your prompt, you may use the
 ```sh
 # Exit status
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(9V.%9v .)'
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
-AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
-# Command execution time
-AGKOZAK_CUSTOM_PROMPT+=$'%(9V. %9v.)\n'
+AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b\n'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
@@ -403,12 +403,12 @@ The same result could be achieved by starting with the default code given at the
 ```sh
 # Exit status 
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(9V.%9v .)'
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
-# Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
 # Git status (followed by newline)
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
 # Prompt character
@@ -421,12 +421,12 @@ AGKOZAK_CUSTOM_RPROMPT='%*'
 Obviously, this code is considerably harder to read, but you might use it if you wanted to do something not supported by the basic configuration options, such as displaying the exit status immediately before the prompt character:
 
 ```sh
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT='%(9V.%9v .)'
 # Username and hostname
-AGKOZAK_CUSTOM_PROMPT='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
+AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
-# Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
 # Git status (followed by newline)
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
 # Exit status
@@ -539,16 +539,19 @@ if (( ${terminfo[colors]:-0} >= 256 )); then
   AGKOZAK_COLORS_BRANCH_STATUS=228
   AGKOZAK_COLORS_EXIT_STATUS=174
   AGKOZAK_COLORS_CMD_EXEC_TIME=245
+  AGKOZAK_COLORS_VIRTUALENV=151
 fi
 AGKOZAK_CUSTOM_PROMPT=''
 # Exit status
 AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(9V.%F{${AGKOZAK_COLORS_CMD_EXEC_TIME}}%b%9v%b%f .)'
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
-# Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(9V. %F{${AGKOZAK_COLORS_CMD_EXEC_TIME}}%b%9vs%b%f.)'
+# Virtual environment indicator
+AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{${AGKOZAK_COLORS_VIRTUALENV:-green}}[%10v]%f.)'
 # Git status
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)\n'
 # SHLVL and prompt character
@@ -558,6 +561,7 @@ AGKOZAK_COLORS_BRANCH_STATUS=228
 # No right prompt
 AGKOZAK_CUSTOM_RPROMPT=''
 ```
+*Note that if you do not need the `SHLVL` indicator, you can achieve the same result with including the `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` sections.*
 
 #### [gnumoksha](https://github.com/gnumoksha/dotfiles/blob/e48d195c58abbedee65976b41d9cdf35a4716c7a/shell/zsh/agkozak-settings.zsh)
 
@@ -583,14 +587,16 @@ AGKOZAK_PROMPT_DIRTRIM=0
 AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
 
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(9V.%9v .)'
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{32})%n%1v%(!.%b%s.%f%b)'
 # Display the current history event number
 AGKOZAK_CUSTOM_PROMPT+=' %B%F{13}%h%f%b'
-# Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
 AGKOZAK_CUSTOM_PROMPT+=$'\n%F{13}%(4V.:.%#)%f '
 
-AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.) '
+# Virtual environment indicator
+AGKOZAK_CUSTOM_RPROMPT='%(10V. %F{green}[%10v]%f.)'
+AGKOZAK_CUSTOM_RPROMPT+='%(3V.%F{yellow}%3v%f.) '
 # Display the path (substituting ~ for $HOME and in named directories)
 AGKOZAK_CUSTOM_RPROMPT+='%B%F{blue}%~%f%b '
 # Display the time
@@ -602,11 +608,13 @@ AGKOZAK_CUSTOM_RPROMPT+='%F{32}%*'
 ![AGitBoy](img/custom_AGitBoy.png)
 
 ```sh
-AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
-AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b):'
-AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
+AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b)'
 # Command execution time
 AGKOZAK_CUSTOM_PROMPT+='%(9V.[%9v].)'
+AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b):'
+AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
+# Virtual environment indicator
+AGKOZAK_CUSTOM_PROMPT+='%(10V.%F{green}[%10v]%f.)'
 # Use > as the prompt character when in vi command mode
 AGKOZAK_CUSTOM_PROMPT+='%(4V.>.%(!.#.$))'
 ```
@@ -628,10 +636,12 @@ krbprinc() {
 }
 
 AGKOZAK_CUSTOM_PROMPT=''
+# Command execution time
+AGKOZAK_CUSTOM_PROMPT+='%(9V.%9v .)'
 _agkozak_is_ssh && AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B)%m%(!.%b%s.%b) '
 AGKOZAK_CUSTOM_PROMPT+='%F{blue}%2v%f%b'
-# Command execution time
-AGKOZAK_CUSTOM_PROMPT+='%(9V. %9v.)'
+# Virtual environment indicator
+AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{green}[%10v]%f.)'
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{green}%3v%f.)\n'
 AGKOZAK_CUSTOM_PROMPT+='$(krbprinc) '
 

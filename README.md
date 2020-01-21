@@ -8,13 +8,13 @@
 
 The agkozak ZSH Prompt is an asynchronous color Git prompt for ZSH that uses basic ASCII symbols to show:
 
+* the exit status of the last command, if it was not zero
+* the execution time of the last command
 * username
-* whether a session is local, or remote over SSH or `mosh`
+* whether a session is local, or remote over SSH or `mosh`; the latter is indicated by the name of the remote machine
 * an abbreviated path
 * any active virtual environment
-* the execution time of the last command
 * Git branch and status
-* the exit status of the last command, if it was not zero
 * if `vi` line editing is enabled, whether insert or command mode is active
 
 This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris, and in Windows environments (MSYS2, Cygwin, and WSL). It should also work perfectly on MacOS.

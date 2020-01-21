@@ -6,12 +6,12 @@
 [![GitHub stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-prompt.svg)](https://github.com/agkozak/agkozak-zsh-prompt/stargazers)
 [![Chat on Gitter](https://img.shields.io/gitter/room/:user/:repo.svg)](https://gitter.im/agkozak-zsh-prompt/Lobby#)
 
-The agkozak ZSH Prompt is an asynchronous color Git prompt for ZSH that uses basic ASCII symbols to show:
+The agkozak ZSH Prompt is an asynchronous color Git prompt that uses basic ASCII symbols to show:
 
 * the exit status of the last command, if it was not zero
 * the execution time of the last command
-* username
-* whether a session is local, or remote over SSH or `mosh`; the latter is indicated by the name of the remote machine
+* the username
+* whether a session is local, or remote over SSH or `mosh`; the latter state is indicated by the name of the remote machine
 * an abbreviated path
 * any active virtual environment
 * Git branch and status
@@ -142,12 +142,11 @@ Run the command
 
     zinit load agkozak/agkozak-zsh-prompt
 
-to try out the prompt; add the same command to your `.zshrc` to load it automatically.
+to try out the prompt; add the same command to your `.zshrc` to load it automatically when the shell starts.
 
 The prompt now supports `zinit`'s `unload` feature; you may restore the shell to its state before loading the prompt by running
 
     zinit unload agkozak/agkozak-zsh-prompt
-
 
 ### For [zplug](https://github.com/zplug/zplug) users
 
@@ -285,6 +284,7 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
     AGKOZAK_COLORS_BRANCH_STATUS=yellow
     AGKOZAK_COLORS_PROMPT_CHAR=default      # Default text color
     AGKOZAK_COLORS_CMD_EXEC_TIME=default    # Default text color
+    AGKOZAK_COLORS_VIRTUALENV=green
 
 ![Custom colors](img/colors.gif)
 

@@ -569,7 +569,7 @@ AGKOZAK_COLORS_BRANCH_STATUS=228
 # No right prompt
 AGKOZAK_CUSTOM_RPROMPT=''
 ```
-*Note that if you do not need the `SHLVL` indicator, you can achieve the same result with including the `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` sections.*
+*Note that if you do not need the `SHLVL` indicator, you can achieve the same result without including the `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` sections.*
 
 #### [gnumoksha](https://github.com/gnumoksha/dotfiles/blob/e48d195c58abbedee65976b41d9cdf35a4716c7a/shell/zsh/agkozak-settings.zsh)
 

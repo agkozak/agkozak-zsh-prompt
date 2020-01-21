@@ -220,7 +220,7 @@ then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `
 
 ![Virtual environments](img/virtual_environments.gif)
 
-If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`.
+If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`. The color of the indicator can be changed using the variable `AGKOZAK_COLORS_VIRTUALENV` (default: `green`).
 
 ## Git Branch and Status
 
@@ -661,6 +661,7 @@ Option | Default | Meaning
 [`AGKOZAK_COLORS_PATH`](#custom-colors) | `blue` | Color of path
 [`AGKOZAK_COLORS_PROMPT_CHAR`](#custom-colors) | `default` | Color of prompt character
 [`AGKOZAK_COLORS_USER_HOST`](#custom-colors) | `green` | Color of username and hostname
+[`AGKOZAK_COLORS_VIRTUALENV`](#virtual-environments) | `green` | Color of the virtual environment indicator
 [`AGKOZAK_CUSTOM_PROMPT`](#advanced-customization) | | Code for custom left prompt
 [`AGKOZAK_CUSTOM_RPROMPT`](#advanced-customization) | | Code for custom right prompt
 [`AGKOZAK_CUSTOM_SYMBOLS`](#custom-git-symbols) | `( '&*' '&' '*' '+' 'x' '!' '>' '?' '$' )` | Array containing custom Git symbols for the statuses Diverged, Behind, Ahead, New file(s), Deleted, Modified, Renamed, Untracked, Stashed changes

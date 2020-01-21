@@ -218,6 +218,8 @@ then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `
 
 ## Virtual Environments
 
+![Virtual environments](img/virtual_environments.gif)
+
 If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`.
 
 ## Git Branch and Status

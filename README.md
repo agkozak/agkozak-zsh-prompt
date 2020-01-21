@@ -138,7 +138,7 @@ to your `.zshrc` somewhere before the line that says `zgen save`.
 
 ### For [Zinit](https://github.com/zdharma/zinit) (formerly `zplugin`) users
 
-Run the command 
+Run the command
 
     zinit load agkozak/agkozak-zsh-prompt
 

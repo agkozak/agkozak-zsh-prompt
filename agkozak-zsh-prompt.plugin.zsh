@@ -209,11 +209,10 @@ fi
 : ${AGKOZAK_BLANK_LINES:=0}
 # Whether or not to display the virtual environment
 : ${AGKOZAK_SHOW_VIRTUALENV:=1}
-
 # Characters to put around the command execution time (default: nothing )
-AGKOZAK_CMD_EXEC_TIME_CHARS=()
+(( $+AGKOZAK_CMD_EXEC_TIME_CHARS )) || AGKOZAK_CMD_EXEC_TIME_CHARS=()
 # Characters to put around the virtual environment name (default: square brackets)
-AGKOZAK_VIRTUALENV_CHARS=( '[' ']' )
+(( $+AGKOZAK_VIRTUALENV_CHARS )) || AGKOZAK_VIRTUALENV_CHARS=( '[' ']' )
 
 setopt PROMPT_SUBST NO_PROMPT_BANG
 

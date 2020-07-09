@@ -58,6 +58,11 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 - v3.8 (July 9, 2020)
     - The prompt no longer defaults to `zsh-async` on Solaris and Solaris-derived operating systems, as I have noticed that `zsh-async`'s performance can be quirky on underperforming systems.
+- v3.7.3 (May 14, 2020)
+    - Updated to use zsh-async 1.8.3.
+- v3.7.2 (May 6, 2020)
+    - `_agkozak_precmd` was triggering a warning on ZSH v5.0.0-2. This has been fixed.
+    - Version 1.8.0 of zsh-async is now being used.
 - v3.7.1 (January 24, 2020)
     - `AGKOZAK_CMD_EXEC_TIME_CHARS` and `AGKOZAK_VIRTUALENV_CHARS` were being set back to default if they were set before the prompt was sourced.
 - v3.7.0 (January 21, 2020)

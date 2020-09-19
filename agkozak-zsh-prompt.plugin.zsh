@@ -563,7 +563,8 @@ _agkozak_async_init() {
   emulate -L zsh
   setopt LOCAL_OPTIONS NO_LOCAL_TRAPS
 
-  # Detect the Windows Subsystem for Linux
+  # Detect the Windows Subsystem for Linux (but do not attempt to read
+  # /proc/version on Android)
   if (( $+WSL_DISTRO_NAME )) || { [[ $OSTYPE == linux* ]] \
     && [[ $OSTYPE != 'linux-android' ]] \
     && [[ "$(< /proc/version)" == *(Microsoft|WSL)* ]]; }; then

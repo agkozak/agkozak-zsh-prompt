@@ -563,10 +563,9 @@ _agkozak_async_init() {
   emulate -L zsh
   setopt LOCAL_OPTIONS NO_LOCAL_TRAPS
 
-  # Detect the Windows Subsystem for Linux (but do not attempt to read
-  # /proc/version on Android)
+  # Detect the Windows Subsystem for Linux
   if (( $+WSL_DISTRO_NAME )) || { [[ $OSTYPE == linux* ]] \
-    && [[ $OSTYPE != 'linux-android' ]] \
+    && [[ -r /proc/version ]] \
     && [[ "$(< /proc/version)" == *(Microsoft|WSL)* ]]; }; then
     # WSL1 should have BG_NICE disabled, since it does not have a Linux kernel
     # TODO: Determine what to do for WSL2

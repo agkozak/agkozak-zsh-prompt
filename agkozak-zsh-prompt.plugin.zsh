@@ -565,6 +565,7 @@ _agkozak_async_init() {
 
   # Detect the Windows Subsystem for Linux
   if (( $+WSL_DISTRO_NAME )) || { [[ $OSTYPE == linux* ]] \
+    && [[ -r /proc/version ]] \
     && [[ "$(< /proc/version)" == *(Microsoft|WSL)* ]]; }; then
     # WSL1 should have BG_NICE disabled, since it does not have a Linux kernel
     # TODO: Determine what to do for WSL2

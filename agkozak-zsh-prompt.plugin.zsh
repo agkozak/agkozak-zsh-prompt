@@ -815,9 +815,8 @@ _agkozak_preexec() {
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
-  (( AGKOZAK_PROMPT_DEBUG )) \
-    && [[ $ZSH_VERSION != 5.0.[0-2] ]] \
-    && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( AGKOZAK_PROMPT_DEBUG )) && [[ $ZSH_VERSION != 5.0.[0-2] ]] &&
+    setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Calculate the time it took to run the last command
   psvar[8]=''

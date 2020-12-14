@@ -821,7 +821,7 @@ _agkozak_precmd() {
   # Calculate the time it took to run the last command
   psvar[8]=''
   psvar[9]=''
-  if (( AGKOZAK_CMD_START_TIME )) && (( AGKOZAK_CMD_EXEC_TIME )); then
+  if (( AGKOZAK_CMD_START_TIME && AGKOZAK_CMD_EXEC_TIME )); then
     local cmd_exec_time=$(( EPOCHSECONDS - AGKOZAK_CMD_START_TIME ))
     if (( cmd_exec_time >= AGKOZAK_CMD_EXEC_TIME )); then
       psvar[8]=$cmd_exec_time
@@ -886,7 +886,7 @@ _agkozak_precmd() {
   fi
 
   # Optionally put blank lines between instances of the prompt
-  (( AGKOZAK_BLANK_LINES )) && (( AGKOZAK[FIRST_PROMPT_PRINTED] )) && print
+  (( AGKOZAK_BLANK_LINES && AGKOZAK[FIRST_PROMPT_PRINTED] )) && print
   AGKOZAK[FIRST_PROMPT_PRINTED]=1
 
   # Begin to calculate the Git status

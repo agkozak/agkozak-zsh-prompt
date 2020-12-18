@@ -58,7 +58,11 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 - Unreleased
     - The characters used as ellipsis with `AGKOZAK_PROMPT_DIRTRIM` (`...` by default) can now be overridden by setting `AGKOZAK_PROMPT_DIRTRIM_CHAR`.
-- v3.8 (July 9, 2020)
+- v3.8.1 (November 23, 2020)
+    - WSL2 now uses the `subst-async` method, while WSL1 continues to use `usr1` for reasons of speed.
+    - The error message `permission denied: /proc/version` is no longer produced in `termux` on Android.
+    - zsh-async v1.8.5 is included.
+- v3.8.0 (July 9, 2020)
     - The prompt no longer defaults to `zsh-async` on Solaris and Solaris-derived operating systems, as I have noticed that `zsh-async`'s performance can be quirky on underperforming systems.
 - v3.7.3 (May 14, 2020)
     - Updated to use zsh-async 1.8.3.
@@ -210,8 +214,6 @@ is displayed as
 ![.../sense-hat/examples](img/abbreviated_paths_2.png)
 
 that is, without a tilde.
-
-Setting `AGKOZAK_PROMPT_DIRTRIM_CHAR` will override the default `...` string used for the ellipsis.
 
 If you would like to display a different number of directory elements, set the environment variable `AGKOZAK_PROMPT_DIRTRIM` in your `.zshrc` file thus (as in the example below):
 
@@ -416,13 +418,13 @@ Now that the right prompt no longer does anything, you could use the `AGKOZAK_CU
 So far, you will have used only the following code:
 
     AGKOZAK_LEFT_PROMPT_ONLY=1
-    AGKOZAK_COLORS_BRANCH_STATUS=243
+    AGKOZAK_COLORS_BRANCH_STATUS=243 
     AGKOZAK_CUSTOM_RPROMPT='%*'
 
 The same result could be achieved by starting with the default code given at the top of this section and altering it to produce
 
 ```sh
-# Exit status
+# Exit status 
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 # Command execution time
 AGKOZAK_CUSTOM_PROMPT+='%(9V.%9v .)'
@@ -692,7 +694,6 @@ Option | Default | Meaning
 [`AGKOZAK_PRE_PROMPT_CHAR`](#optional-single-line-prompt) | ` ` | For a single-line prompt, the character or characters to display before the prompt character
 [`AGKOZAK_PROMPT_DEBUG`](#asynchronous-methods) | `0` | Show debugging information
 [`AGKOZAK_PROMPT_DIRTRIM`](#abbreviated-paths) | `2` | Number of directory elements to display; `0` turns off directory trimming
-[`AGKOZAK_PROMPT_DIRTRIM_CHAR`](#abbreviated-paths) | `...` | Character or characters used as ellipsis when directory trimming
 [`AGKOZAK_SHOW_STASH`](#agkozak_show_stash) | `1` | Display stashed changes
 [`AGKOZAK_SHOW_VIRTUALENV`](#virtual-environments) | `1` | Display virtual environments
 [`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display) | `1` | Display the username and hostname

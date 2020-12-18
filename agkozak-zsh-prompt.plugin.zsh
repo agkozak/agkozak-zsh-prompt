@@ -87,7 +87,7 @@ autoload -Uz is-at-least add-zle-hook-widget
 #                       prevents an unnecessary blank line before the first
 #                       prompt of the session
 # AGKOZAK[FUNCTIONS]    A list of the prompt's functions
-# AGKOZAK[IS_WSL]       Whether or not the system is WSL
+# AGKOZAK[IS_WSL1]      Whether or not the system is WSL1
 # AGKOZAK[OLD_PROMPT]   The left prompt before this prompt was loaded
 # AGKOZAK[OLD RPROMPT]  The right prompt before this prompt was loaded
 # AGKOZAK[PROMPT]       The current state of the left prompt
@@ -550,12 +550,11 @@ _agkozak_has_usr1() {
 
 ############################################################
 # If AGKOZAK_FORCE_ASYNC_METHOD is set to a valid value,
-# set AGKOZAK[ASYNC_METHOD] to that; otherwise, determine
-# the optimal asynchronous method from the environment (usr1
-# for MSYS2/Cygwin/WSL, zsh-async for WSL, subst-async for
-# everything else), with fallbacks being available. Define
-# the necessary asynchronous functions (loading async.zsh
-# when necessary).
+# use it; otherwise, determine the optimal asynchronous
+# method for the environment (usr1 for MSYS2/Cygwin/WSL1,
+# subst-async for everything else), with fallbacks being
+# available. Define the necessary asynchronous functions
+# (loading async.zsh when necessary).
 #
 # Globals:
 #   AGKOZAK
@@ -567,13 +566,13 @@ _agkozak_async_init() {
   emulate -L zsh
   setopt LOCAL_OPTIONS NO_LOCAL_TRAPS
 
-  # Detect the Windows Subsystem for Linux
-  if (( $+WSL_DISTRO_NAME )) || { [[ $OSTYPE == linux* ]] \
-    && [[ "$(< /proc/version)" == *(Microsoft|WSL)* ]]; }; then
-    # WSL1 should have BG_NICE disabled, since it does not have a Linux kernel
-    # TODO: Determine what to do for WSL2
+  # Detect WSL1
+  if [[ $OSTYPE == linux* &&
+        -r /proc/version  &&
+        $(< /proc/version) == *Microsoft* ]]; then
+    # Early versions of WSL1 require BG_NICE to be explicitly disabled
     unsetopt BG_NICE
-    AGKOZAK[IS_WSL]=1   # For later reference
+    AGKOZAK[IS_WSL1]=1
   fi
 
   if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
@@ -583,8 +582,8 @@ _agkozak_async_init() {
   # Otherwise, first provide for certain quirky systems
   else
 
-    # SIGUSR1 method is still much faster on Windows (MSYS2/Cygwin/WSL).
-    if [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL] )); then
+    # SIGUSR1 method is still much faster on Windows (MSYS2/Cygwin/WSL1).
+    if [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL1] )); then
       if _agkozak_has_usr1; then
         AGKOZAK[ASYNC_METHOD]='usr1'
       else
@@ -821,14 +820,13 @@ _agkozak_preexec() {
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
-  (( AGKOZAK_PROMPT_DEBUG )) \
-    && [[ $ZSH_VERSION != 5.0.[0-2] ]] \
-    && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( AGKOZAK_PROMPT_DEBUG )) && [[ $ZSH_VERSION != 5.0.[0-2] ]] &&
+    setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Calculate the time it took to run the last command
   psvar[8]=''
   psvar[9]=''
-  if (( AGKOZAK_CMD_START_TIME )) && (( AGKOZAK_CMD_EXEC_TIME )); then
+  if (( AGKOZAK_CMD_START_TIME && AGKOZAK_CMD_EXEC_TIME )); then
     local cmd_exec_time=$(( EPOCHSECONDS - AGKOZAK_CMD_START_TIME ))
     if (( cmd_exec_time >= AGKOZAK_CMD_EXEC_TIME )); then
       psvar[8]=$cmd_exec_time
@@ -893,7 +891,7 @@ _agkozak_precmd() {
   fi
 
   # Optionally put blank lines between instances of the prompt
-  (( AGKOZAK_BLANK_LINES )) && (( AGKOZAK[FIRST_PROMPT_PRINTED] )) && print
+  (( AGKOZAK_BLANK_LINES && AGKOZAK[FIRST_PROMPT_PRINTED] )) && print
   AGKOZAK[FIRST_PROMPT_PRINTED]=1
 
   # Begin to calculate the Git status

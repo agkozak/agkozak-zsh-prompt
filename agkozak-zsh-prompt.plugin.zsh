@@ -198,8 +198,6 @@ fi
 : ${AGKOZAK_NAMED_DIRS:=1}
 # The number of path elements to display (default: 2; 0 displays the whole path)
 : ${AGKOZAK_PROMPT_DIRTRIM:=2}
-# The ellipsis string to use when trimming paths (default: ...)
-: ${AGKOZAK_PROMPT_DIRTRIM_STRING:=...}
 # Whether or not to display the Git stash (default: on)
 : ${AGKOZAK_SHOW_STASH:=1}
 # Whether or not to display the username and hostname (default: on)
@@ -295,8 +293,8 @@ _agkozak_prompt_dirtrim() {
   done
   [[ $1 -ge 0 ]] || set 2
 
-  # The ellipsis string (default: ...)
-  local ellipsis=${AGKOZAK_PROMPT_DIRTRIM_STRING}
+  # The ellipsis string to use when trimming paths (default: ...)
+  local ellipsis=${AGKOZAK_PROMPT_DIRTRIM_STRING:-...}
 
   local output
 

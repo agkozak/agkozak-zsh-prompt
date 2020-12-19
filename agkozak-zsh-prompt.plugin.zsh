@@ -199,7 +199,7 @@ fi
 # The number of path elements to display (default: 2; 0 displays the whole path)
 : ${AGKOZAK_PROMPT_DIRTRIM:=2}
 # The ellipsis string to use when trimming paths (default: ...)
-: ${AGKOZAK_PROMPT_DIRTRIM_CHAR=...}
+: ${AGKOZAK_PROMPT_DIRTRIM_STRING:=...}
 # Whether or not to display the Git stash (default: on)
 : ${AGKOZAK_SHOW_STASH:=1}
 # Whether or not to display the username and hostname (default: on)
@@ -258,7 +258,7 @@ _agkozak_is_ssh() {
 # has more than a certain number of elements in its
 # directory tree, keep the number specified by
 # AGKOZAK_PROMPT_DIRTRIM (default: 2) and abbreviate the
-# rest with AGKOZAK_PROMPT_DIRTRIM_CHAR (default: `...').
+# rest with AGKOZAK_PROMPT_DIRTRIM_STRING (default: `...').
 # (Set AGKOZAK_PROMPT_DIRTRIM=0 to disable
 # directory trimming). For example,
 #
@@ -277,10 +277,9 @@ _agkozak_is_ssh() {
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_NAMED_DIRS
 # Arguments:
-#   $1 [Optional] If `-v', store the function's output in
+#   [Optional] If `-v', store the function's output in
 #        psvar[2] instead of printing it to STDOUT
-#   $2 Number of directory elements to display (default: 2)
-#   $3 Ellipsis string (default: ...)
+#   [Optional] Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
   emulate -L zsh
@@ -296,6 +295,9 @@ _agkozak_prompt_dirtrim() {
   done
   [[ $1 -ge 0 ]] || set 2
 
+  # The ellipsis string (default: ...)
+  local ellipsis=${AGKOZAK_PROMPT_DIRTRIM_STRING}
+
   local output
 
   # Default behavior (when AGKOZAK_NAMED_DIRS is 1)
@@ -307,9 +309,9 @@ _agkozak_prompt_dirtrim() {
     if (( $1 )); then
       case $zsh_pwd in
         \~) output=${(%)zsh_pwd} ;;
-        \~/*) output="${(%):-%($(( $1 + 2 ))~|~/${2}/%${1}~|%~)}" ;;
-        \~*) output="${(%):-%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}${2}/%${1}~|%~)}" ;;
-        *) output="${(%):-%($(( $1 + 1 ))/|${2}/%${1}d|%d)}" ;;
+        \~/*) output="${(%):-%($(( $1 + 2 ))~|~/${ellipsis}/%${1}~|%~)}" ;;
+        \~*) output="${(%):-%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}${ellipsis}/%${1}~|%~)}" ;;
+        *) output="${(%):-%($(( $1 + 1 ))/|${ellipsis}/%${1}d|%d)}" ;;
       esac
     else
       output=$zsh_pwd
@@ -343,8 +345,8 @@ _agkozak_prompt_dirtrim() {
           (( i++ ))
         done
         case $PWD in
-          ${HOME}*) output="~/${2}${dir#${lopped_path}}" ;;
-          *) output="${2}${PWD#${lopped_path}}" ;;
+          ${HOME}*) output="~/${ellipsis}${dir#${lopped_path}}" ;;
+          *) output="${ellipsis}${PWD#${lopped_path}}" ;;
         esac
       fi
 
@@ -816,7 +818,6 @@ _agkozak_preexec() {
 #   AGKOZAK_PRE_PROMPT_CHAR
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_PROMPT_DIRTRIM
-#   AGKOZAK_PROMPT_DIRTRIM_CHAR
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
@@ -903,7 +904,7 @@ _agkozak_precmd() {
   esac
 
   # Construct and display PROMPT and RPROMPT
-  _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2} ${AGKOZAK_PROMPT_DIRTRIM_CHAR-...}
+  _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
   _agkozak_prompt_strings
 }
 
@@ -977,7 +978,6 @@ _agkozak_prompt_strings() {
 #   AGKOZAK
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_DIRTRIM
-#   AGKOZAK_PROMPT_DIRTRIM_CHAR
 ############################################################
 agkozak-zsh-prompt() {
   emulate -L zsh
@@ -1022,7 +1022,7 @@ agkozak-zsh-prompt() {
   if [[ $TERM == 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
-    PROMPT+='$(_agkozak_prompt_dirtrim "${AGKOZAK_PROMPT_DIRTRIM:-2}" "${AGKOZAK_PROMPT_DIRTRIM_CHAR-...}")'
+    PROMPT+='$(_agkozak_prompt_dirtrim "${AGKOZAK_PROMPT_DIRTRIM:-2}")'
     PROMPT+='$(_agkozak_branch_status) '
     PROMPT+='%# '
   else

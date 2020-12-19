@@ -198,6 +198,8 @@ fi
 : ${AGKOZAK_NAMED_DIRS:=1}
 # The number of path elements to display (default: 2; 0 displays the whole path)
 : ${AGKOZAK_PROMPT_DIRTRIM:=2}
+# The string to use to indicate that a path has been abbreviated (default: ...)
+: ${AGKOZAK_PROMPT_DIRTRIM_STRING:=...}
 # Whether or not to display the Git stash (default: on)
 : ${AGKOZAK_SHOW_STASH:=1}
 # Whether or not to display the username and hostname (default: on)

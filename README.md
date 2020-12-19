@@ -230,7 +230,11 @@ if you have executed
 
 then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `/var/www/html/wp-content/plugins/redirection/actions` will be represented as `~wp-content/.../redirection/actions`. If you prefer to have named directories displayed just like any others, set `AGKOZAK_NAMED_DIRS=0`.
 
-If you want to use a string other than `...` to signify that a path has been abbreviated, you may specify it using `AGKOZAK_PROMPT_DIRTRIM_STRING`.
+If you want to use a string other than `...` to signify that a path has been abbreviated, you may specify it using `AGKOZAK_PROMPT_DIRTRIM_STRING`. For example,
+
+    AGKOZAK_PROMPT_DIRTRIM_STRING=$'\u2026'
+
+will replace the default three dots (`...`) with a Unicode ellipsis (`…`), which can free up a little screen space if your terminal font supports it.
 
 ## Virtual Environments
 

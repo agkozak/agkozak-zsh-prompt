@@ -56,7 +56,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
-- Unreleased
+- v3.9.0
     - The characters used to signify path abbreviation with `AGKOZAK_PROMPT_DIRTRIM` (`...` by default) can now be overridden with `AGKOZAK_PROMPT_DIRTRIM_STRING`.
 - v3.8.1 (November 23, 2020)
     - WSL2 now uses the `subst-async` method, while WSL1 continues to use `usr1` for reasons of speed.

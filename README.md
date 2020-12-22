@@ -56,6 +56,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
+- v3.9.0
+    - The characters used to signify path abbreviation with `AGKOZAK_PROMPT_DIRTRIM` (`...` by default) can now be overridden with `AGKOZAK_PROMPT_DIRTRIM_STRING`.
 - v3.8.1 (November 23, 2020)
     - WSL2 now uses the `subst-async` method, while WSL1 continues to use `usr1` for reasons of speed.
     - The error message `permission denied: /proc/version` is no longer produced in `termux` on Android.
@@ -227,6 +229,12 @@ if you have executed
     hash -d wp-content=/var/www/html/wp-content
 
 then `/var/www/html/wp-content` will appear in the prompt as `wp-content`, and `/var/www/html/wp-content/plugins/redirection/actions` will be represented as `~wp-content/.../redirection/actions`. If you prefer to have named directories displayed just like any others, set `AGKOZAK_NAMED_DIRS=0`.
+
+If you want to use a string other than `...` to signify that a path has been abbreviated, you may specify it using `AGKOZAK_PROMPT_DIRTRIM_STRING`. For example,
+
+    AGKOZAK_PROMPT_DIRTRIM_STRING=$'\u2026'
+
+will replace the default three dots (`...`) with a Unicode ellipsis (`…`), which can free up a little screen space if your terminal font supports it.
 
 ## Virtual Environments
 
@@ -692,6 +700,7 @@ Option | Default | Meaning
 [`AGKOZAK_PRE_PROMPT_CHAR`](#optional-single-line-prompt) | ` ` | For a single-line prompt, the character or characters to display before the prompt character
 [`AGKOZAK_PROMPT_DEBUG`](#asynchronous-methods) | `0` | Show debugging information
 [`AGKOZAK_PROMPT_DIRTRIM`](#abbreviated-paths) | `2` | Number of directory elements to display; `0` turns off directory trimming
+[`AGKOZAK_PROMPT_DIRTRIM_STRING`] | `...` | Ellipsis string used in directory trimming
 [`AGKOZAK_SHOW_STASH`](#agkozak_show_stash) | `1` | Display stashed changes
 [`AGKOZAK_SHOW_VIRTUALENV`](#virtual-environments) | `1` | Display virtual environments
 [`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display) | `1` | Display the username and hostname

@@ -198,6 +198,8 @@ fi
 : ${AGKOZAK_NAMED_DIRS:=1}
 # The number of path elements to display (default: 2; 0 displays the whole path)
 : ${AGKOZAK_PROMPT_DIRTRIM:=2}
+# The string to use to indicate that a path has been abbreviated (default: ...)
+: ${AGKOZAK_PROMPT_DIRTRIM_STRING:=...}
 # Whether or not to display the Git stash (default: on)
 : ${AGKOZAK_SHOW_STASH:=1}
 # Whether or not to display the username and hostname (default: on)
@@ -256,7 +258,8 @@ _agkozak_is_ssh() {
 # has more than a certain number of elements in its
 # directory tree, keep the number specified by
 # AGKOZAK_PROMPT_DIRTRIM (default: 2) and abbreviate the
-# rest with `...'. (Set AGKOZAK_PROMPT_DIRTRIM=0 to disable
+# rest with AGKOZAK_PROMPT_DIRTRIM_STRING (default: `...').
+# (Set AGKOZAK_PROMPT_DIRTRIM=0 to disable
 # directory trimming). For example,
 #
 #   $HOME/dotfiles/polyglot/img
@@ -274,9 +277,9 @@ _agkozak_is_ssh() {
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_NAMED_DIRS
 # Arguments:
-#   $1 [Optional] If `-v', store the function's output in
+#   [Optional] If `-v', store the function's output in
 #        psvar[2] instead of printing it to STDOUT
-#   $2 Number of directory elements to display (default: 2)
+#   [Optional] Number of directory elements to display (default: 2)
 ############################################################
 _agkozak_prompt_dirtrim() {
   emulate -L zsh
@@ -292,6 +295,9 @@ _agkozak_prompt_dirtrim() {
   done
   [[ $1 -ge 0 ]] || set 2
 
+  # The ellipsis string to use when trimming paths (default: ...)
+  local ellipsis=${AGKOZAK_PROMPT_DIRTRIM_STRING:-...}
+
   local output
 
   # Default behavior (when AGKOZAK_NAMED_DIRS is 1)
@@ -303,9 +309,9 @@ _agkozak_prompt_dirtrim() {
     if (( $1 )); then
       case $zsh_pwd in
         \~) output=${(%)zsh_pwd} ;;
-        \~/*) output="${(%):-%($(( $1 + 2 ))~|~/.../%${1}~|%~)}" ;;
-        \~*) output="${(%):-%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}.../%${1}~|%~)}" ;;
-        *) output="${(%):-%($(( $1 + 1 ))/|.../%${1}d|%d)}" ;;
+        \~/*) output="${(%):-%($(( $1 + 2 ))~|~/${ellipsis}/%${1}~|%~)}" ;;
+        \~*) output="${(%):-%($(( $1 + 2 ))~|${zsh_pwd%%${zsh_pwd#\~*\/}}${ellipsis}/%${1}~|%~)}" ;;
+        *) output="${(%):-%($(( $1 + 1 ))/|${ellipsis}/%${1}d|%d)}" ;;
       esac
     else
       output=$zsh_pwd
@@ -339,8 +345,8 @@ _agkozak_prompt_dirtrim() {
           (( i++ ))
         done
         case $PWD in
-          ${HOME}*) output="~/...${dir#${lopped_path}}" ;;
-          *) output="...${PWD#${lopped_path}}" ;;
+          ${HOME}*) output="~/${ellipsis}${dir#${lopped_path}}" ;;
+          *) output="${ellipsis}${PWD#${lopped_path}}" ;;
         esac
       fi
 
@@ -815,14 +821,13 @@ _agkozak_preexec() {
 ############################################################
 _agkozak_precmd() {
   emulate -L zsh
-  (( AGKOZAK_PROMPT_DEBUG )) \
-    && [[ $ZSH_VERSION != 5.0.[0-2] ]] \
-    && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+  (( AGKOZAK_PROMPT_DEBUG )) && [[ $ZSH_VERSION != 5.0.[0-2] ]] &&
+    setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   # Calculate the time it took to run the last command
   psvar[8]=''
   psvar[9]=''
-  if (( AGKOZAK_CMD_START_TIME )) && (( AGKOZAK_CMD_EXEC_TIME )); then
+  if (( AGKOZAK_CMD_START_TIME && AGKOZAK_CMD_EXEC_TIME )); then
     local cmd_exec_time=$(( EPOCHSECONDS - AGKOZAK_CMD_START_TIME ))
     if (( cmd_exec_time >= AGKOZAK_CMD_EXEC_TIME )); then
       psvar[8]=$cmd_exec_time
@@ -887,7 +892,7 @@ _agkozak_precmd() {
   fi
 
   # Optionally put blank lines between instances of the prompt
-  (( AGKOZAK_BLANK_LINES )) && (( AGKOZAK[FIRST_PROMPT_PRINTED] )) && print
+  (( AGKOZAK_BLANK_LINES && AGKOZAK[FIRST_PROMPT_PRINTED] )) && print
   AGKOZAK[FIRST_PROMPT_PRINTED]=1
 
   # Begin to calculate the Git status

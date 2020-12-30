@@ -79,8 +79,8 @@
 
 autoload -Uz is-at-least add-zle-hook-widget
 
-# AGKOZAK is an associative array for storing internal information that is discarded when the
-# prompt is unloaded.
+# AGKOZAK is an associative array for storing internal information that is
+# discarded when the prompt is unloaded.
 #
 # AGKOZAK[ASYNC_METHOD] Which asynchronous method is currently in use
 # AGKOZAK[FIRST_PROMPT_PRINTED] When AGKOZAK_BLANK_LINES=1, this variable

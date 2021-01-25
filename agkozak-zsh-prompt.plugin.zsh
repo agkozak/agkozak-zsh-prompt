@@ -395,7 +395,7 @@ _agkozak_branch_status() {
   fi
 
   if [[ $git_status == On\ branch\ * ]]; then
-    branch=${${git_status#On\ branch\ }%%$'\n'*}
+    branch=${${git_status#On\ branch\ }%%$'\n'Your*}
   elif [[ $git_status == HEAD\ detached\ at\ * ]]; then
     branch=${${git_status#HEAD\ detached\ at\ }%%$'\n'*}
   fi

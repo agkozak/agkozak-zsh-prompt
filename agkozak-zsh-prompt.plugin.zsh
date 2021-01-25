@@ -388,9 +388,9 @@ _agkozak_branch_status() {
 
   if (( ${AGKOZAK_SHOW_STASH:-1} )); then
     if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
-      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
+      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)" || return
     else
-      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
+      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)" || return
     fi
   fi
 
@@ -398,8 +398,6 @@ _agkozak_branch_status() {
     branch=${${git_status#On\ branch\ }%%$'\n'*}
   elif [[ $git_status == HEAD\ detached\ at\ * ]]; then
     branch=${${git_status#HEAD\ detached\ at\ }%%$'\n'*}
-  else
-    return 1
   fi
 
   typeset -A messages

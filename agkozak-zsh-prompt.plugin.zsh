@@ -384,68 +384,62 @@ _agkozak_branch_status() {
   emulate -L zsh
   (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
-  local ref branch
-  ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
-  case $? in        # See what the exit code is.
-    0) ;;           # $ref contains the name of a checked-out branch.
-    128) return ;;  # No Git repository here.
-    # Otherwise, see if HEAD is in detached state.
-    *) ref=$(command git rev-parse --short HEAD 2> /dev/null) || return ;;
-  esac
-  branch=${ref#refs/heads/}
+  local git_status branch symbols i=1 k
 
-  if [[ -n $branch ]]; then
-    local git_status symbols i=1 k
-
-    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
-        git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
-      else
-        git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
-      fi
+  if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+    if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
+      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
+    else
+      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
     fi
-
-    typeset -A messages
-    messages=(
-                '&*'  ' have diverged,'
-                '&'   'Your branch is behind '
-                '*'   'Your branch is ahead of '
-                '+'   'new file:   '
-                'x'   'deleted:    '
-                '!'   'modified:   '
-                '>'   'renamed:    '
-                '?'   'Untracked files:'
-             )
-
-    for k in '&*' '&' '*' '+' 'x' '!' '>' '?'; do
-      case $git_status in
-        *${messages[$k]}*) symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-$k}" ;;
-      esac
-      (( i++ ))
-    done
-
-    # Check for stashed changes. If there are any, add the stash symbol to the
-    # list of symbols.
-    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
-        case $git_status in
-          *'Your stash currently has '*)
-            symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
-            ;;
-        esac
-      else
-        if LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git rev-parse --verify \
-          refs/stash &> /dev/null; then
-          symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
-        fi
-      fi
-    fi
-
-    [[ -n $symbols ]] && symbols=" ${symbols}"
-
-    printf -- '%s(%s%s)' "${AGKOZAK_BRANCH_STATUS_SEPARATOR- }" "$branch" \
-      "$symbols"
   fi
+
+  if [[ $git_status == On\ branch\ * ]]; then
+    branch=${${git_status#On\ branch\ }%%$'\n'*}
+  elif [[ $git_status == HEAD\ detached\ at\ * ]]; then
+    branch=${${git_status#HEAD\ detached\ at\ }%%$'\n'*}
+  fi
+
+  typeset -A messages
+  messages=(
+              '&*'  ' have diverged,'
+              '&'   'Your branch is behind '
+              '*'   'Your branch is ahead of '
+              '+'   'new file:   '
+              'x'   'deleted:    '
+              '!'   'modified:   '
+              '>'   'renamed:    '
+              '?'   'Untracked files:'
+           )
+
+  for k in '&*' '&' '*' '+' 'x' '!' '>' '?'; do
+    case $git_status in
+      *${messages[$k]}*) symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-$k}" ;;
+    esac
+    (( i++ ))
+  done
+
+  # Check for stashed changes. If there are any, add the stash symbol to the
+  # list of symbols.
+  if (( ${AGKOZAK_SHOW_STASH:-1} )); then
+    if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
+      case $git_status in
+        *'Your stash currently has '*)
+          symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
+          ;;
+      esac
+    else
+      if LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git rev-parse --verify \
+        refs/stash &> /dev/null; then
+        symbols+="${AGKOZAK_CUSTOM_SYMBOLS[$i]:-\$}"
+      fi
+    fi
+  fi
+
+  [[ -n $symbols ]] && symbols=" ${symbols}"
+
+  printf -- '%s(%s%s)' "${AGKOZAK_BRANCH_STATUS_SEPARATOR- }" "$branch" \
+    "$symbols"
 }
 
 ############################################################

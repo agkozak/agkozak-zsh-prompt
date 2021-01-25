@@ -388,10 +388,10 @@ _agkozak_branch_status() {
 
   if (( ${AGKOZAK_SHOW_STASH:-1} )); then
     if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
-      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)" ||
+      git_status="$(command git rev-parse HEAD &> /dev/null && LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)" ||
         return # If there is no Git repo
     else
-      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)" ||
+      git_status="$(command git rev-parse HEAD &> /dev/null && LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)" ||
         return # If there is no Git repo
     fi
   fi

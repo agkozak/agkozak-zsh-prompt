@@ -398,6 +398,8 @@ _agkozak_branch_status() {
     branch=${${git_status#On\ branch\ }%%$'\n'*}
   elif [[ $git_status == HEAD\ detached\ at\ * ]]; then
     branch=${${git_status#HEAD\ detached\ at\ }%%$'\n'*}
+  else
+    return 1
   fi
 
   typeset -A messages

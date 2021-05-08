@@ -1,0 +1,3 @@
+#autoload
+# Shim for promptinit compatibility
+source "${${(%):-%x}:A:h}/agkozak-zsh-prompt.plugin.zsh"

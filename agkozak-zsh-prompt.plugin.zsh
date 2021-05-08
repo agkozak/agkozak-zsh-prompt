@@ -216,7 +216,9 @@ fi
 # Characters to put around the virtual environment name (default: square brackets)
 (( $+AGKOZAK_VIRTUALENV_CHARS )) || AGKOZAK_VIRTUALENV_CHARS=( '[' ']' )
 
-setopt PROMPT_SUBST NO_PROMPT_BANG
+# promptinit compatibility
+prompt_opts=( percent subst )
+setopt NO_PROMPT_{BANG,CR,PERCENT,SUBST} "PROMPT_${^prompt_opts[@]}"
 
 ######################################################################
 # GENERAL FUNCTIONS

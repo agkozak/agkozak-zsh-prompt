@@ -134,10 +134,12 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_usr1_async_worker
                     TRAPUSR1
                     _agkozak_strip_colors
-                    _agkozak_preexec
-                    _agkozak_precmd
+                    prompt_agkozak_preexec
+                    prompt_agkozak_precmd
                     _agkozak_prompt_strings
-                    agkozak-zsh-prompt'
+                    agkozak-zsh-prompt
+                    prompt_agkozak-zsh-prompt_preview
+                    prompt_agkozak-zsh-prompt_help'
 
 : ${AGKOZAK_PROMPT_DEBUG:=0}
 
@@ -215,8 +217,6 @@ fi
 (( $+AGKOZAK_CMD_EXEC_TIME_CHARS )) || AGKOZAK_CMD_EXEC_TIME_CHARS=()
 # Characters to put around the virtual environment name (default: square brackets)
 (( $+AGKOZAK_VIRTUALENV_CHARS )) || AGKOZAK_VIRTUALENV_CHARS=( '[' ']' )
-
-setopt PROMPT_SUBST NO_PROMPT_BANG
 
 ######################################################################
 # GENERAL FUNCTIONS
@@ -716,7 +716,7 @@ _agkozak_async_init() {
         else
           _agkozak_debug_print 'TRAPUSR1 has been redefined. Switching to subst-async mode.'
           AGKOZAK[ASYNC_METHOD]='subst-async'
-          _agkozak_precmd
+          prompt_agkozak_precmd
         fi
       }
 
@@ -800,7 +800,7 @@ _agkozak_strip_colors() {
 # Runs right before each command is about to be executed.
 # Used to calculate command execution time.
 ############################################################
-_agkozak_preexec() {
+prompt_agkozak_preexec() {
   typeset -gi AGKOZAK_CMD_START_TIME=$EPOCHSECONDS
 }
 
@@ -819,7 +819,7 @@ _agkozak_preexec() {
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
-_agkozak_precmd() {
+prompt_agkozak_precmd() {
   emulate -L zsh
   (( AGKOZAK_PROMPT_DEBUG )) && [[ $ZSH_VERSION != 5.0.[0-2] ]] &&
     setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
@@ -979,9 +979,14 @@ _agkozak_prompt_strings() {
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
-agkozak-zsh-prompt() {
-  emulate -L zsh
-  (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+prompt_agkozak-zsh-prompt_setup() {
+  # promptinit compatibility
+  # TODO: rewrite function carefully now that emulate -L zsh has been removed
+  prompt_opts=( percent subst )
+  setopt NO_PROMPT_{BANG,CR,PERCENT,SUBST} "PROMPT_${^prompt_opts[@]}"
+
+  # emulate -L zsh
+  # (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   _agkozak_async_init
 
@@ -1002,8 +1007,8 @@ agkozak-zsh-prompt() {
     :
   else
     autoload -Uz add-zsh-hook
-    add-zsh-hook preexec _agkozak_preexec
-    add-zsh-hook precmd _agkozak_precmd
+    add-zsh-hook preexec prompt_agkozak_preexec
+    add-zsh-hook precmd prompt_agkozak_precmd
   fi
 
   # Only display the HOSTNAME for an SSH connection or for a superuser
@@ -1037,7 +1042,23 @@ agkozak-zsh-prompt() {
   _agkozak_debug_print "Using async method: ${AGKOZAK[ASYNC_METHOD]}"
 }
 
-agkozak-zsh-prompt
+prompt_agkozak-zsh-prompt_setup
+
+############################################################
+# Preview function for promptinit
+############################################################
+
+prompt_agkozak-zsh-prompt_preview() {
+  # TODO: Write a real preview function if possible
+  print "No preview available. Try \`prompt agkozak-zsh-prompt\'."
+}
+
+############################################################
+# Help function for promptinit
+############################################################
+prompt_agkozak-zsh-prompt_help() {
+  print 'For information about how to configure the agkozak-zsh-prompt, visit https://github.com/agkozak/agkozak-zsh-prompt.' | fold -s
+}
 
 ############################################################
 # Unload function
@@ -1056,8 +1077,8 @@ agkozak-zsh-prompt_plugin_unload() {
 
   psvar=( $AGKOZAK_OLD_PSVAR )
 
-  add-zsh-hook -D preexec _agkozak_preexec
-  add-zsh-hook -D precmd _agkozak_precmd
+  add-zsh-hook -D preexec prompt_agkozak_preexec
+  add-zsh-hook -D precmd prompt_agkozak_precmd
 
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select

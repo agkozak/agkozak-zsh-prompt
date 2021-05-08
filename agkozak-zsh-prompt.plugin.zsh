@@ -137,7 +137,8 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     prompt_agkozak_preexec
                     prompt_agkozak_precmd
                     _agkozak_prompt_strings
-                    agkozak-zsh-prompt'
+                    agkozak-zsh-prompt
+                    prompt_agkozak-zsh-prompt_preview'
 
 : ${AGKOZAK_PROMPT_DEBUG:=0}
 
@@ -1041,6 +1042,15 @@ prompt_agkozak-zsh-prompt_setup() {
 }
 
 prompt_agkozak-zsh-prompt_setup
+
+############################################################
+# Preview function for promptinit
+############################################################
+
+prompt_agkozak-zsh-prompt_preview() {
+  # TODO: Write a real preview function
+  print "No preview available. Try \`prompt agkozak-zsh-prompt\'."
+}
 
 ############################################################
 # Unload function

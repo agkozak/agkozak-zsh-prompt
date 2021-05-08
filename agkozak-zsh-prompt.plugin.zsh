@@ -216,10 +216,6 @@ fi
 # Characters to put around the virtual environment name (default: square brackets)
 (( $+AGKOZAK_VIRTUALENV_CHARS )) || AGKOZAK_VIRTUALENV_CHARS=( '[' ']' )
 
-# promptinit compatibility
-prompt_opts=( percent subst )
-setopt NO_PROMPT_{BANG,CR,PERCENT,SUBST} "PROMPT_${^prompt_opts[@]}"
-
 ######################################################################
 # GENERAL FUNCTIONS
 ######################################################################
@@ -981,9 +977,14 @@ _agkozak_prompt_strings() {
 #   AGKOZAK_PROMPT_DEBUG
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
-agkozak-zsh-prompt() {
-  emulate -L zsh
-  (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
+prompt_agkozak-zsh-prompt_setup() {
+  # promptinit compatibility
+  # TODO: rewrite function carefully now that emulate -L zsh has been removed
+  prompt_opts=( percent subst )
+  setopt NO_PROMPT_{BANG,CR,PERCENT,SUBST} "PROMPT_${^prompt_opts[@]}"
+
+  # emulate -L zsh
+  # (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   _agkozak_async_init
 
@@ -1039,7 +1040,7 @@ agkozak-zsh-prompt() {
   _agkozak_debug_print "Using async method: ${AGKOZAK[ASYNC_METHOD]}"
 }
 
-agkozak-zsh-prompt
+prompt_agkozak-zsh-prompt_setup
 
 ############################################################
 # Unload function

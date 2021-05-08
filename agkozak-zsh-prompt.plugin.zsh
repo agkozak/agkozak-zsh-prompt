@@ -1048,8 +1048,15 @@ prompt_agkozak-zsh-prompt_setup
 ############################################################
 
 prompt_agkozak-zsh-prompt_preview() {
-  # TODO: Write a real preview function
+  # TODO: Write a real preview function if possible
   print "No preview available. Try \`prompt agkozak-zsh-prompt\'."
+}
+
+############################################################
+# Help function for promptinit
+############################################################
+prompt_agkozak-zsh-prompt_help() {
+  print 'For information about how to configure the agkozak-zsh-prompt, visit https://github.com/agkozak/agkozak-zsh-prompt.' | fold -s
 }
 
 ############################################################

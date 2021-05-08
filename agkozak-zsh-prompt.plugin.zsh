@@ -138,7 +138,8 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     prompt_agkozak_precmd
                     _agkozak_prompt_strings
                     agkozak-zsh-prompt
-                    prompt_agkozak-zsh-prompt_preview'
+                    prompt_agkozak-zsh-prompt_preview
+                    prompt_agkozak-zsh-prompt_help'
 
 : ${AGKOZAK_PROMPT_DEBUG:=0}
 

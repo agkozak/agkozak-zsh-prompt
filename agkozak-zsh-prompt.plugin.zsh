@@ -980,13 +980,10 @@ _agkozak_prompt_strings() {
 #   AGKOZAK_PROMPT_DIRTRIM
 ############################################################
 prompt_agkozak-zsh-prompt_setup() {
-  # promptinit compatibility
-  # TODO: rewrite function carefully now that emulate -L zsh has been removed
+  # `emulate -L zsh' has been removed for promptinit
+  # compatibility
   prompt_opts=( percent subst )
   setopt NO_PROMPT_{BANG,CR,PERCENT,SUBST} "PROMPT_${^prompt_opts[@]}"
-
-  # emulate -L zsh
-  # (( AGKOZAK_PROMPT_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   _agkozak_async_init
 
@@ -1049,8 +1046,7 @@ prompt_agkozak-zsh-prompt_setup
 ############################################################
 
 prompt_agkozak-zsh-prompt_preview() {
-  # TODO: Write a real preview function if possible
-  print "No preview available. Try \`prompt agkozak-zsh-prompt\'."
+  print "No preview available. Try \`prompt agkozak-zsh-prompt'."
 }
 
 ############################################################

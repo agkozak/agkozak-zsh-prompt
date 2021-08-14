@@ -56,6 +56,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
+- v3.10.0
+    + The prompt is now fully compatible with ZSH's `promptinit` function.
 - v3.9.0
     - The characters used to signify path abbreviation with `AGKOZAK_PROMPT_DIRTRIM` (`...` by default) can now be overridden with `AGKOZAK_PROMPT_DIRTRIM_STRING`.
 - v3.8.1 (November 23, 2020)
@@ -125,6 +127,15 @@ And add the following to your `.zshrc` file:
 
     source /path/to/agkozak-zsh-prompt.plugin.zsh
 
+### For [`promptinit`](https://zsh.sourceforge.io/Doc/Release/User-Contributions.html#Prompt-Themes) users
+
+ZSH comes with a built-in way of handling prompts, the `promptinit` function. You can load the agkozak ZSH prompt by running
+
+    fpath+=( /path/to/agkozak-zsh-prompt )  # The directory where the prompt's
+                                            # files are kept
+    autoload promptinit; promptinit
+    prompt agkozak-zsh-prompt
+
 ### For [antigen](https://github.com/zsh-users/antigen) users
 
 Add the line
@@ -162,6 +173,14 @@ to try out the prompt; add the same command to your `.zshrc` to load it automati
 The prompt now supports `zinit`'s `unload` feature; you may restore the shell to its state before loading the prompt by running
 
     zinit unload agkozak/agkozak-zsh-prompt
+
+### For [Znap](https://github.com/marlonrichert/zsh-snap) users
+
+Simply put
+
+    znap prompt agkozak/agkozak-zsh-prompt
+
+in your `.zshrc` somewhere after you source `znap.zsh`.
 
 ### For [zplug](https://github.com/zplug/zplug) users
 

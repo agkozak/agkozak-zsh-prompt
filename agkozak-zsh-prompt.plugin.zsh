@@ -138,7 +138,8 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     prompt_agkozak_precmd
                     _agkozak_prompt_strings
                     prompt_agkozak-zsh-prompt_preview
-                    prompt_agkozak-zsh-prompt_help'
+                    prompt_agkozak-zsh-prompt_help
+                    _agkozak_prompt_cleanup'
 
 # Some global declarations
 typeset -g AGKOZAK_PROMPT_DEBUG \
@@ -1057,6 +1058,10 @@ prompt_agkozak-zsh-prompt_setup() {
     (( $+VSCODE_PID )) && ZLE_RPROMPT_INDENT=6
   fi
 
+  # For promptinit
+  (( ${+functions[prompt_cleanup]} )) &&
+    prompt_cleanup _agkozak_prompt_cleanup
+
   _agkozak_debug_print "Using async method: ${AGKOZAK[ASYNC_METHOD]}"
 }
 
@@ -1111,6 +1116,22 @@ agkozak-zsh-prompt_plugin_unload() {
     AGKOZAK_PROMPT_WHITESPACE
 
   unfunction $0
+}
+
+############################################################
+# promptinit cleanup function
+############################################################
+_agkozak_prompt_cleanup() {
+  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
+
+  add-zsh-hook -D preexec prompt_agkozak_preexec
+  add-zsh-hook -D precmd prompt_agkozak_precmd
+
+  if is-at-least 5.3; then
+    add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select
+  else
+    zle -D _agkozak_zle-keymap_select
+  fi
 }
 
 # vim: ts=2:et:sts=2:sw=2:

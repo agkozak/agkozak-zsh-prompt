@@ -141,6 +141,30 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     prompt_agkozak-zsh-prompt_preview
                     prompt_agkozak-zsh-prompt_help'
 
+# Some global declarations
+typeset -g AGKOZAK_PROMPT_DEBUG \
+           AGKOZAK_COLORS_EXIT_STATUS \
+           AGKOZAK_COLORS_USER_HOST \
+           AGKOZAK_COLORS_PATH \
+           AGKOZAK_COLORS_BRANCH_STATUS \
+           AGKOZAK_COLORS_PROMPT_CHAR \
+           AGKOZAK_COLORS_CMD_EXEC_TIME \
+           AGKOZAK_COLORS_VIRTUALENV \
+           AGKOZAK_LEFT_PROMPT_ONLY \
+           AGKOZAK_MULTILINE \
+           AGKOZAK_NAMED_DIRS \
+           AGKOZAK_PROMPT_DIRTRIM \
+           AGKOZAK_PROMPT_DIRTRIM_STRING \
+           AGKOZAK_SHOW_STASH \
+           AGKOZAK_USER_HOST_DISPLAY \
+           AGKOZAK_CMD_EXEC_TIME \
+           AGKOZAK_BLANK_LINES \
+           AGKOZAK_SHOW_VIRTUALENV
+
+typeset -ga AGKOZAK_CMD_EXEC_TIME_CHARS \
+            AGKOZAK_VIRTUALENV_CHARS
+
+# Set AGKOZAK_PROMPT_DEBUG=1 for debugging mode
 : ${AGKOZAK_PROMPT_DEBUG:=0}
 
 ############################################################
@@ -162,12 +186,9 @@ _agkozak_debug_print() {
 
 if (( AGKOZAK_PROMPT_DEBUG )); then
   if is-at-least 5.4.0; then
-    for x in ${=AGKOZAK[FUNCTIONS]}; do
-      # Enable WARN_CREATE_GLOBAL for each function of the prompt
-      functions -W $x
-    done
+    # Enable WARN_CREATE_GLOBAL for each function of the prompt
+    functions -W ${=AGKOZAK[FUNCTIONS][@]}
   fi
-  unset x
 fi
 
 # Putting these default options here makes sure that the variables are in the
@@ -982,6 +1003,7 @@ _agkozak_prompt_strings() {
 prompt_agkozak-zsh-prompt_setup() {
   # `emulate -L zsh' has been removed for promptinit
   # compatibility
+  typeset -g prompt_opts
   prompt_opts=( percent subst )
   setopt NO_PROMPT_{BANG,CR,PERCENT,SUBST} "PROMPT_${^prompt_opts[@]}"
 

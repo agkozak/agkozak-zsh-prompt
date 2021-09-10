@@ -56,9 +56,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
-- Unreleased
-    + Support for `promptinit`'s `prompt_cleanup` function
-    + Some global variable declarations
+- v3.10.1
+    + The prompt now supports `promptinit`'s `prompt_cleanup` function.
 - v3.10.0
     + The prompt is now fully compatible with ZSH's `promptinit` function.
 - v3.9.0

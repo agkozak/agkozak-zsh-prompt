@@ -56,6 +56,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
+- v3.10.2
+    + The unload function now works without any error messages on ZSH earlier than v5.3.0.
 - v3.10.1
     + The prompt now supports `promptinit`'s `prompt_cleanup` function.
 - v3.10.0

@@ -1058,7 +1058,7 @@ prompt_agkozak-zsh-prompt_setup() {
     (( $+VSCODE_PID )) && ZLE_RPROMPT_INDENT=6
   fi
 
-  # For promptinit
+  # For promptinit (introduced in Zsh v5.4)
   (( ${+functions[prompt_cleanup]} )) &&
     prompt_cleanup _agkozak_prompt_cleanup
 
@@ -1088,16 +1088,15 @@ prompt_agkozak-zsh-prompt_help() {
 # See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun
 ############################################################
 agkozak-zsh-prompt_plugin_unload() {
-  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
   local x
 
   [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] && unsetopt PROMPT_SUBST
   [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] && setopt PROMPT_BANG
 
-  PROMPT=${AGKOZAK[OLD_PROMPT]}
-  RPROMPT=${AGKOZAK[OLD_RPROMPT]}
+  PROMPT="${AGKOZAK[OLD_PROMPT]}"
+  RPROMPT="${AGKOZAK[OLD_RPROMPT]}"
 
-  psvar=( $AGKOZAK_OLD_PSVAR )
+  psvar=( "${AGKOZAK_OLD_PSVAR[@]}" )
 
   add-zsh-hook -D preexec prompt_agkozak_preexec
   add-zsh-hook -D precmd prompt_agkozak_precmd
@@ -1105,8 +1104,7 @@ agkozak-zsh-prompt_plugin_unload() {
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select
   else
-    # TODO: Make sure this is the right thing to do.
-    zle -N zle-keymap-select
+    zle -D zle-keymap-select
   fi
 
   for x in ${=AGKOZAK[FUNCTIONS]}; do
@@ -1121,6 +1119,8 @@ agkozak-zsh-prompt_plugin_unload() {
 
 ############################################################
 # promptinit cleanup function
+#
+# prompt_cleanup was introduced in Zsh v5.4
 ############################################################
 _agkozak_prompt_cleanup() {
   setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
@@ -1131,7 +1131,7 @@ _agkozak_prompt_cleanup() {
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select
   else
-    zle -D _agkozak_zle-keymap_select
+    zle -D zle-keymap-select
   fi
 }
 

@@ -1058,7 +1058,7 @@ prompt_agkozak-zsh-prompt_setup() {
     (( $+VSCODE_PID )) && ZLE_RPROMPT_INDENT=6
   fi
 
-  # For promptinit
+  # For promptinit (introduced in Zsh v5.4)
   (( ${+functions[prompt_cleanup]} )) &&
     prompt_cleanup _agkozak_prompt_cleanup
 
@@ -1119,6 +1119,8 @@ agkozak-zsh-prompt_plugin_unload() {
 
 ############################################################
 # promptinit cleanup function
+#
+# prompt_cleanup was introduced in Zsh v5.4
 ############################################################
 _agkozak_prompt_cleanup() {
   setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT

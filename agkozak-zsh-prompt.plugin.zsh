@@ -1104,8 +1104,7 @@ agkozak-zsh-prompt_plugin_unload() {
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select
   else
-    # TODO: Make sure this is the right thing to do.
-    zle -N zle-keymap-select
+    zle -D zle-keymap-select
   fi
 
   for x in ${=AGKOZAK[FUNCTIONS]}; do
@@ -1130,7 +1129,7 @@ _agkozak_prompt_cleanup() {
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select
   else
-    zle -D _agkozak_zle-keymap_select
+    zle -D zle-keymap-select
   fi
 }
 

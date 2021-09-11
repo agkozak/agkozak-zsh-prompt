@@ -1088,16 +1088,15 @@ prompt_agkozak-zsh-prompt_help() {
 # See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun
 ############################################################
 agkozak-zsh-prompt_plugin_unload() {
-  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT
   local x
 
   [[ ${AGKOZAK_OLD_OPTIONS[promptsubst]} == 'off' ]] && unsetopt PROMPT_SUBST
   [[ ${AGKOZAK_OLD_OPTIONS[promptbang]} == 'on' ]] && setopt PROMPT_BANG
 
-  PROMPT=${AGKOZAK[OLD_PROMPT]}
-  RPROMPT=${AGKOZAK[OLD_RPROMPT]}
+  PROMPT="${AGKOZAK[OLD_PROMPT]}"
+  RPROMPT="${AGKOZAK[OLD_RPROMPT]}"
 
-  psvar=( $AGKOZAK_OLD_PSVAR )
+  psvar=( "${AGKOZAK_OLD_PSVAR[@]}" )
 
   add-zsh-hook -D preexec prompt_agkozak_preexec
   add-zsh-hook -D precmd prompt_agkozak_precmd

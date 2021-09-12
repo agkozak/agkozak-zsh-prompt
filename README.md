@@ -164,7 +164,7 @@ Add
 
     zcomet load agkozak/agkozak-zsh-prompt
 
-to your `.zshrc`. If you like to use `promptinit` for prompt-switching, you can do
+to your `.zshrc` (below where you source `zcomet.zsh` and above where you load `compinit`). If you like to use `promptinit` for prompt-switching, you can do
 
     zcomet fpath agkozak/agkozak-zsh-prompt
     autoload promptinit; promptinit

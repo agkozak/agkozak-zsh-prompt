@@ -158,6 +158,18 @@ Execute the following commands:
 
 And set `ZSH_THEME=agkozak` in your `.zshrc` file.
 
+### For [zcomet](https://github.com/agkozak/zcomet) users
+
+Add
+
+    zcomet load agkozak/agkozak-zsh-prompt
+
+to your `.zshrc`. If you like to use `promptinit` for prompt-switching, you can do
+
+    zcomet fpath agkozak/agkozak-zsh-prompt
+    autoload promptinit; promptinit
+    prompt agkozak-zsh-prompt
+
 ### For [zgen](https://github.com/tarjoilija/zgen) users
 
 Add the line

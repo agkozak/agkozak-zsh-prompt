@@ -56,8 +56,10 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
-- v3.10.3
+- v3.10.4
     + Mere orthographical changes: "ZSH" is now "Zsh" throughout.
+- v3.10.3
+    + Fixed a bug associated with unloading the prompt on Zsh < v5.30.
 - v3.10.2
     + The unload function now works on Zsh versions earlier than 5.3.0 without any error messages.
 - v3.10.1

@@ -5,7 +5,7 @@
 #  \__,_|\__, |_|\_\___/___\__,_|_|\_\
 #        |___/
 #
-# An asynchronous, dynamic color prompt for ZSH with Git, vi mode, and exit
+# An asynchronous, dynamic color prompt for Zsh with Git, vi mode, and exit
 # status indicators
 #
 #
@@ -1021,7 +1021,7 @@ prompt_agkozak-zsh-prompt_setup() {
     zle -N zle-keymap-select _agkozak_zle-keymap-select
   fi
 
-  # Don't use ZSH hooks in Emacs classic shell
+  # Don't use Zsh hooks in Emacs classic shell
   if (( $+INSIDE_EMACS )) && [[ $TERM == 'dumb' ]]; then
     :
   else
@@ -1041,7 +1041,7 @@ prompt_agkozak-zsh-prompt_setup() {
   # Avoid the ugly ^[[?2004 control sequence.
   [[ $TERM == (cons25|dumb) ]] && unset zle_bracketed_paste
 
-  # The Emacs shell has only limited support for some ZSH features, so use a
+  # The Emacs shell has only limited support for some Zsh features, so use a
   # more limited prompt.
   if [[ $TERM == 'dumb' ]]; then
     PROMPT='%(?..(%?%) )'

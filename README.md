@@ -1,12 +1,12 @@
-# agkozak ZSH Prompt
+# agkozak Zsh Prompt
 
 [![MIT License](img/mit_license.svg)](https://opensource.org/licenses/MIT)
 [![GitHub tag](https://img.shields.io/github/tag/agkozak/agkozak-zsh-prompt.svg)](https://GitHub.com/agkozak/agkozak-zsh-prompt/tags/)
-![ZSH version 4.3.11 and higher](img/zsh_4.3.11_plus.svg)
+![Zsh version 4.3.11 and higher](img/zsh_4.3.11_plus.svg)
 [![GitHub stars](https://img.shields.io/github/stars/agkozak/agkozak-zsh-prompt.svg)](https://github.com/agkozak/agkozak-zsh-prompt/stargazers)
 [![Chat on Gitter](https://img.shields.io/gitter/room/:user/:repo.svg)](https://gitter.im/agkozak-zsh-prompt/Lobby#)
 
-The agkozak ZSH Prompt is an asynchronous color Git prompt that uses basic ASCII symbols to show:
+The agkozak Zsh Prompt is an asynchronous color Git prompt that uses basic ASCII symbols to show:
 
 * the exit status of the last command, if it was not zero
 * the execution time of the last command
@@ -19,7 +19,7 @@ The agkozak ZSH Prompt is an asynchronous color Git prompt that uses basic ASCII
 
 This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris, and in Windows environments (MSYS2, Cygwin, and WSL). It should also work perfectly on MacOS.
 
-![The agkozak ZSH Prompt](img/demo.gif)
+![The agkozak Zsh Prompt](img/demo.gif)
 
 ## Table of Contents
 
@@ -45,7 +45,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
         - [AGKOZAK_BRANCH_STATUS_SEPARATOR](#agkozak_branch_status_separator)
         - [AGKOZAK_SHOW_STASH](#agkozak_show_stash)
     - [Advanced Customization](#advanced-customization)
-- [Examples of agkozak ZSH Prompt Customization](#examples-of-agkozak-zsh-prompt-customization)
+- [Examples of agkozak Zsh Prompt Customization](#examples-of-agkozak-zsh-prompt-customization)
     - [Using Basic Configuration Settings](#using-basic-configuration-settings)
     - [Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT](#using-agkozak_custom_prompt-and-agkozak_custom_rprompt)
 - [Options Index](#options-index)
@@ -57,7 +57,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
   <summary>Here are the latest features and updates.</summary>
 
 - v3.10.2
-    + The unload function now works without any error messages on ZSH earlier than v5.3.0.
+    + The unload function now works without any error messages on Zsh earlier than v5.3.0.
 - v3.10.1
     + The prompt now supports `promptinit`'s `prompt_cleanup` function.
 - v3.10.0
@@ -73,12 +73,12 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - v3.7.3 (May 14, 2020)
     - Updated to use zsh-async 1.8.3.
 - v3.7.2 (May 6, 2020)
-    - `_agkozak_precmd` was triggering a warning on ZSH v5.0.0-2. This has been fixed.
+    - `_agkozak_precmd` was triggering a warning on Zsh v5.0.0-2. This has been fixed.
     - Version 1.8.0 of zsh-async is now being used.
 - v3.7.1 (January 24, 2020)
     - `AGKOZAK_CMD_EXEC_TIME_CHARS` and `AGKOZAK_VIRTUALENV_CHARS` were being set back to default if they were set before the prompt was sourced.
 - v3.7.0 (January 21, 2020)
-    - The agkozak ZSH Prompt now includes an indicator for Python virtual environments created with `virtualenv`, `python -m venv`, `pipenv`, `poetry`, and `conda`.
+    - The agkozak Zsh Prompt now includes an indicator for Python virtual environments created with `virtualenv`, `python -m venv`, `pipenv`, `poetry`, and `conda`.
     - I have moved the command execution time indicator back towards the beginning of the prompt, right after the exit status indicator.
 - v3.6.0 (January 4, 2020)
     - There is now a [command execution time indicator](#command-execution-time).
@@ -87,8 +87,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - Asynchronous method improvements: `subst-async` has been tweaked to provide more stability and speed on all systems. `usr1` has been made faster through the elimination of a subshell. It is now the default asynchronous method in all Windows environments.
     - I have provided the code for [my own "Zenburn" custom prompt](#my-zenburn-custom-prompt).
 - v3.5.0 (November 15, 2019)
-    - The prompt now supports the [zdharma ZSH plugin unload function standard](https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
-    - For debugging purposes, `WARN_CREATE_GLOBAL` is now applied to individual functions whether or not debugging mode is enabled. On ZSH v5.4.0+ and when `AGKOZAK_PROMPT_DEBUG` is set to `1`, all functions have `WARN_NESTED_VAR` applied to them.
+    - The prompt now supports the [zdharma Zsh plugin unload function standard](https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
+    - For debugging purposes, `WARN_CREATE_GLOBAL` is now applied to individual functions whether or not debugging mode is enabled. On Zsh v5.4.0+ and when `AGKOZAK_PROMPT_DEBUG` is set to `1`, all functions have `WARN_NESTED_VAR` applied to them.
     - Measures have been taken to avoid problems when the shell options `KSH_ARRAYS` and `SH_WORD_SPLIT` have been enabled.
     - When loaded on terminals without color, the prompt avoids using subshells when eliminating color codes from the `PROMPT` and `RPROMPT` strings.
 - v3.4.0 (November 6, 2019)
@@ -99,7 +99,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - v3.2.2 (July 8, 2019)
     - When the local `git` version is 2.15.0 or greater, `git status` will not run unnecessary optional operations that require locks.
 - v3.2.1 (May 6, 2019)
-    - For ZSH v5.0.2, `subst-async` now works correctly, but `usr1` will be used as the default async method, as it should be slightly faster.
+    - For Zsh v5.0.2, `subst-async` now works correctly, but `usr1` will be used as the default async method, as it should be slightly faster.
 - v3.2.0 (February 28, 2019)
     - By default, a space precedes the Git branch status indicator. The space can now be eliminated by setting `AGKOZAK_BRANCH_STATUS_SEPARATOR=''`, or changed to another character or characters (e.g. `AGKOZAK_BRANCH_STATUS_SEPARATOR='--'`).
 - v3.1.0 (February 5, 2019)
@@ -112,7 +112,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - v3.0.1 (November 26, 2018)
     - I have restored the `_agkozak_vi_mode_indicator` function as a legacy feature, as many people people use it in custom prompts. The default indicator can be expressed as `'%(4V.:.%#)'`, though, and variations on this will be preferable to `'$(_agkozak_vi_mode_indicator)'`, which entails a subshell.
 - v3.0.0 (November 26, 2018)
-    - The asynchronous Git status is now available via process substitution in all supported versions of ZSH and on all supported systems (props to @psprint). For reasons of speed, `zsh-async` remains the default asynchronous method in WSL and Solaris, and `usr1` is default in MSYS2/Cygwin.
+    - The asynchronous Git status is now available via process substitution in all supported versions of Zsh and on all supported systems (props to @psprint). For reasons of speed, `zsh-async` remains the default asynchronous method in WSL and Solaris, and `usr1` is default in MSYS2/Cygwin.
     - When `AGKOZAK_LEFT_PROMPT_ONLY` is set to `1`, the Git status is displayed in the left prompt, and the right prompt is left blank.
     - The prompt script loads up to 4x faster.
     - The left prompt is displayed ~2x faster.
@@ -123,7 +123,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 ### For users without a framework
 
-The agkozak ZSH prompt requires no framework and can be simply sourced from your `.zshrc` file. Clone the git repo:
+The agkozak Zsh prompt requires no framework and can be simply sourced from your `.zshrc` file. Clone the git repo:
 
     git clone https://github.com/agkozak/agkozak-zsh-prompt
 
@@ -133,7 +133,7 @@ And add the following to your `.zshrc` file:
 
 ### For [`promptinit`](https://zsh.sourceforge.io/Doc/Release/User-Contributions.html#Prompt-Themes) users
 
-ZSH comes with a built-in way of handling prompts, the `promptinit` function. You can load the agkozak ZSH prompt by running
+Zsh comes with a built-in way of handling prompts, the `promptinit` function. You can load the agkozak Zsh prompt by running
 
     fpath+=( /path/to/agkozak-zsh-prompt )  # The directory where the prompt's
                                             # files are kept
@@ -232,7 +232,7 @@ When a session is local, only the username is shown; when it is remote over SSH 
 
 ## Abbreviated Paths
 
-By default the agkozak ZSH Prompt emulates the behavior that `bash` uses when `PROMPT_DIRTRIM` is set to `2`: a tilde (`~`) is prepended if the working directory is under the user's home directory, and then if more than two directory elements need to be shown, only the last two are displayed, along with an ellipsis, so that
+By default the agkozak Zsh Prompt emulates the behavior that `bash` uses when `PROMPT_DIRTRIM` is set to `2`: a tilde (`~`) is prepended if the working directory is under the user's home directory, and then if more than two directory elements need to be shown, only the last two are displayed, along with an ellipsis, so that
 
     /home/pi/src/neovim/config
 
@@ -287,7 +287,7 @@ will display just the virtual environment name without any surrounding character
 
 ## Git Branch and Status
 
-If the current directory contains a Git repository, the agkozak ZSH Prompt displays the name of the working branch, along with some symbols to show changes to its status:
+If the current directory contains a Git repository, the agkozak Zsh Prompt displays the name of the working branch, along with some symbols to show changes to its status:
 
 ![Git examples](img/git-examples.png)
 
@@ -305,9 +305,9 @@ Stashed changes | $
 
 ## `vi` Editing Mode
 
-The agkozak ZSH Prompt indicates when the user has switched from `vi` insert mode to command mode by turning the `%` or `#` of the prompt into a colon:
+The agkozak Zsh Prompt indicates when the user has switched from `vi` insert mode to command mode by turning the `%` or `#` of the prompt into a colon:
 
-![ZSH line editing](img/zsh-line-editing.png)
+![Zsh line editing](img/zsh-line-editing.png)
 
 agkozak does not enable `vi` editing mode for you. To do so, add
 
@@ -315,17 +315,17 @@ agkozak does not enable `vi` editing mode for you. To do so, add
 
 to your `.zshrc`.
 
-This prompt will work perfectly if you use the default ZSH Emacs editing mode; in that case, the prompt character will not change.
+This prompt will work perfectly if you use the default Zsh Emacs editing mode; in that case, the prompt character will not change.
 
 ## Asynchronous Methods
 
-The agkozak ZSH Prompt chooses the fastest and most reliable of three different methods for displaying the Git status asynchronously. One asynchronous method that works on all known platforms and with all supported versions of ZSH is [@psprint](https://github.com/psprint)'s `subst-async` technique, which uses process substitution (`<()`) to fork a background process that fetches the Git status and feeds it to a file descriptor. A `zle -F` callback handler then processes the input from the file descriptor and uses it to update the prompt.
+The agkozak Zsh Prompt chooses the fastest and most reliable of three different methods for displaying the Git status asynchronously. One asynchronous method that works on all known platforms and with all supported versions of Zsh is [@psprint](https://github.com/psprint)'s `subst-async` technique, which uses process substitution (`<()`) to fork a background process that fetches the Git status and feeds it to a file descriptor. A `zle -F` callback handler then processes the input from the file descriptor and uses it to update the prompt.
 
-`subst-async` works on Windows environments such as Cygwin, MSYS2, and WSL1, but it is comparatively slow on these systems. For these platforms, the agkozak ZSH Prompt uses a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/). This `usr1` method creates and disowns child processes that calculate the Git status and then kill themselves off, triggering SIGUSR1 in the process. The ZSH `TRAPUSR1` trap function then displays that Git status. Since other scripts or the user could conceivably define `TRAPUSR1` either before or after this prompt is loaded, it regularly checks to see if that is the case and, if so, falls back to the slower but entirely reliable `subst-async` method.
+`subst-async` works on Windows environments such as Cygwin, MSYS2, and WSL1, but it is comparatively slow on these systems. For these platforms, the agkozak Zsh Prompt uses a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/). This `usr1` method creates and disowns child processes that calculate the Git status and then kill themselves off, triggering SIGUSR1 in the process. The Zsh `TRAPUSR1` trap function then displays that Git status. Since other scripts or the user could conceivably define `TRAPUSR1` either before or after this prompt is loaded, it regularly checks to see if that is the case and, if so, falls back to the slower but entirely reliable `subst-async` method.
 
 This prompt also supplies a `zsh-async` method that relies on the [`zsh-async`](https://github.com/mafredri/zsh-async) library, which uses ZSH's `zsh/zpty` module to spin off pseudo-terminals that can calculate the Git status without blocking the user from continuing to use the terminal. `zsh/zpty` does not work well with Cygwin or MSYS2, however, and it can be quirky on Solaris and related operating systems, so it is no longer used by default, and is only provided for those who want it.
 
-If you want to force the agkozak ZSH Prompt to use a specific asynchronous method (or none at all), execute `export AGKOZAK_FORCE_ASYNC_METHOD=subst-async`, `zsh-async`, `usr1`, or `none` before sourcing it. If you want more insight into how the prompt is working in your shell, put `export AGKOZAK_PROMPT_DEBUG=1` in your `.zshrc` before the code loading this prompt.
+If you want to force the agkozak Zsh Prompt to use a specific asynchronous method (or none at all), execute `export AGKOZAK_FORCE_ASYNC_METHOD=subst-async`, `zsh-async`, `usr1`, or `none` before sourcing it. If you want more insight into how the prompt is working in your shell, put `export AGKOZAK_PROMPT_DEBUG=1` in your `.zshrc` before the code loading this prompt.
 
 ## Customization
 
@@ -374,7 +374,7 @@ If you would like to have the Git status displayed in the left prompt (with no r
 
 ### Custom Prompt Character
 
-The classic prompt for Bourne-style shells is `$`; for `csh` it is `%`, and ZSH borrows the latter because it inherits features from both types of shell. agkozak-zsh-prompt uses `%` to show where the prompt ends and where input should begin, although a superuser will see `#`, and either sort of user will see `:` when `vi` command mode is active. If you wish to change any or all of these symbols, you may do so using the array `AGKOZAK_PROMPT_CHAR`, whose three elements are 1) the normal prompt character; 2) the superuser prompt character; and 3) the `vi` command mode character. The default behavior of the prompt can be represented as
+The classic prompt for Bourne-style shells is `$`; for `csh` it is `%`, and Zsh borrows the latter because it inherits features from both types of shell. agkozak-zsh-prompt uses `%` to show where the prompt ends and where input should begin, although a superuser will see `#`, and either sort of user will see `:` when `vi` command mode is active. If you wish to change any or all of these symbols, you may do so using the array `AGKOZAK_PROMPT_CHAR`, whose three elements are 1) the normal prompt character; 2) the superuser prompt character; and 3) the `vi` command mode character. The default behavior of the prompt can be represented as
 
     AGKOZAK_PROMPT_CHAR=( %# %# : )
 
@@ -506,7 +506,7 @@ AGKOZAK_CUSTOM_RPROMPT='%*'
 
 For some examples of prompt configurations that people have created using `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT`, see ["Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT"](#using-agkozak_custom_prompt-and-agkozak_custom_rprompt).
 
-## Examples of agkozak ZSH Prompt Customization
+## Examples of agkozak Zsh Prompt Customization
 
 *Note: If you see your prompt customization here, I may have rewritten it a bit or even simplified it for educational purposes.*
 
@@ -759,5 +759,5 @@ Option | Default | Meaning
 <hr>
 
 <p align="center">
-  <img src="img/logo.png" alt="agkozak ZSH Prompt Logo">
+  <img src="img/logo.png" alt="agkozak Zsh Prompt Logo">
 </p>

@@ -739,7 +739,7 @@ Option | Default | Meaning
 [`AGKOZAK_PRE_PROMPT_CHAR`](#optional-single-line-prompt) | ` ` | For a single-line prompt, the character or characters to display before the prompt character
 [`AGKOZAK_PROMPT_DEBUG`](#asynchronous-methods) | `0` | Show debugging information
 [`AGKOZAK_PROMPT_DIRTRIM`](#abbreviated-paths) | `2` | Number of directory elements to display; `0` turns off directory trimming
-[`AGKOZAK_PROMPT_DIRTRIM_STRING`] | `...` | Ellipsis string used in directory trimming
+[`AGKOZAK_PROMPT_DIRTRIM_STRING`](#abbreviated-paths) | `...` | Ellipsis string used in directory trimming
 [`AGKOZAK_SHOW_STASH`](#agkozak_show_stash) | `1` | Display stashed changes
 [`AGKOZAK_SHOW_VIRTUALENV`](#virtual-environments) | `1` | Display virtual environments
 [`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display) | `1` | Display the username and hostname

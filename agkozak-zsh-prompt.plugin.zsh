@@ -936,12 +936,11 @@ prompt_agkozak_precmd() {
 
   # Clear background job indicator
   psvar[11]=''
-  
+
   # Optionally check if a job is running in the background
   if (( ${AGKOZAK_SHOW_BG:-1} )); then
-    res=$(jobs 2> /dev/null)
-    # If jobs exits with any output at least one job is running in the background
-    [[ -n $res  ]] && psvar[11]=${AGKOZAK_BG_STRING:-o}
+    # If jobtexts has any content at least one job is running in the background
+    psvar[11]=${jobtexts:+${AGKOZAK_BG_STRING:-o}}
   fi
 
   # Construct and display PROMPT and RPROMPT

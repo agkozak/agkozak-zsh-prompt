@@ -209,7 +209,7 @@ fi
 #   AGKOZAK_COLORS_CMD_EXEC_TIME changes the command executime time color
 #                                                                 (default: magenta)
 #   AGKOZAK_COLORS_VIRTUALENV changes the virtual environment color (default: green)
-#   AGKOZAK_COLORS_BG_STRING cahnges the background job indicator color
+#   AGKOZAK_COLORS_BG_STRING changes the background job indicator color
 #                                                                 (default: yellow)
 : ${AGKOZAK_COLORS_EXIT_STATUS:=red}
 : ${AGKOZAK_COLORS_USER_HOST:=green}

@@ -939,7 +939,7 @@ prompt_agkozak_precmd() {
   
   # Optionally check if a job is running in the background
   if (( ${AGKOZAK_SHOW_BACKGROUND_JOB:-1} )); then
-    bg &> /dev/null
+    bg 2> /dev/null
     # If bg exits with 0 at least one job is running in the background
     (( $? == 0 )) && psvar[11]=${AGKOZAG_BACKGROUND_JOB_CHAR:-o}
   fi

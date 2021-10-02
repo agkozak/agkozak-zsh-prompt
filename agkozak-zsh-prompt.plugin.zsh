@@ -73,7 +73,8 @@
 #
 # psvar[10]     %10v                        Name of virtual environment
 #
-# psvar[11]     %11v                        Background job indicator
+# psvar[11]     %11v                        Number of jobs running in the 
+#                                           background
 #
 
 # EPOCHSECONDS is needed to display command execution time
@@ -934,13 +935,12 @@ prompt_agkozak_precmd() {
     *) _agkozak_set_git_psvars "$(_agkozak_branch_status)" ;;
   esac
 
-  # Clear background job indicator
+  # Clear background job count
   psvar[11]=''
 
-  # Optionally check if a job is running in the background
+  # Optionally get the amount of jobs running in the background
   if (( ${AGKOZAK_SHOW_BG:-1} )); then
-    # If jobtexts has any content at least one job is running in the background
-    psvar[11]=${jobtexts:+${AGKOZAK_BG_STRING:-o}}
+    psvar[11]=${${#jobtexts[@]}#0}
   fi
 
   # Construct and display PROMPT and RPROMPT
@@ -974,7 +974,7 @@ _agkozak_prompt_strings() {
   else
     # The color left prompt
     AGKOZAK[PROMPT]=''
-    AGKOZAK[PROMPT]+='%(11V.%F{${AGKOZAK_COLORS_BG_STRING:-yellow}}%11v%f .)'
+    AGKOZAK[PROMPT]+='%(11V.%F{${AGKOZAK_COLORS_BG_STRING:-yellow}}%11v${AGKOZAK_BG_STRING:-j}%f .)'
     AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
     AGKOZAK[PROMPT]+='%(9V.%F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}${AGKOZAK_CMD_EXEC_TIME_CHARS[1]}%9v${AGKOZAK_CMD_EXEC_TIME_CHARS[2]}%f .)'
     if (( AGKOZAK_USER_HOST_DISPLAY )); then

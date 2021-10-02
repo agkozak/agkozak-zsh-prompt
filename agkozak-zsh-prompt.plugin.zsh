@@ -73,6 +73,8 @@
 #
 # psvar[10]     %10v                        Name of virtual environment
 #
+# psvar[11]     %11v                        Background job indicator
+#
 
 # EPOCHSECONDS is needed to display command execution time
 (( $+EPOCHSECONDS )) || zmodload zsh/datetime
@@ -150,6 +152,7 @@ typeset -g AGKOZAK_PROMPT_DEBUG \
            AGKOZAK_COLORS_PROMPT_CHAR \
            AGKOZAK_COLORS_CMD_EXEC_TIME \
            AGKOZAK_COLORS_VIRTUALENV \
+           AGKOZAK_COLORS_BACKGROUND_JOB_CHAR \
            AGKOZAK_LEFT_PROMPT_ONLY \
            AGKOZAK_MULTILINE \
            AGKOZAK_NAMED_DIRS \
@@ -159,7 +162,8 @@ typeset -g AGKOZAK_PROMPT_DEBUG \
            AGKOZAK_USER_HOST_DISPLAY \
            AGKOZAK_CMD_EXEC_TIME \
            AGKOZAK_BLANK_LINES \
-           AGKOZAK_SHOW_VIRTUALENV
+           AGKOZAK_SHOW_VIRTUALENV \
+           AGKOZAK_SHOW_BACKGROUND_JOB
 
 typeset -ga AGKOZAK_CMD_EXEC_TIME_CHARS \
             AGKOZAK_VIRTUALENV_CHARS
@@ -204,6 +208,8 @@ fi
 #   AGKOZAK_COLORS_CMD_EXEC_TIME changes the command executime time color
 #                                                                 (default: magenta)
 #   AGKOZAK_COLORS_VIRTUALENV changes the virtual environment color (default: green)
+#   AGKOZAK_COLORS_BACKGROUND_JOB_CHAR cahnges the background job indicator color
+#                                                                 (default: yellow)
 : ${AGKOZAK_COLORS_EXIT_STATUS:=red}
 : ${AGKOZAK_COLORS_USER_HOST:=green}
 : ${AGKOZAK_COLORS_PATH:=blue}
@@ -211,6 +217,7 @@ fi
 : ${AGKOZAK_COLORS_PROMPT_CHAR:=default}
 : ${AGKOZAK_COLORS_CMD_EXEC_TIME:=default}
 : ${AGKOZAK_COLORS_VIRTUALENV:=green}
+: ${AGKOZAK_COLORS_BACKGROUND_JOB_CHAR:=yellow}
 
 # Whether or not to display the Git status in the left prompt (default: off)
 : ${AGKOZAK_LEFT_PROMPT_ONLY:=0}
@@ -234,7 +241,9 @@ fi
 : ${AGKOZAK_BLANK_LINES:=0}
 # Whether or not to display the virtual environment
 : ${AGKOZAK_SHOW_VIRTUALENV:=1}
-# Characters to put around the command execution time (default: nothing )
+# Whether or not to indicate if a job is running in the background
+: ${AGKOZAK_SHOW_BACKGROUND_JOB:=1}
+# Characters to put around the command execution time (default: nothing)
 (( $+AGKOZAK_CMD_EXEC_TIME_CHARS )) || AGKOZAK_CMD_EXEC_TIME_CHARS=()
 # Characters to put around the virtual environment name (default: square brackets)
 (( $+AGKOZAK_VIRTUALENV_CHARS )) || AGKOZAK_VIRTUALENV_CHARS=( '[' ']' )
@@ -839,6 +848,7 @@ prompt_agkozak_preexec() {
 #   AGKOZAK_PRE_PROMPT_CHAR
 #   AGKOZAK_BLANK_LINES
 #   AGKOZAK_PROMPT_DIRTRIM
+#   AGKOZAK_BACKGROUND_JOB_CHAR
 ############################################################
 prompt_agkozak_precmd() {
   emulate -L zsh
@@ -924,6 +934,16 @@ prompt_agkozak_precmd() {
     *) _agkozak_set_git_psvars "$(_agkozak_branch_status)" ;;
   esac
 
+  # Clear background job indicator
+  psvar[11]=''
+  
+  # Optionally check if a job is running in the background
+  if (( ${AGKOZAK_SHOW_BACKGROUND_JOB:-1} )); then
+    bg &> /dev/null
+    # If bg exits with 0 at least one job is running in the background
+    (( $? == 0 )) && psvar[11]=${AGKOZAG_BACKGROUND_JOB_CHAR:-o}
+  fi
+
   # Construct and display PROMPT and RPROMPT
   _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
   _agkozak_prompt_strings
@@ -941,6 +961,7 @@ prompt_agkozak_precmd() {
 #   AGKOZAK_LEFT_PROMPT_ONLY
 #   AGKOZAK_COLORS_BRANCH_STATUS AGKOZAK_PROMPT_WHITESPACE
 #   AGKOZAK_COLORS_PROMPT_CHAR
+#   AGKOZAK_COLORS_BACKGROUND_JOB_CHAR
 #   AGKOZAK_PROMPT_CHAR
 #   AGKOZAK_CUSTOM_RPROMPT
 #   AGKOZAK_MULTILINE
@@ -954,6 +975,7 @@ _agkozak_prompt_strings() {
   else
     # The color left prompt
     AGKOZAK[PROMPT]=''
+    AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_BACKGROUND_JOB_CHAR:-yellow}}%11v%f '
     AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
     AGKOZAK[PROMPT]+='%(9V.%F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}${AGKOZAK_CMD_EXEC_TIME_CHARS[1]}%9v${AGKOZAK_CMD_EXEC_TIME_CHARS[2]}%f .)'
     if (( AGKOZAK_USER_HOST_DISPLAY )); then

@@ -939,9 +939,9 @@ prompt_agkozak_precmd() {
   
   # Optionally check if a job is running in the background
   if (( ${AGKOZAK_SHOW_BACKGROUND_JOB:-1} )); then
-    bg 2> /dev/null
-    # If bg exits with 0 at least one job is running in the background
-    (( $? == 0 )) && psvar[11]=${AGKOZAG_BACKGROUND_JOB_CHAR:-o}
+    res=$(jobs 2> /dev/null)
+    # If jobs exits with any output at least one job is running in the background
+    [[ -n $res  ]] && psvar[11]=${AGKOZAG_BACKGROUND_JOB_CHAR:-o}
   fi
 
   # Construct and display PROMPT and RPROMPT
@@ -975,7 +975,7 @@ _agkozak_prompt_strings() {
   else
     # The color left prompt
     AGKOZAK[PROMPT]=''
-    AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_BACKGROUND_JOB_CHAR:-yellow}}%11v%f '
+    AGKOZAK[PROMPT]+='%(11V.%F{${AGKOZAK_COLORS_BACKGROUND_JOB_CHAR:-yellow}}%11v%f .)'
     AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
     AGKOZAK[PROMPT]+='%(9V.%F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}${AGKOZAK_CMD_EXEC_TIME_CHARS[1]}%9v${AGKOZAK_CMD_EXEC_TIME_CHARS[2]}%f .)'
     if (( AGKOZAK_USER_HOST_DISPLAY )); then

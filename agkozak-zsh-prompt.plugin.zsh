@@ -73,7 +73,7 @@
 #
 # psvar[10]     %10v                        Name of virtual environment
 #
-# psvar[11]     %11v                        Number of jobs running in the 
+# psvar[11]     %11v                        Number of jobs running in the
 #                                           background
 #
 

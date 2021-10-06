@@ -974,9 +974,9 @@ _agkozak_prompt_strings() {
   else
     # The color left prompt
     AGKOZAK[PROMPT]=''
-    AGKOZAK[PROMPT]+='%(11V.%F{${AGKOZAK_COLORS_BG_STRING:-yellow}}%11v${AGKOZAK_BG_STRING:-j}%f .)'
-    AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
     AGKOZAK[PROMPT]+='%(9V.%F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}${AGKOZAK_CMD_EXEC_TIME_CHARS[1]}%9v${AGKOZAK_CMD_EXEC_TIME_CHARS[2]}%f .)'
+    AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
+    AGKOZAK[PROMPT]+='%(11V.%F{${AGKOZAK_COLORS_BG_STRING:-yellow}}%11v${AGKOZAK_BG_STRING:-j}%f .)'
     if (( AGKOZAK_USER_HOST_DISPLAY )); then
       AGKOZAK[PROMPT]+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) '
     fi

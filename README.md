@@ -307,6 +307,8 @@ Renamed | >
 Untracked | ?
 Stashed changes | $
 
+## Background Jobs Status
+
 ## `vi` Editing Mode
 
 The agkozak Zsh Prompt indicates when the user has switched from `vi` insert mode to command mode by turning the `%` or `#` of the prompt into a colon:
@@ -345,6 +347,7 @@ If you would like to customize the prompt colors, change any of the `AGKOZAK_COL
     AGKOZAK_COLORS_PROMPT_CHAR=default      # Default text color
     AGKOZAK_COLORS_CMD_EXEC_TIME=default    # Default text color
     AGKOZAK_COLORS_VIRTUALENV=green
+    AGKOZAK_COLORS_BG_STRING=magenta
 
 ![Custom colors](img/colors.gif)
 
@@ -718,10 +721,12 @@ AGKOZAK_CUSTOM_RPROMPT=''
 
 Option | Default | Meaning
 --- | --- | ---
+[`AGKOZAK_BG_STRING`](#background-jobs-status) | `j` | The symbol or symbols to display next to the background jobs count
 [`AGKOZAK_BLANK_LINES`](#blank-lines-between-prompts) | `0` | Display a blank line before displaying the prompt
 [`AGKOZAK_BRANCH_STATUS_SEPARATOR`](#AGKOZAK_BRANCH_STATUS_SEPARATOR) | ` ` | Character or characters preceding the Git status indicator
 [`AGKOZAK_CMD_EXEC_TIME_CHARS`](#command-execution-time) | `( '' '' )` | Strings to prepend and append to the command execution time indicator
 [`AGKOZAK_CMD_EXEC_TIME`](#command-execution-time) | `5` | Threshold beyond which to display command execution time (in seconds)
+[`AGKOZAK_COLORS_BG_STRING`](#custom-colors) | `magenta` | Color of the background jobs indicator
 [`AGKOZAK_COLORS_BRANCH_STATUS`](#custom-colors) | `yellow` | Color of Git status
 [`AGKOZAK_COLORS_CMD_EXEC_TIME`](#command-execution-time) | `default` | Color of command execution time indicator
 [`AGKOZAK_COLORS_EXIT_STATUS`](#custom-colors) | `red` | Color of exit status
@@ -740,6 +745,7 @@ Option | Default | Meaning
 [`AGKOZAK_PROMPT_DEBUG`](#asynchronous-methods) | `0` | Show debugging information
 [`AGKOZAK_PROMPT_DIRTRIM`](#abbreviated-paths) | `2` | Number of directory elements to display; `0` turns off directory trimming
 [`AGKOZAK_PROMPT_DIRTRIM_STRING`](#abbreviated-paths) | `...` | Ellipsis string used in directory trimming
+[`AGKOZAK_SHOW_BG`](#background-jobs-status) | `1` | Display the number of background jobs you hav running
 [`AGKOZAK_SHOW_STASH`](#agkozak_show_stash) | `1` | Display stashed changes
 [`AGKOZAK_SHOW_VIRTUALENV`](#virtual-environments) | `1` | Display virtual environments
 [`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display) | `1` | Display the username and hostname
@@ -759,6 +765,7 @@ Option | Default | Meaning
 `psvar[8]` | `%8v` | Previous command's execution time in seconds; only set if `AGKOZAK_CMD_EXEC_TIME` > 0 and if the execution time exceeded `AGKOZAK_CMD_EXEC_TIME`
 `psvar[9]` | `%9v` | `psvar[8]` pretty-printed as days, hours, minutes, and seconds, thus: `1d 2h 3m 4s`
 `psvar[10]` | `%10v` | Name of any virtual environment that has been activated
+`psvar[11]` | `%11v` | The number of background jobs running
 
 <hr>
 

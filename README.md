@@ -41,9 +41,9 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - [Custom Prompt Character](#custom-prompt-character)
     - [Custom Git Symbols](#custom-git-symbols)
     - [Other Settings](#other-settings)
-        - [AGKOZAK_USER_HOST_DISPLAY](#agkozak_user_host_display)
-        - [AGKOZAK_BRANCH_STATUS_SEPARATOR](#agkozak_branch_status_separator)
-        - [AGKOZAK_SHOW_STASH](#agkozak_show_stash)
+        - [`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display)
+        - [`AGKOZAK_BRANCH_STATUS_SEPARATOR`](#agkozak_branch_status_separator)
+        - [`AGKOZAK_SHOW_STASH`](#agkozak_show_stash)
     - [Advanced Customization](#advanced-customization)
 - [Examples of agkozak Zsh Prompt Customization](#examples-of-agkozak-zsh-prompt-customization)
     - [Using Basic Configuration Settings](#using-basic-configuration-settings)
@@ -415,7 +415,7 @@ If you prefer the [pure](https://github.com/sindresorhus/pure) symbols for the "
 
 ### Other Settings
 
-#### AGKOZAK_USER_HOST_DISPLAY
+#### `AGKOZAK_USER_HOST_DISPLAY`
 
 ![AGKOZAK_USER_HOST_DISPLAY demo](img/AGKOZAK_USER_HOST_DISPLAY.gif)
 
@@ -423,15 +423,15 @@ For a more streamlined prompt, you may choose to suppress the display of the use
 
     AGKOZAK_USER_HOST_DISPLAY=0
 
-#### AGKOZAK_BRANCH_STATUS_SEPARATOR
+#### `AGKOZAK_BRANCH_STATUS_SEPARATOR`
 
-By default, a space precedes the Git branch status indicator, typically right between it and the directory name. You may eliminate the space by setting
+By default, when you set `AGKOZAK_LEFT_PROMPT_ONLY=1`, a space precedes the Git branch status indicator, typically right between it and the directory name. You may eliminate the space by setting
 
     AGKOZAK_BRANCH_STATUS_SEPARATOR=''
 
 Alternatively, you may set `AGKOZAK_BRANCH_STATUS_SEPARATOR` to any other character or characters that you prefer.
 
-#### AGKOZAK_SHOW_STASH
+#### `AGKOZAK_SHOW_STASH`
 
 If you prefer not to have stashed changes displayed, you may set `AGKOZAK_SHOW_STASH=0`.
 
@@ -591,7 +591,7 @@ AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' )
 AGKOZAK_USER_HOST_DISPLAY=0
 ```
 
-### Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT
+### Using `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT`
 
 #### My "Zenburn" Custom Prompt
 

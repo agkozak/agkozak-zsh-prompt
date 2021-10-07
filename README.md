@@ -309,6 +309,8 @@ Stashed changes | $
 
 ## Background Jobs Status
 
+![Background jobs status](img/bg_demo.gif)
+
 ## `vi` Editing Mode
 
 The agkozak Zsh Prompt indicates when the user has switched from `vi` insert mode to command mode by turning the `%` or `#` of the prompt into a colon:

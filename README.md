@@ -29,6 +29,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - [Abbreviated Paths](#abbreviated-paths)
 - [Command Execution Time](#command-execution-time)
 - [Git Branch and Status](#git-branch-and-status)
+- [Background Jobs Status](#background-jobs-status)
 - [Exit Status](#exit-status)
 - [Virtual Environments](#virtual-environments)
 - [`vi` Editing Mode](#vi-editing-mode)
@@ -309,7 +310,11 @@ Stashed changes | $
 
 ## Background Jobs Status
 
+If you have background jobs running (a suspended editor, for example), the prompt will display the number of such jobs followed by a `j`:
+
 ![Background jobs status](img/bg_demo.gif)
+You can customize the background jobs display by setting `AGKOZAK_COLORS_BG_STRING` to the color you would like it to have or `AGKOZAK_BG_STRING` to the character or characters you want to use to denote background jobs (you could set `AGKOZAK_BG_STRING=bg`, for example).
+
 
 ## `vi` Editing Mode
 
@@ -470,7 +475,7 @@ So far, you will have used only the following code:
     AGKOZAK_LEFT_PROMPT_ONLY=1
     AGKOZAK_COLORS_BRANCH_STATUS=243 
     AGKOZAK_CUSTOM_RPROMPT='%*'
-
+z
 The same result could be achieved by starting with the default code given at the top of this section and altering it to produce
 
 ```sh

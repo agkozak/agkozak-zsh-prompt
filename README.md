@@ -15,6 +15,7 @@ The agkozak Zsh Prompt is an asynchronous color Git prompt that uses basic ASCII
 * an abbreviated path
 * any active virtual environment
 * Git branch and status
+* any background processes
 * if `vi` line editing is enabled, whether insert or command mode is active
 
 This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris, and in Windows environments (MSYS2, Cygwin, and WSL). It should also work perfectly on MacOS.
@@ -57,6 +58,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
+- Unreleased
+    + Background process indicator (props to [@crai0](https://github.com/crai0/)).
 - v3.10.4
     + Mere orthographical changes: "ZSH" is now "Zsh" throughout.
 - v3.10.3
@@ -328,7 +331,7 @@ agkozak does not enable `vi` editing mode for you. To do so, add
 
 to your `.zshrc`.
 
-This prompt will work perfectly if you use the default Zsh Emacs editing mode; in that case, the prompt character will not change.
+This prompt will still work perfectly if you use the default Zsh Emacs editing mode; in that case, the prompt character will not change.
 
 ## Asynchronous Methods
 

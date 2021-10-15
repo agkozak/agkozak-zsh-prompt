@@ -598,39 +598,15 @@ _agkozak_async_init() {
   emulate -L zsh
   setopt LOCAL_OPTIONS NO_LOCAL_TRAPS
 
-  # Detect WSL1
-  if [[ $OSTYPE == linux* &&
-        -r /proc/version  &&
-        $(< /proc/version) == *Microsoft* ]]; then
-    # Early versions of WSL1 require BG_NICE to be explicitly disabled
-    unsetopt BG_NICE
-    AGKOZAK[IS_WSL1]=1
-  fi
-
   if [[ $AGKOZAK_FORCE_ASYNC_METHOD == (subst-async|zsh-async|usr1|none) ]]; then
     [[ $AGKOZAK_FORCE_ASYNC_METHOD == 'zsh-async' ]] && _agkozak_load_async_lib
     AGKOZAK[ASYNC_METHOD]=$AGKOZAK_FORCE_ASYNC_METHOD
-
-  # Otherwise, first provide for certain quirky systems
+  elif [[ $TERM == 'dumb' ]]; then
+    AGKOZAK[ASYNC_METHOD]='none'
+  elif _agkozak_has_usr1; then
+    AGKOZAK[ASYNC_METHOD]='usr1'
   else
-
-    # SIGUSR1 method is still much faster on Windows (MSYS2/Cygwin/WSL1).
-    if [[ $OSTYPE == (msys|cygwin) ]] || (( AGKOZAK[IS_WSL1] )); then
-      if _agkozak_has_usr1; then
-        AGKOZAK[ASYNC_METHOD]='usr1'
-      else
-        AGKOZAK[ASYNC_METHOD]='subst-async'
-      fi
-
-    # Asynchronous methods don't work in Emacs shell mode (but they do in term
-    # and ansi-term)
-    elif [[ $TERM == 'dumb' ]]; then
-      AGKOZAK[ASYNC_METHOD]='none'
-
-    # Otherwise use subst-async
-    else
-      AGKOZAK[ASYNC_METHOD]='subst-async'
-    fi
+    AGKOZAK[ASYNC_METHOD]='subst-async'
   fi
 
   ############################################################

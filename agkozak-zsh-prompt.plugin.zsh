@@ -5,8 +5,7 @@
 #  \__,_|\__, |_|\_\___/___\__,_|_|\_\
 #        |___/
 #
-# An asynchronous, dynamic color prompt for Zsh with Git, vi mode, and exit
-# status indicators
+# An asynchronous, dynamic Git prompt for Zsh
 #
 #
 # MIT License

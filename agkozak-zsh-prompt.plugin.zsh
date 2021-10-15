@@ -423,6 +423,7 @@ _agkozak_branch_status() {
     *) ref=$(command git rev-parse --short HEAD 2> /dev/null) || return ;;
   esac
   branch=${ref#refs/heads/}
+  psvar[6]=$branch
 
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k
@@ -472,6 +473,7 @@ _agkozak_branch_status() {
     fi
 
     [[ -n $symbols ]] && symbols=" ${symbols}"
+    psvar[7]=$symbols
 
     printf -- '%s(%s%s)' "${AGKOZAK_BRANCH_STATUS_SEPARATOR- }" "$branch" \
       "$symbols"
@@ -960,7 +962,7 @@ _agkozak_prompt_strings() {
     fi
     AGKOZAK[PROMPT]+='%(11V. %F{${AGKOZAK_COLORS_BG_STRING:-magenta}}%11v${AGKOZAK_BG_STRING:-j}%f.)'
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
-      AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
+      AGKOZAK[PROMPT]+='%(6V. %F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}(%(7V.%6v %7v.%6v)%)%f.)'
     fi
     AGKOZAK[PROMPT]+='${AGKOZAK_PROMPT_WHITESPACE}'
     AGKOZAK[PROMPT]+='%F{${AGKOZAK_COLORS_PROMPT_CHAR:-default}}'
@@ -973,7 +975,7 @@ _agkozak_prompt_strings() {
   else
     # The color right prompt
     if (( ! ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
-      AGKOZAK[RPROMPT]='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
+      AGKOZAK[RPROMPT]='%(6V. %F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}(%(7V.%6v %7v.%6v)%)%f.)'
     else
       AGKOZAK[RPROMPT]=''
     fi

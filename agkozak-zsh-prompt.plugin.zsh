@@ -900,21 +900,15 @@ prompt_agkozak_precmd() {
 
   # Optionally put blank lines between instances of the prompt
   (( AGKOZAK_BLANK_LINES && AGKOZAK[FIRST_PROMPT_PRINTED] )) && print
+  AGKOZAK[FIRST_PROMPT_PRINTED]=1
 
   # Begin to calculate the Git status
-  if (( AGKOZAK[FIRST_PROMPT_PRINTED] )); then
-    case ${AGKOZAK[ASYNC_METHOD]} in
-      'subst-async') _agkozak_subst_async ;;
-      'zsh-async') _agkozak_zsh_async ;;
-      'usr1') _agkozak_usr1_async ;;
-      *) _agkozak_set_git_psvars "$(_agkozak_branch_status)" ;;
-    esac
-  else
-    # Always print the Git status before the first command prompt
-    _agkozak_set_git_psvars "$(_agkozak_branch_status)"
-  fi
-
-  AGKOZAK[FIRST_PROMPT_PRINTED]=1
+  case ${AGKOZAK[ASYNC_METHOD]} in
+    'subst-async') _agkozak_subst_async ;;
+    'zsh-async') _agkozak_zsh_async ;;
+    'usr1') _agkozak_usr1_async ;;
+    *) _agkozak_set_git_psvars "$(_agkozak_branch_status)" ;;
+  esac
 
   # Clear background job count
   psvar[11]=''

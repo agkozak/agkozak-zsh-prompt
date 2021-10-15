@@ -640,13 +640,13 @@ My Zenburn prompt tests first to make sure that the terminal has 256 colors; if 
 (( ${+modules[zsh/terminfo]} )) || zmodload zsh/terminfo
 # If there are 256 colors, use the following colors; otherwise use the defaults
 if (( ${terminfo[colors]:-0} >= 256 )); then
-AGKOZAK_COLORS_USER_HOST=108
-AGKOZAK_COLORS_PATH=116
-AGKOZAK_COLORS_BRANCH_STATUS=228
-AGKOZAK_COLORS_EXIT_STATUS=174
-AGKOZAK_COLORS_CMD_EXEC_TIME=245
-AGKOZAK_COLORS_VIRTUALENV=188
-AGKOZAK_COLORS_BG_STRING=223
+  AGKOZAK_COLORS_USER_HOST=108
+  AGKOZAK_COLORS_PATH=116
+  AGKOZAK_COLORS_BRANCH_STATUS=228
+  AGKOZAK_COLORS_EXIT_STATUS=174
+  AGKOZAK_COLORS_CMD_EXEC_TIME=245
+  AGKOZAK_COLORS_VIRTUALENV=188
+  AGKOZAK_COLORS_BG_STRING=223
 fi
 AGKOZAK_CUSTOM_PROMPT=''
 # Command execution time

@@ -60,6 +60,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 
 - Unreleased
     + Background process indicator (props to [@crai0](https://github.com/crai0/)).
+    + The `usr1` async method is now preferred whenever possible, as it is almost always the fastest.
 - v3.10.4
     + Mere orthographical changes: "ZSH" is now "Zsh" throughout.
 - v3.10.3

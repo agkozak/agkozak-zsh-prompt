@@ -943,7 +943,6 @@ prompt_agkozak_precmd() {
 _agkozak_prompt_strings() {
   emulate -L zsh
 
-  # TODO: Document what unsetting the custom prompt strings does.
   if (( $+AGKOZAK_CUSTOM_PROMPT )); then
     AGKOZAK[PROMPT]=$AGKOZAK_CUSTOM_PROMPT
   else

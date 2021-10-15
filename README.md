@@ -15,7 +15,7 @@ The agkozak Zsh Prompt is an asynchronous color Git prompt that uses basic ASCII
 * an abbreviated path
 * any active virtual environment
 * Git branch and status
-* any background processes
+* the number of background processes
 * if `vi` line editing is enabled, whether insert or command mode is active
 
 This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris, and in Windows environments (MSYS2, Cygwin, and WSL). It should also work perfectly on MacOS.
@@ -58,9 +58,9 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
-- Unreleased
-    + Background process indicator (props to [@crai0](https://github.com/crai0/)).
-    + The `usr1` async method is now preferred whenever possible, as it is almost always the fastest.
+- v3.11.0
+    + Added a background jobs indicator (props to [@crai0](https://github.com/crai0/)).
+    + The `usr1` async method is used preferred whenever possible, as it reduces command lag considerably (props to [@romkatv](https://github.com/romkatv/) for sharing [his benchmarking system](https://github.com/romkatv/zsh-bench)).
 - v3.10.4
     + Mere orthographical changes: "ZSH" is now "Zsh" throughout.
 - v3.10.3
@@ -336,9 +336,9 @@ This prompt will still work perfectly if you use the default Zsh Emacs editing m
 
 ## Asynchronous Methods
 
-The agkozak Zsh Prompt chooses the fastest and most reliable of three different methods for displaying the Git status asynchronously. One asynchronous method that works on all known platforms and with all supported versions of Zsh is [@psprint](https://github.com/psprint)'s `subst-async` technique, which uses process substitution (`<()`) to fork a background process that fetches the Git status and feeds it to a file descriptor. A `zle -F` callback handler then processes the input from the file descriptor and uses it to update the prompt.
+The agkozak Zsh Prompt chooses the fastest and most reliable of three different methods for displaying the Git status asynchronously. The default `usr1` method, first described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/), creates and disowns child processes that calculate the Git status and then kill themselves off, triggering `SIGUSR1` in the process. The Zsh `TRAPUSR1` trap function then displays that Git status. Since other scripts or the user could conceivably define `TRAPUSR1` either before or after this prompt is loaded, it regularly checks to see if that is the case and, if so, falls back to the slower but entirely reliable `subst-async` method, which is also used if `SIGUSR1` is not available.
 
-`subst-async` works on Windows environments such as Cygwin, MSYS2, and WSL1, but it is comparatively slow on these systems. For these platforms, the agkozak Zsh Prompt uses a method described by [Anish Athalye](http://www.anishathalye.com/2015/02/07/an-asynchronous-shell-prompt/). This `usr1` method creates and disowns child processes that calculate the Git status and then kill themselves off, triggering SIGUSR1 in the process. The Zsh `TRAPUSR1` trap function then displays that Git status. Since other scripts or the user could conceivably define `TRAPUSR1` either before or after this prompt is loaded, it regularly checks to see if that is the case and, if so, falls back to the slower but entirely reliable `subst-async` method.
+I have tweaked [@psprint](https://github.com/psprint)'s `subst-async` technique to work on all known platforms and with all supported versions of Zsh. It uses process substitution (`<( ... )`) to fork a background process that fetches the Git status and feeds it to a file descriptor. A `zle -F` callback handler then processes the input from the file descriptor and uses it to update the prompt.
 
 This prompt also supplies a `zsh-async` method that relies on the [`zsh-async`](https://github.com/mafredri/zsh-async) library, which uses ZSH's `zsh/zpty` module to spin off pseudo-terminals that can calculate the Git status without blocking the user from continuing to use the terminal. `zsh/zpty` does not work well with Cygwin or MSYS2, however, and it can be quirky on Solaris and related operating systems, so it is no longer used by default, and is only provided for those who want it.
 
@@ -453,6 +453,8 @@ If you prefer not to have stashed changes displayed, you may set `AGKOZAK_SHOW_S
 If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as
 
 ```sh
+# The left prompt
+
 # Exit status
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 # Command execution time
@@ -460,9 +462,15 @@ AGKOZAK_CUSTOM_PROMPT+='%(9V.%9v .)'
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
-AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b\n'
+AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b'
+# Virtual environment
+AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{green}[%10v]%f.)'
+# Background jobs indicator and newline
+AGKOZAK_CUSTOM_PROMPT+=$'%(11V. %F{magenta}%11vj%f.)\n'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
+
+# The right prompt
 
 # Git status
 AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.)'
@@ -470,7 +478,7 @@ AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.)'
 
 In general, you will not need to change these settings to achieve a custom prompt. If, for example, you would like to move the Git status into the left prompt, you may do so simply with `AGKOZAK_LEFT_PROMPT_ONLY=1`. If you want to make it your favorite shade of grey, you may add `AGKOZAK_COLORS_BRANCH_STATUS=243`.
 
-Now that the right prompt no longer does anything, you could use the `AGKOZAK_CUSTOM_RPROMPT` variable to have it do something new, such as to display the time:
+If you made those customizations, however,  the right prompt would no longer do anything, so you could use the `AGKOZAK_CUSTOM_RPROMPT` variable to have it do something new, such as to display the time:
 
      AGKOZAK_CUSTOM_RPROMPT='%*'
 
@@ -479,11 +487,13 @@ So far, you will have used only the following code:
     AGKOZAK_LEFT_PROMPT_ONLY=1
     AGKOZAK_COLORS_BRANCH_STATUS=243 
     AGKOZAK_CUSTOM_RPROMPT='%*'
-z
+
 The same result could be achieved by starting with the default code given at the top of this section and altering it to produce
 
 ```sh
-# Exit status 
+# The left prompt
+
+# Exit status
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b )'
 # Command execution time
 AGKOZAK_CUSTOM_PROMPT+='%(9V.%9v .)'
@@ -491,33 +501,45 @@ AGKOZAK_CUSTOM_PROMPT+='%(9V.%9v .)'
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
-# Git status (followed by newline)
+# Virtual environment
+AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{green}[%10v]%f.)'
+# Background jobs indicator and newline
+AGKOZAK_CUSTOM_PROMPT+='%(11V. %F{magenta}%11vj%f.)'
+# Git status and newline
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
-# Time
+# The right prompt
+
+# Git status
 AGKOZAK_CUSTOM_RPROMPT='%*'
 ```
 
 Obviously, this code is considerably harder to read, but you might use it if you wanted to do something not supported by the basic configuration options, such as displaying the exit status immediately before the prompt character:
 
 ```sh
+# The left prompt
+
 # Command execution time
 AGKOZAK_CUSTOM_PROMPT='%(9V.%9v .)'
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b) '
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
-# Git status (followed by newline)
-AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
+# Virtual environment
+AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{green}[%10v]%f.)'
+# Background jobs indicator and newline
+AGKOZAK_CUSTOM_PROMPT+=$'%(11V. %F{magenta}%11vj%f.)\n'
 # Exit status
 AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{red}(%?%)%f%b )'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
-# Time
-AGKOZAK_CUSTOM_RPROMPT='%*'
+# The right prompt
+
+# Git status
+AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.)'
 ```
 
 *Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, it may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.*
@@ -526,7 +548,7 @@ For some examples of prompt configurations that people have created using `AGKOZ
 
 ## Examples of agkozak Zsh Prompt Customization
 
-*Note: If you see your prompt customization here, I may have rewritten it a bit or even simplified it for educational purposes.*
+*Note: If you see your custom prompt here, I may have rewritten it a bit (often to include new features of the prompt) or even simplified it for educational purposes.*
 
 ### Using Basic Configuration Settings
 
@@ -607,33 +629,38 @@ AGKOZAK_USER_HOST_DISPLAY=0
 
 ### Using `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT`
 
-#### My "Zenburn" Custom Prompt
+#### My Zenburn Custom Prompt
 
-![My "Zenburn" Custom Prompt](img/custom_agkozak_zenburn.png)
+![My Zenburn Custom Prompt](img/custom_agkozak_zenburn.png)
+
+One of the reasons that my Zenburn prompt is so long is that it tests first to make sure that the terminal has 256 colors; if not, the default colors of the prompt are used.
 
 ```sh
 # Make sure the zsh/terminfo module is loaded
-[[ ${modules[zsh/terminfo]} == 'loaded' ]] || zmodload zsh/terminfo
+(( ${+modules[zsh/terminfo]} )) || zmodload zsh/terminfo
 # If there are 256 colors, use the following colors; otherwise use the defaults
 if (( ${terminfo[colors]:-0} >= 256 )); then
-  AGKOZAK_COLORS_USER_HOST=108
-  AGKOZAK_COLORS_PATH=116
-  AGKOZAK_COLORS_BRANCH_STATUS=228
-  AGKOZAK_COLORS_EXIT_STATUS=174
-  AGKOZAK_COLORS_CMD_EXEC_TIME=245
-  AGKOZAK_COLORS_VIRTUALENV=151
+AGKOZAK_COLORS_USER_HOST=108
+AGKOZAK_COLORS_PATH=116
+AGKOZAK_COLORS_BRANCH_STATUS=228
+AGKOZAK_COLORS_EXIT_STATUS=174
+AGKOZAK_COLORS_CMD_EXEC_TIME=245
+AGKOZAK_COLORS_VIRTUALENV=188
+AGKOZAK_COLORS_BG_STRING=223
 fi
 AGKOZAK_CUSTOM_PROMPT=''
-# Exit status
-AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
 # Command execution time
 AGKOZAK_CUSTOM_PROMPT+='%(9V.%F{${AGKOZAK_COLORS_CMD_EXEC_TIME}}%b%9v%b%f .)'
+# Exit status
+AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS}}(%?%)%f%b )'
 # Username and hostname
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST}})%n%1v%(!.%b%s.%f%b) '
+# Virtual environment indicator
+AGKOZAK_CUSTOM_PROMPT+='%(10V.%F{${AGKOZAK_COLORS_VIRTUALENV}}[%10v]%f .)'
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
-# Virtual environment indicator
-AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{${AGKOZAK_COLORS_VIRTUALENV:-green}}[%10v]%f.)'
+# Background job status
+AGKOZAK_CUSTOM_PROMPT+='%(11V. %F{${AGKOZAK_COLORS_BG_STRING}}%11vj%f.)'
 # Git status
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)\n'
 # SHLVL and prompt character
@@ -675,9 +702,12 @@ AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{32})%n%1v%(!.%b%s.%f%b)'
 AGKOZAK_CUSTOM_PROMPT+=' %B%F{13}%h%f%b'
 AGKOZAK_CUSTOM_PROMPT+=$'\n%F{13}%(4V.:.%#)%f '
 
+# Git status
+AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.) '
+# Background jobs indicator
+AGKOZAK_CUSTOM_RPROMPT+='%(11V.%F{magenta}%11vj%f .)'
 # Virtual environment indicator
-AGKOZAK_CUSTOM_RPROMPT='%(10V. %F{green}[%10v]%f.)'
-AGKOZAK_CUSTOM_RPROMPT+='%(3V.%F{yellow}%3v%f.) '
+AGKOZAK_CUSTOM_RPROMPT+='%(10V.%F{green}[%10v]%f .)'
 # Display the path (substituting ~ for $HOME and in named directories)
 AGKOZAK_CUSTOM_RPROMPT+='%B%F{blue}%~%f%b '
 # Display the time
@@ -692,10 +722,14 @@ AGKOZAK_CUSTOM_RPROMPT+='%F{32}%*'
 AGKOZAK_CUSTOM_PROMPT='%(?..%B%F{red}(%?%)%f%b)'
 # Command execution time
 AGKOZAK_CUSTOM_PROMPT+='%(9V.[%9v].)'
+# Username and hostname
 AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B%F{green})%n%1v%(!.%b%s.%f%b):'
+# Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 # Virtual environment indicator
-AGKOZAK_CUSTOM_PROMPT+='%(10V.%F{green}[%10v]%f.)'
+AGKOZAK_CUSTOM_PROMPT+='%(10V.:%F{green}%10v%f.)'
+# Background jobs indicator
+AGKOZAK_CUSTOM_PROMPT+='%(11V.:%F{magenta}%11vj%f.)'
 # Use > as the prompt character when in vi command mode
 AGKOZAK_CUSTOM_PROMPT+='%(4V.>.%(!.#.$))'
 ```
@@ -722,8 +756,12 @@ AGKOZAK_CUSTOM_PROMPT+='%(9V.%9v .)'
 _agkozak_is_ssh && AGKOZAK_CUSTOM_PROMPT+='%(!.%S%B.%B)%m%(!.%b%s.%b) '
 AGKOZAK_CUSTOM_PROMPT+='%F{blue}%2v%f%b'
 # Virtual environment indicator
-AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{green}[%10v]%f.)'
+AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{default}[%10v]%f.)'
+# Background jobs indicator
+AGKOZAK_CUSTOM_PROMPT+='%(11V. %F{magenta}%11vj%f.)'
+# Git status
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{green}%3v%f.)\n'
+# Kerberos status
 AGKOZAK_CUSTOM_PROMPT+='$(krbprinc) '
 
 AGKOZAK_CUSTOM_RPROMPT=''

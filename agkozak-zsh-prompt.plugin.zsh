@@ -124,6 +124,7 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_set_git_psvars
                     _agkozak_zle-keymap-select
                     TRAPWINCH
+                    TRAPCHLD
                     _agkozak_vi_mode_indicator
                     _agkozak_load_async_lib
                     _agkozak_has_usr1
@@ -514,6 +515,14 @@ _agkozak_zle-keymap-select() {
 ############################################################
 TRAPWINCH() {
   zle && zle -R
+}
+
+############################################################
+# Redraw the prompt when the background jobs count changes
+############################################################
+TRAPCHLD() {
+  psvar[11]=${${(%):-%j}#0}
+  zle && zle reset-prompt
 }
 
 ############################################################

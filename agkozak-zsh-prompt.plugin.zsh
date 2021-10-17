@@ -73,7 +73,8 @@
 # psvar[10]     %10v                        Name of virtual environment
 #
 # psvar[11]     %11v                        Number of jobs running in the
-#                                           background
+#                                           background (legacy; deprecated;
+#                                           use %j)
 #
 
 # EPOCHSECONDS is needed to display command execution time
@@ -910,13 +911,13 @@ prompt_agkozak_precmd() {
     *) _agkozak_set_git_psvars "$(_agkozak_branch_status)" ;;
   esac
 
+  # psvar[11] deprecated in favor of %j
+
   # Clear background job count
   psvar[11]=''
 
-  # Optionally get the amount of jobs running in the background
-  if (( ${AGKOZAK_SHOW_BG:-1} )); then
-    psvar[11]=${${(%):-%j}#0}
-  fi
+  # Get the amount of jobs running in the background
+  psvar[11]=${${(%):-%j}#0}
 
   # Construct and display PROMPT and RPROMPT
   _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
@@ -957,7 +958,9 @@ _agkozak_prompt_strings() {
     if (( ${AGKOZAK_SHOW_VIRTUALENV:-1} )); then
       AGKOZAK[PROMPT]+='%(10V. %F{${AGKOZAK_COLORS_VIRTUALENV:-green}}${AGKOZAK_VIRTUALENV_CHARS[1]-[}%10v${AGKOZAK_VIRTUALENV_CHARS[2]-]}%f.)'
     fi
-    AGKOZAK[PROMPT]+='%(1j. %F{${AGKOZAK_COLORS_BG_STRING:-magenta}}%j${AGKOZAK_BG_STRING:-j}%f.)'
+    if (( ${AGKOZAK_SHOW_BG:-1} )); then
+      AGKOZAK[PROMPT]+='%(1j. %F{${AGKOZAK_COLORS_BG_STRING:-magenta}}%j${AGKOZAK_BG_STRING:-j}%f.)'
+    fi
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi

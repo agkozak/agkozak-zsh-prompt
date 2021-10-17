@@ -58,6 +58,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
+- v3.11.1
+    + Bug fix: The background jobs indicator was not updating immediately when a job ended. The prompt now uses the native Zsh `%j` escape to fetch the number of background jobs. Please update your custom prompts accordingly; the examples below have all been updated.
 - v3.11.0
     + Added a background jobs indicator (props to [@crai0](https://github.com/crai0/)).
     + The `usr1` async method is used preferred whenever possible, as it reduces command lag considerably (props to [@romkatv](https://github.com/romkatv/) for sharing [his benchmarking system](https://github.com/romkatv/zsh-bench)).
@@ -814,7 +816,7 @@ Option | Default | Meaning
 `psvar[8]` | `%8v` | Previous command's execution time in seconds; only set if `AGKOZAK_CMD_EXEC_TIME` > 0 and if the execution time exceeded `AGKOZAK_CMD_EXEC_TIME`
 `psvar[9]` | `%9v` | `psvar[8]` pretty-printed as days, hours, minutes, and seconds, thus: `1d 2h 3m 4s`
 `psvar[10]` | `%10v` | Name of any virtual environment that has been activated
-`psvar[11]` | `%11v` | The number of background jobs running
+`psvar[11]` | `%11v` | The number of background jobs running (deprecated; please use `%j` instead)
 
 <hr>
 

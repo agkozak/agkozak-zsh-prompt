@@ -124,7 +124,6 @@ AGKOZAK[FUNCTIONS]='_agkozak_debug_print
                     _agkozak_set_git_psvars
                     _agkozak_zle-keymap-select
                     TRAPWINCH
-                    _agkozak_update_psvar11
                     TRAPCHLD
                     _agkozak_vi_mode_indicator
                     _agkozak_load_async_lib
@@ -519,23 +518,11 @@ TRAPWINCH() {
 }
 
 ############################################################
-# Help TRAPCHLD update psvar[11]
-#
-# See https://zsh.org/mla/workers/2016/msg00257.html
-############################################################
-_agkozak_update_psvar11() {
-  unset "AGKOZAK[TRAPCHLD_CALLED]"
-  psvar[11]=${${(%):-%j}#0}
-  zle && zle reset-prompt
-  (( AGKOZAK[TRAPCHLD_CALLED] )) && _agkozak_update_psvar11
-}
-
-############################################################
 # Redraw the prompt when the background jobs count changes
 ############################################################
 TRAPCHLD() {
-  _agkozak_update_psvar11
-  AGKOZAK[TRAPCHD_CALLED]=1
+  psvar[11]=${${(%):-%j}#0}
+  zle && zle reset-prompt
 }
 
 ############################################################

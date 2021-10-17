@@ -466,7 +466,7 @@ AGKOZAK_CUSTOM_PROMPT+=$'%B%F{blue}%2v%f%b'
 # Virtual environment
 AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{green}[%10v]%f.)'
 # Background jobs indicator and newline
-AGKOZAK_CUSTOM_PROMPT+=$'%(11V. %F{magenta}%11vj%f.)\n'
+AGKOZAK_CUSTOM_PROMPT+=$'%(1j. %F{magenta}%jj%f.)\n'
 # Prompt character
 AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 
@@ -504,7 +504,7 @@ AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 # Virtual environment
 AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{green}[%10v]%f.)'
 # Background jobs indicator and newline
-AGKOZAK_CUSTOM_PROMPT+='%(11V. %F{magenta}%11vj%f.)'
+AGKOZAK_CUSTOM_PROMPT+='%(1j. %F{magenta}%jj%f.)'
 # Git status and newline
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{243}%3v%f.)\n'
 # Prompt character
@@ -530,7 +530,7 @@ AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 # Virtual environment
 AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{green}[%10v]%f.)'
 # Background jobs indicator and newline
-AGKOZAK_CUSTOM_PROMPT+=$'%(11V. %F{magenta}%11vj%f.)\n'
+AGKOZAK_CUSTOM_PROMPT+=$'%(1j. %F{magenta}%jj%f.)\n'
 # Exit status
 AGKOZAK_CUSTOM_PROMPT+='%(?..%B%F{red}(%?%)%f%b )'
 # Prompt character
@@ -660,7 +660,7 @@ AGKOZAK_CUSTOM_PROMPT+='%(10V.%F{${AGKOZAK_COLORS_VIRTUALENV}}[%10v]%f .)'
 # Path
 AGKOZAK_CUSTOM_PROMPT+='%B%F{${AGKOZAK_COLORS_PATH}}%2v%f%b'
 # Background job status
-AGKOZAK_CUSTOM_PROMPT+='%(11V. %F{${AGKOZAK_COLORS_BG_STRING}}%11vj%f.)'
+AGKOZAK_CUSTOM_PROMPT+='%(1j. %F{${AGKOZAK_COLORS_BG_STRING}}%jj%f.)'
 # Git status
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS}}%3v%f.)\n'
 # SHLVL and prompt character
@@ -705,7 +705,7 @@ AGKOZAK_CUSTOM_PROMPT+=$'\n%F{13}%(4V.:.%#)%f '
 # Git status
 AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.) '
 # Background jobs indicator
-AGKOZAK_CUSTOM_RPROMPT+='%(11V.%F{magenta}%11vj%f .)'
+AGKOZAK_CUSTOM_RPROMPT+='%(1j.%F{magenta}%jj%f .)'
 # Virtual environment indicator
 AGKOZAK_CUSTOM_RPROMPT+='%(10V.%F{green}[%10v]%f .)'
 # Display the path (substituting ~ for $HOME and in named directories)
@@ -729,7 +729,7 @@ AGKOZAK_CUSTOM_PROMPT+='%B%F{blue}%2v%f%b'
 # Virtual environment indicator
 AGKOZAK_CUSTOM_PROMPT+='%(10V.:%F{green}%10v%f.)'
 # Background jobs indicator
-AGKOZAK_CUSTOM_PROMPT+='%(11V.:%F{magenta}%11vj%f.)'
+AGKOZAK_CUSTOM_PROMPT+='%(1j.:%F{magenta}%jj%f.)'
 # Use > as the prompt character when in vi command mode
 AGKOZAK_CUSTOM_PROMPT+='%(4V.>.%(!.#.$))'
 ```
@@ -758,7 +758,7 @@ AGKOZAK_CUSTOM_PROMPT+='%F{blue}%2v%f%b'
 # Virtual environment indicator
 AGKOZAK_CUSTOM_PROMPT+='%(10V. %F{default}[%10v]%f.)'
 # Background jobs indicator
-AGKOZAK_CUSTOM_PROMPT+='%(11V. %F{magenta}%11vj%f.)'
+AGKOZAK_CUSTOM_PROMPT+='%(1j. %F{magenta}%jj%f.)'
 # Git status
 AGKOZAK_CUSTOM_PROMPT+=$'%(3V.%F{green}%3v%f.)\n'
 # Kerberos status

@@ -924,7 +924,7 @@ prompt_agkozak_precmd() {
 
   # Optionally get the amount of jobs running in the background
   if (( ${AGKOZAK_SHOW_BG:-1} )); then
-    psvar[11]=${${#jobtexts[@]}#0}
+    psvar[11]=${${(%):-%j}#0}
   fi
 
   # Construct and display PROMPT and RPROMPT
@@ -966,7 +966,7 @@ _agkozak_prompt_strings() {
     if (( ${AGKOZAK_SHOW_VIRTUALENV:-1} )); then
       AGKOZAK[PROMPT]+='%(10V. %F{${AGKOZAK_COLORS_VIRTUALENV:-green}}${AGKOZAK_VIRTUALENV_CHARS[1]-[}%10v${AGKOZAK_VIRTUALENV_CHARS[2]-]}%f.)'
     fi
-    AGKOZAK[PROMPT]+='%(11V. %F{${AGKOZAK_COLORS_BG_STRING:-magenta}}%11v${AGKOZAK_BG_STRING:-j}%f.)'
+    AGKOZAK[PROMPT]+='%(1j. %F{${AGKOZAK_COLORS_BG_STRING:-magenta}}%j${AGKOZAK_BG_STRING:-j}%f.)'
     if (( ${AGKOZAK_LEFT_PROMPT_ONLY:-0} )); then
       AGKOZAK[PROMPT]+='%(3V.%F{${AGKOZAK_COLORS_BRANCH_STATUS:-yellow}}%3v%f.)'
     fi

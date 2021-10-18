@@ -736,7 +736,7 @@ _agkozak_async_init() {
         # Make a named pipe
         mkfifo /tmp/agkozak_zsh_prompt_$$
         # Save Git branch status to temporary file
-        _agkozak_branch_status >| /tmp/agkozak_zsh_prompt_$$ &
+        _agkozak_branch_status >| /tmp/agkozak_zsh_prompt_$$ &!
 
         # Signal parent process
         kill -s USR1 $$ &> /dev/null

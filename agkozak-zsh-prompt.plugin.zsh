@@ -79,7 +79,6 @@
 
 # EPOCHSECONDS is needed to display command execution time
 (( $+EPOCHSECONDS )) || zmodload zsh/datetime
-zmodload -F zsh/files b:zf_rm 
 
 autoload -Uz is-at-least add-zle-hook-widget
 
@@ -733,10 +732,8 @@ _agkozak_async_init() {
       # then kill own process, sending SIGUSR1
       ############################################################
       _agkozak_usr1_async_worker() {
-        # Make a named pipe
-        mkfifo /tmp/agkozak_zsh_prompt_$$
         # Save Git branch status to temporary file
-        _agkozak_branch_status >| /tmp/agkozak_zsh_prompt_$$ &
+        _agkozak_branch_status >| /tmp/agkozak_zsh_prompt_$$
 
         # Signal parent process
         kill -s USR1 $$ &> /dev/null
@@ -756,8 +753,6 @@ _agkozak_async_init() {
 
         # Set prompts from contents of temporary file
         _agkozak_set_git_psvars "$(< /tmp/agkozak_zsh_prompt_$$)"
-
-        zf_rm /tmp/agkozak_zsh_prompt_$$
 
         # Reset asynchronous process number
         AGKOZAK[USR1_ASYNC_WORKER]=0

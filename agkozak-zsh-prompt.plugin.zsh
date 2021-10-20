@@ -828,7 +828,15 @@ prompt_agkozak_preexec() {
 #   AGKOZAK_BG_STRING
 ############################################################
 prompt_agkozak_precmd() {
-  _agkozak_pipestatus
+  # Calculate pipestatus psvars first
+  local pstatus="${${pipestatus#0}:+${"${pipestatus[*]}"// /${AGKOZAK_PIPESTATUS_SEPARATOR:-|}}}"
+  psvar[12]='' psvar[13]=''
+  if [[ $pstatus == *"${AGKOZAK_PIPESTATUS_SEPARATOR:-|}"0 ]]; then
+    typeset -g psvar[12]=$pstatus
+  elif [[ -n $pstatus ]]; then
+    typeset -g psvar[13]=$pstatus
+  fi
+
   emulate -L zsh
   (( AGKOZAK_PROMPT_DEBUG )) && [[ $ZSH_VERSION != 5.0.[0-2] ]] &&
     setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
@@ -923,20 +931,6 @@ prompt_agkozak_precmd() {
   # Construct and display PROMPT and RPROMPT
   _agkozak_prompt_dirtrim -v ${AGKOZAK_PROMPT_DIRTRIM:-2}
   _agkozak_prompt_strings
-}
-
-############################################################
-# Keep track of pipestatus - set psvar[12] and psvar[13]
-############################################################
-_agkozak_pipestatus() {
-  local pstatus="${${pipestatus#0}:+${"${pipestatus[*]}"// /${AGKOZAK_PIPESTATUS_SEPARATOR:-|}}}"
-  psvar[12]='' psvar[13]=''
-  [[ -z $pstatus ]] && return
-  if [[ $pstatus == *"${AGKOZAK_PIPESTATUS_SEPARATOR:-|}"0 ]]; then
-    typeset -g psvar[12]=$pstatus
-  else
-    typeset -g psvar[13]=$pstatus
-  fi
 }
 
 ############################################################

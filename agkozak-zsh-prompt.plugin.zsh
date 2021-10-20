@@ -925,6 +925,20 @@ prompt_agkozak_precmd() {
 }
 
 ############################################################
+# Keep track of pipestatus - used as a precmd hook
+############################################################
+_agkozak_pipestatus() {
+  local pstatus="${${pipestatus#0}:+${"${pipestatus[*]}"// /${AGKOZAK_PIPESTATUS_SEPARATOR:-|}}}"
+  psvar[12]='' psvar[13]=''
+  [[ -z $pstatus ]] && return
+  if [[ $pstatus == *"${AGKOZAK_PIPESTATUS_SEPARATOR:-|}"0 ]]; then
+    typeset -g psvar[12]=$pstatus
+  else
+    typeset -g psvar[13]=$pstatus
+  fi
+}
+
+############################################################
 # Set the prompt strings
 #
 # Globals:
@@ -949,7 +963,7 @@ _agkozak_prompt_strings() {
   else
     # The color left prompt
     AGKOZAK[PROMPT]=''
-    AGKOZAK[PROMPT]+='%(?..%B%F{${AGKOZAK_COLORS_EXIT_STATUS:-red}}(%?%)%f%b )'
+    AGKOZAK[PROMPT]+='%(13V.%B%F{${AGKOZAK_COLORS_EXIT_STATUS}\}(%13v%)%f%b .%(12V.%F{cyan}(%12v%)%f .))'
     AGKOZAK[PROMPT]+='%(9V.%F{${AGKOZAK_COLORS_CMD_EXEC_TIME:-default}}${AGKOZAK_CMD_EXEC_TIME_CHARS[1]}%9v${AGKOZAK_CMD_EXEC_TIME_CHARS[2]}%f .)'
     if (( AGKOZAK_USER_HOST_DISPLAY )); then
       AGKOZAK[PROMPT]+='%(!.%S%B.%B%F{${AGKOZAK_COLORS_USER_HOST:-green}})%n%1v%(!.%b%s.%f%b) '
@@ -1026,6 +1040,7 @@ prompt_agkozak-zsh-prompt_setup() {
     autoload -Uz add-zsh-hook
     add-zsh-hook preexec prompt_agkozak_preexec
     add-zsh-hook precmd prompt_agkozak_precmd
+    add-zsh-hook precmd _agkozak_pipestatus
   fi
 
   # Only display the HOSTNAME for an SSH connection or for a superuser
@@ -1098,6 +1113,7 @@ agkozak-zsh-prompt_plugin_unload() {
 
   add-zsh-hook -D preexec prompt_agkozak_preexec
   add-zsh-hook -D precmd prompt_agkozak_precmd
+  add-zsh-hook -D precmd _agkozak_pipestatus
 
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select
@@ -1125,6 +1141,7 @@ _agkozak_prompt_cleanup() {
 
   add-zsh-hook -D preexec prompt_agkozak_preexec
   add-zsh-hook -D precmd prompt_agkozak_precmd
+  add-zsh-hook -D precmd _agkozak_pipestatus
 
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select

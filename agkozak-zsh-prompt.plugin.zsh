@@ -828,6 +828,7 @@ prompt_agkozak_preexec() {
 #   AGKOZAK_BG_STRING
 ############################################################
 prompt_agkozak_precmd() {
+  _agkozak_pipestatus
   emulate -L zsh
   (( AGKOZAK_PROMPT_DEBUG )) && [[ $ZSH_VERSION != 5.0.[0-2] ]] &&
     setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
@@ -925,7 +926,7 @@ prompt_agkozak_precmd() {
 }
 
 ############################################################
-# Keep track of pipestatus - used as a precmd hook
+# Keep track of pipestatus - set psvar[12] and psvar[13]
 ############################################################
 _agkozak_pipestatus() {
   local pstatus="${${pipestatus#0}:+${"${pipestatus[*]}"// /${AGKOZAK_PIPESTATUS_SEPARATOR:-|}}}"
@@ -1040,7 +1041,6 @@ prompt_agkozak-zsh-prompt_setup() {
     autoload -Uz add-zsh-hook
     add-zsh-hook preexec prompt_agkozak_preexec
     add-zsh-hook precmd prompt_agkozak_precmd
-    add-zsh-hook precmd _agkozak_pipestatus
   fi
 
   # Only display the HOSTNAME for an SSH connection or for a superuser
@@ -1113,7 +1113,6 @@ agkozak-zsh-prompt_plugin_unload() {
 
   add-zsh-hook -D preexec prompt_agkozak_preexec
   add-zsh-hook -D precmd prompt_agkozak_precmd
-  add-zsh-hook -D precmd _agkozak_pipestatus
 
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select
@@ -1141,7 +1140,6 @@ _agkozak_prompt_cleanup() {
 
   add-zsh-hook -D preexec prompt_agkozak_preexec
   add-zsh-hook -D precmd prompt_agkozak_precmd
-  add-zsh-hook -D precmd _agkozak_pipestatus
 
   if is-at-least 5.3; then
     add-zle-hook-widget -D zle-keymap-select _agkozak_zle-keymap-select

@@ -532,7 +532,7 @@ _agkozak_vi_mode_indicator() {
 ######################################################################
 
 # Standarized $0 handling
-# (See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc)0=${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}})
+# (See https://github.com/agkozak/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc)0=${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}})
 0=${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}
 0=${${(M)0:#/*}:-$PWD/$0}
 AGKOZAK[PROMPT_DIR]="${0:A:h}"
@@ -1083,7 +1083,7 @@ prompt_agkozak-zsh-prompt_help() {
 ############################################################
 # Unload function
 #
-# See https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun
+# See https://github.com/agkozak/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun
 ############################################################
 agkozak-zsh-prompt_plugin_unload() {
   local x

@@ -98,7 +98,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - Asynchronous method improvements: `subst-async` has been tweaked to provide more stability and speed on all systems. `usr1` has been made faster through the elimination of a subshell. It is now the default asynchronous method in all Windows environments.
     - I have provided the code for [my own Zenburn custom prompt](#my-zenburn-custom-prompt).
 - v3.5.0 (November 15, 2019)
-    - The prompt now supports the [zdharma Zsh plugin unload function standard](https://github.com/zdharma/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
+    - The prompt now supports the [zdharma Zsh plugin unload function standard](https://github.com/agkozak/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
     - For debugging purposes, `WARN_CREATE_GLOBAL` is now applied to individual functions whether or not debugging mode is enabled. On Zsh v5.4.0+ and when `AGKOZAK_PROMPT_DEBUG` is set to `1`, all functions have `WARN_NESTED_VAR` applied to them.
     - Measures have been taken to avoid problems when the shell options `KSH_ARRAYS` and `SH_WORD_SPLIT` have been enabled.
     - When loaded on terminals without color, the prompt avoids using subshells when eliminating color codes from the `PROMPT` and `RPROMPT` strings.
@@ -189,7 +189,7 @@ Add the line
 
 to your `.zshrc` somewhere before the line that says `zgen save`.
 
-### For [Zinit](https://github.com/zdharma/zinit) (formerly `zplugin`) users
+### For Zinit (formerly `zplugin`) users
 
 Run the command
 

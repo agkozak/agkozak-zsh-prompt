@@ -1033,7 +1033,7 @@ prompt_agkozak-zsh-prompt_setup() {
   fi
 
   # Only display the HOSTNAME for an SSH connection or for a superuser
-  if _agkozak_is_ssh || (( EUID == 0 )); then
+  if _agkozak_is_ssh || (( EUID == 0 )) || test -f /run/.containerenv; then
     psvar[1]="@${(%):-%m}"
   else
     psvar[1]=''

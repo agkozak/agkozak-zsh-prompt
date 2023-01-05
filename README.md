@@ -58,6 +58,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
+- v3.11.2
+    + `zsh-async` v1.8.6 is included.
 - v3.11.1
     + Bug fix: The background jobs indicator was not updating immediately when a job ended. The prompt now uses the native Zsh `%j` escape to fetch the number of background jobs. Please update your custom prompts accordingly; the examples below have all been updated.
 - v3.11.0

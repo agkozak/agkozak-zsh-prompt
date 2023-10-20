@@ -428,12 +428,11 @@ _agkozak_branch_status() {
   if [[ -n $branch ]]; then
     local git_status symbols i=1 k
 
-    if (( ${AGKOZAK_SHOW_STASH:-1} )); then
-      if is-at-least 2.14 $AGKOZAK_GIT_VERSION; then
-        git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
-      else
-        git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
-      fi
+    if is-at-least 2.14 $AGKOZAK_GIT_VERSION &&
+        (( ${AGKOZAK_SHOW_STASH:-1} )); then
+      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status --show-stash 2>&1)"
+    else
+      git_status="$(LC_ALL=C GIT_OPTIONAL_LOCKS=0 command git status 2>&1)"
     fi
 
     typeset -A messages

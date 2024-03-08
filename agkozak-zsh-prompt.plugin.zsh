@@ -626,19 +626,24 @@ _agkozak_async_init() {
 
     typeset -g AGKOZAK_ASYNC_FD=13371
 
-    if [[ $OSTYPE == (msys|cygwin) ]]; then
-      exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status; command true)
-    elif [[ $OSTYPE == solaris* ]]; then
+    # There was a bug in Zsh < 5.8 that required forking
+    if is-at-least 5.8; then
       exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status)
-      command sleep 0.01
-    elif [[ $ZSH_VERSION == 5.0.[0-2] ]]; then
-      exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status)
-      command sleep 0.02
     else
-      exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status)
+      if [[ $OSTYPE == (msys|cygwin) ]]; then
+        exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status; command true)
+      elif [[ $OSTYPE == solaris* ]]; then
+        exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status)
+        command sleep 0.01
+      elif [[ $ZSH_VERSION == 5.0.[0-2] ]]; then
+        exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status)
+        command sleep 0.02
+      else
+        exec {AGKOZAK_ASYNC_FD} < <(_agkozak_branch_status)
 
-      # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
-      command true
+        # Bug workaround; see http://www.zsh.org/mla/workers/2018/msg00966.html
+        command true
+      fi
     fi
 
     zle -F "$AGKOZAK_ASYNC_FD" _agkozak_zsh_subst_async_callback

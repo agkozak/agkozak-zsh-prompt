@@ -145,7 +145,11 @@ The agkozak Zsh prompt requires no framework and can be simply sourced from your
 
     git clone https://github.com/agkozak/agkozak-zsh-prompt
 
-And add the following to your `.zshrc` file:
+...or for a more VCS-friendly approach use [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+
+	git submodule add https://github.com/agkozak/agkozak-zsh-prompt
+
+then add the following to your `.zshrc` file:
 
     source /path/to/agkozak-zsh-prompt.plugin.zsh
 

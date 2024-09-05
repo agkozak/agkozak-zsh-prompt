@@ -1005,9 +1005,9 @@ _agkozak_prompt_strings() {
 prompt_agkozak-zsh-prompt_setup() {
   # `emulate -L zsh' has been removed for promptinit
   # compatibility
-  typeset -g prompt_opts
-  prompt_opts=( percent subst )
-  setopt NO_PROMPT_{BANG,CR,PERCENT,SUBST} "PROMPT_${^prompt_opts[@]}"
+  typeset -ga prompt_opts
+  prompt_opts=( cr percent sp subst )
+  setopt NO_PROMPT_{BANG,PERCENT,SUBST} "PROMPT_${^prompt_opts[@]}"
 
   _agkozak_async_init
 

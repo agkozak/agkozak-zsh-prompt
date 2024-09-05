@@ -58,6 +58,8 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 <details>
   <summary>Here are the latest features and updates.</summary>
 
+- v3.11.4
+    + An oversight in the function `prompt_agkozak-zsh-prompt_setup` was preventing final partial lines from being displayed ([#46](https://github.com/agkozak/agkozak-zsh-prompt/issues/46)). Many thanks to Josh Rosen for jogging my memory of default Zsh handling of such situations.
 - v3.11.3
     + [A bug was fixed in Zsh 5.8 itself](https://www.zsh.org/mla/workers/2019/msg00252.html) that had required the `subst-async` method to do extra forking as a workaround. The code for `subst-async` has been updated to reflect the bug fix. The majority of users default to the `usr1` async method, however, which is unaffected.
 - v3.11.2

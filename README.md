@@ -18,7 +18,7 @@ The agkozak Zsh Prompt is an asynchronous color Git prompt that uses basic ASCII
 * the number of background processes
 * if `vi` line editing is enabled, whether insert or command mode is active
 
-This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris, and in Windows environments (MSYS2, Cygwin, and WSL). It should also work perfectly on MacOS.
+This prompt has been tested on numerous Linux and BSD distributions, as well as on Solaris, and in Windows environments (MSYS2, Cygwin, and WSL). It should also work perfectly on macOS.
 
 ![The agkozak Zsh Prompt](img/demo.gif)
 
@@ -59,40 +59,40 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
   <summary>Here are the latest features and updates.</summary>
 
 - v3.11.4
-    + An oversight in the function `prompt_agkozak-zsh-prompt_setup` was preventing final partial lines from being displayed ([#46](https://github.com/agkozak/agkozak-zsh-prompt/issues/46)). Many thanks to Josh Rosen for jogging my memory of default Zsh handling of such situations.
+    - An oversight in the function `prompt_agkozak-zsh-prompt_setup` was preventing final partial lines from being displayed ([#46](https://github.com/agkozak/agkozak-zsh-prompt/issues/46)). Many thanks to Josh Rosen for jogging my memory of default Zsh handling of such situations.
 - v3.11.3
-    + [A bug was fixed in Zsh 5.8 itself](https://www.zsh.org/mla/workers/2019/msg00252.html) that had required the `subst-async` method to do extra forking as a workaround. The code for `subst-async` has been updated to reflect the bug fix. The majority of users default to the `usr1` async method, however, which is unaffected.
+    - [A bug was fixed in Zsh 5.8 itself](https://www.zsh.org/mla/workers/2019/msg00252.html) that had required the `subst-async` method to do extra forking as a workaround. The code for `subst-async` has been updated to reflect the bug fix. The majority of users default to the `usr1` async method, however, which is unaffected.
 - v3.11.2
-    + `zsh-async` v1.8.6 is included.
-    + The behavior of `$AGKOZAK_SHOW_STASH` has been fixed.
+    - `zsh-async` v1.8.6 is included.
+    - The behavior of `$AGKOZAK_SHOW_STASH` has been fixed.
 - v3.11.1
-    + Bug fix: The background jobs indicator was not updating immediately when a job ended. The prompt now uses the native Zsh `%j` escape to fetch the number of background jobs. Please update your custom prompts accordingly; the examples below have all been updated.
+    - Bug fix: The background jobs indicator was not updating immediately when a job ended. The prompt now uses the native Zsh `%j` escape to fetch the number of background jobs. Please update your custom prompts accordingly; the examples below have all been updated.
 - v3.11.0
-    + Added a background jobs indicator (props to [@crai0](https://github.com/crai0/)).
-    + The `usr1` async method is used preferred whenever possible, as it reduces command lag considerably (props to [@romkatv](https://github.com/romkatv/) for sharing [his benchmarking system](https://github.com/romkatv/zsh-bench)).
+    - Added a background jobs indicator (props to [@crai0](https://github.com/crai0/)).
+    - The `usr1` async method is used preferred whenever possible, as it reduces command lag considerably (props to [@romkatv](https://github.com/romkatv/) for sharing [his benchmarking system](https://github.com/romkatv/zsh-bench)).
 - v3.10.4
-    + Mere orthographical changes: "ZSH" is now "Zsh" throughout.
+    - Mere orthographical changes: "ZSH" is now "Zsh" throughout.
 - v3.10.3
-    + Fixed a bug associated with unloading the prompt on Zsh < v5.30.
+    - Fixed a bug associated with unloading the prompt on Zsh < v5.30.
 - v3.10.2
-    + The unload function now works on Zsh versions earlier than 5.3.0 without any error messages.
+    - The unload function now works on Zsh versions earlier than 5.3.0 without any error messages.
 - v3.10.1
-    + The prompt now supports `promptinit`'s `prompt_cleanup` function.
+    - The prompt now supports `promptinit`'s `prompt_cleanup` function.
 - v3.10.0
-    + The prompt is now fully compatible with ZSH's `promptinit` function.
+    - The prompt is now fully compatible with Zsh's `promptinit` function.
 - v3.9.0
     - The characters used to signify path abbreviation with `AGKOZAK_PROMPT_DIRTRIM` (`...` by default) can now be overridden with `AGKOZAK_PROMPT_DIRTRIM_STRING`.
 - v3.8.1 (November 23, 2020)
     - WSL2 now uses the `subst-async` method, while WSL1 continues to use `usr1` for reasons of speed.
     - The error message `permission denied: /proc/version` is no longer produced in `termux` on Android.
-    - zsh-async v1.8.5 is included.
+    - `zsh-async` v1.8.5 is included.
 - v3.8.0 (July 9, 2020)
     - The prompt no longer defaults to `zsh-async` on Solaris and Solaris-derived operating systems, as I have noticed that `zsh-async`'s performance can be quirky on underperforming systems.
 - v3.7.3 (May 14, 2020)
-    - Updated to use zsh-async 1.8.3.
+    - Updated to use `zsh-async` 1.8.3.
 - v3.7.2 (May 6, 2020)
     - `_agkozak_precmd` was triggering a warning on Zsh v5.0.0-2. This has been fixed.
-    - Version 1.8.0 of zsh-async is now being used.
+    - Version 1.8.0 of `zsh-async` is now being used.
 - v3.7.1 (January 24, 2020)
     - `AGKOZAK_CMD_EXEC_TIME_CHARS` and `AGKOZAK_VIRTUALENV_CHARS` were being set back to default if they were set before the prompt was sourced.
 - v3.7.0 (January 21, 2020)
@@ -105,7 +105,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
     - Asynchronous method improvements: `subst-async` has been tweaked to provide more stability and speed on all systems. `usr1` has been made faster through the elimination of a subshell. It is now the default asynchronous method in all Windows environments.
     - I have provided the code for [my own Zenburn custom prompt](#my-zenburn-custom-prompt).
 - v3.5.0 (November 15, 2019)
-    - The prompt now supports the [zdharma Zsh plugin unload function standard](https://github.com/zdharma-continuum/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the zplugin framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
+    - The prompt now supports the [zdharma Zsh plugin unload function standard](https://github.com/zdharma-continuum/Zsh-100-Commits-Club/blob/master/Zsh-Plugin-Standard.adoc#unload-fun) which is currently implemented by the `zplugin` framework. When the function `agkozak-zsh-prompt_plugin_unload` is invoked, the state of the shell before agkozak-zsh-prompt was loaded is restored.
     - For debugging purposes, `WARN_CREATE_GLOBAL` is now applied to individual functions whether or not debugging mode is enabled. On Zsh v5.4.0+ and when `AGKOZAK_PROMPT_DEBUG` is set to `1`, all functions have `WARN_NESTED_VAR` applied to them.
     - Measures have been taken to avoid problems when the shell options `KSH_ARRAYS` and `SH_WORD_SPLIT` have been enabled.
     - When loaded on terminals without color, the prompt avoids using subshells when eliminating color codes from the `PROMPT` and `RPROMPT` strings.
@@ -119,7 +119,7 @@ This prompt has been tested on numerous Linux and BSD distributions, as well as 
 - v3.2.1 (May 6, 2019)
     - For Zsh v5.0.2, `subst-async` now works correctly, but `usr1` will be used as the default async method, as it should be slightly faster.
 - v3.2.0 (February 28, 2019)
-    - By default, a space precedes the Git branch status indicator. The space can now be eliminated by setting `AGKOZAK_BRANCH_STATUS_SEPARATOR=''`, or changed to another character or characters (e.g. `AGKOZAK_BRANCH_STATUS_SEPARATOR='--'`).
+    - By default, a space precedes the Git branch status indicator. The space can now be eliminated by setting `AGKOZAK_BRANCH_STATUS_SEPARATOR=''`, or changed to another character or characters (e.g., `AGKOZAK_BRANCH_STATUS_SEPARATOR='--'`).
 - v3.1.0 (February 5, 2019)
     - The array `AGKOZAK_PROMPT_CHAR` allows the user to specify prompt characters for regular user, superuser, and `vi` command mode.
     - Setting `AGKOZAK_COLORS_PROMPT_CHAR` can change the color of the prompt character.
@@ -234,7 +234,7 @@ If the exit status of the most recently executed command is other than zero (zer
 
 ![Command Execution Time](img/command_execution_time.gif)
 
-The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which is normally `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can contain two strings to prepend and append to the command execution time string; for example,
+The prompt will display the execution time of the last command if it exceeds a certain threshold (`AGKOZAK_CMD_EXEC_TIME`, which defaults to `5` seconds). Setting `AGKOZAK_CMD_EXEC_TIME=0` will disable the display of this indicator entirely. The color can be set using `AGKOZAK_COLORS_CMD_EXEC_TIME`, which is normally `default` (the default text color). An array, `AGKOZAK_CMD_EXEC_TIME_CHARS`, can contain two strings to prepend and append to the command execution time string. For example,
 
     AGKOZAK_CMD_EXEC_TIME_CHARS=( '[' ']' )
 
@@ -246,11 +246,11 @@ When a session is local, only the username is shown; when it is remote over SSH 
 
 ![Local and remote sessions](img/local-and-remote-sessions.png)
 
-*Note: It is exceedingly difficult to determine with accuracy whether a superuser is connected over SSH or not. In the interests of providing useful and not misleading information, this prompt always displays both username and hostname for a superuser in reverse video.*
+*Note: It is exceedingly difficult to determine with accuracy whether a superuser is connected over SSH or not. In the interest of providing useful and not misleading information, this prompt always displays both username and hostname for a superuser in reverse video.*
 
 ## Abbreviated Paths
 
-By default the agkozak Zsh Prompt emulates the behavior that `bash` uses when `PROMPT_DIRTRIM` is set to `2`: a tilde (`~`) is prepended if the working directory is under the user's home directory, and then if more than two directory elements need to be shown, only the last two are displayed, along with an ellipsis, so that
+By default, the agkozak Zsh Prompt emulates the behavior that `bash` uses when `PROMPT_DIRTRIM` is set to `2`. A tilde (`~`) replaces the name of the home directory. Then, if more than two directory elements need to be shown, only the last two are displayed, preceded by an ellipsis, so that
 
     /home/pi/src/neovim/config
 
@@ -268,7 +268,7 @@ is displayed as
 
 that is, without a tilde.
 
-If you would like to display a different number of directory elements, set the environment variable `AGKOZAK_PROMPT_DIRTRIM` in your `.zshrc` file thus (as in the example below):
+If you would like to display a different number of directory elements, set the environment variable `AGKOZAK_PROMPT_DIRTRIM` in your `.zshrc` file as shown below:
 
     AGKOZAK_PROMPT_DIRTRIM=4     # Or whatever number you like
 
@@ -276,8 +276,7 @@ If you would like to display a different number of directory elements, set the e
 
 Setting `AGKOZAK_PROMPT_DIRTRIM=0` will turn off path abbreviation, with the exception of `~` for `$HOME` and named directories (see immediately below).
 
-By default, [static named directories created with `hash -d`](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Static-named-directories) will be used as base directories in the path the prompt displays. For example,
-if you have executed
+By default, [static named directories created with `hash -d`](http://zsh.sourceforge.net/Doc/Release/Expansion.html#Static-named-directories) will be used as base directories in the path the prompt displays. For example, if you have executed
 
     hash -d wp-content=/var/www/html/wp-content
 
@@ -293,7 +292,7 @@ will replace the default three dots (`...`) with a Unicode ellipsis (`…`), whi
 
 ![Virtual environments](img/virtual_environments.gif)
 
-If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`. The color of the indicator can be changed using the variable `AGKOZAK_COLORS_VIRTUALENV` (default: `green`). The virtual environment name is normally surrounded by square brackets, but the characters used can be changed using the array `AGKOZAK_VIRTUALENV_CHARS`; for example
+If a virtual environment created by `virtualenv`, `python -m venv`, `pipenv`, `poetry`, or `conda` is activated, by default it will be displayed to the right of the path. Display of the virtual environment indicator may be disabled with `AGKOZAK_SHOW_VIRTUALENV=0`. The color of the indicator can be changed using the variable `AGKOZAK_COLORS_VIRTUALENV` (default: `green`). The virtual environment name is normally surrounded by square brackets, but the characters used can be changed using the array `AGKOZAK_VIRTUALENV_CHARS`. For example,
 
     AGKOZAK_VIRTUALENV_CHARS=( '(' ')' )
 
@@ -326,8 +325,7 @@ Stashed changes | $
 If you have background jobs running (a suspended editor, for example), the prompt will display the number of such jobs followed by a `j`:
 
 ![Background jobs status](img/bg_demo.gif)
-You can customize the background jobs display by setting `AGKOZAK_COLORS_BG_STRING` to the color you would like it to have or `AGKOZAK_BG_STRING` to the character or characters you want to use to denote background jobs (you could set `AGKOZAK_BG_STRING=bg`, for example).
-
+You can customize the background jobs display by setting `AGKOZAK_COLORS_BG_STRING` to the color you would like it to have or `AGKOZAK_BG_STRING` to the character or characters you want to use to denote background jobs (for example, you could set `AGKOZAK_BG_STRING=bg`).
 
 ## `vi` Editing Mode
 
@@ -349,13 +347,13 @@ The agkozak Zsh Prompt chooses the fastest and most reliable of three different 
 
 I have tweaked [@psprint](https://github.com/psprint)'s `subst-async` technique to work on all known platforms and with all supported versions of Zsh. It uses process substitution (`<( ... )`) to fork a background process that fetches the Git status and feeds it to a file descriptor. A `zle -F` callback handler then processes the input from the file descriptor and uses it to update the prompt.
 
-This prompt also supplies a `zsh-async` method that relies on the [`zsh-async`](https://github.com/mafredri/zsh-async) library, which uses ZSH's `zsh/zpty` module to spin off pseudo-terminals that can calculate the Git status without blocking the user from continuing to use the terminal. `zsh/zpty` does not work well with Cygwin or MSYS2, however, and it can be quirky on Solaris and related operating systems, so it is no longer used by default, and is only provided for those who want it.
+This prompt also supplies a `zsh-async` method that relies on the [`zsh-async`](https://github.com/mafredri/zsh-async) library, which uses Zsh's `zsh/zpty` module to spin off pseudo-terminals that can calculate the Git status without blocking the user from continuing to use the terminal. `zsh/zpty` does not work well with Cygwin or MSYS2, however, and it can be quirky on Solaris and related operating systems, so it is no longer used by default, and is only provided for those who want it.
 
 If you want to force the agkozak Zsh Prompt to use a specific asynchronous method (or none at all), execute `export AGKOZAK_FORCE_ASYNC_METHOD=subst-async`, `zsh-async`, `usr1`, or `none` before sourcing it. If you want more insight into how the prompt is working in your shell, put `export AGKOZAK_PROMPT_DEBUG=1` in your `.zshrc` before the code loading this prompt.
 
 ## Customization
 
-In addition to setting `AGKOZAK_PROMPT_DIRTRIM` and `AGKOZAK_NAMED_DIRS` to change how the working directory is displayed ([see above](#abbreviated-paths)), you may use other settings to alter how the prompt is displayed. For some examples of prompt configurations people have created using simple combinations of options, see ["Using Basic Configuration Settings"](#using-basic-configuration-settings).
+In addition to setting `AGKOZAK_PROMPT_DIRTRIM` and `AGKOZAK_NAMED_DIRS` to change how the working directory is displayed ([see above](#abbreviated-paths)), you can use other settings to alter how the prompt is displayed. For some examples of prompt configurations people have created using simple combinations of options, see ["Using Basic Configuration Settings"](#using-basic-configuration-settings).
 
 ### Custom Colors
 If you would like to customize the prompt colors, change any of the `AGKOZAK_COLORS_*` variables from their defaults to any valid color and add it to your `.zshrc`. The following are the available color variables and their defaults:
@@ -377,7 +375,7 @@ If you prefer to have a little space between instances of the prompt, put `AGKOZ
 
 ![AGKOZAK_BLANK_LINES](img/blank_lines.png)
 
-### Optional Single-line Prompt
+### Optional Single-Line Prompt
 
 If you prefer a single-line prompt with a right prompt that disappears when it is typed over, put
 
@@ -387,11 +385,11 @@ in your `.zshrc`.
 
 ![Single-line prompt](img/single-line_prompt.gif)
 
-If you would prefer to have a character or characters other than a space appear before the prompt character, set `AGKOZAK_PRE_PROMPT_CHAR` to that character or characters -- or set `AGKOZAK_PRE_PROMPT_CHAR=''` to eliminate the space.
+If you prefer to have a character or characters other than a space appear before the prompt character, set `AGKOZAK_PRE_PROMPT_CHAR` to that character or characters -- or set `AGKOZAK_PRE_PROMPT_CHAR=''` to eliminate the space.
 
 ### Optional Left-prompt-only Mode
 
-If you would like to have the Git status displayed in the left prompt (with no right prompt -- this is how [`pure`](https://github.com/sindresorhus/pure) does it), set
+If you want to have the Git status displayed in the left prompt (with no right prompt -- this is how [`pure`](https://github.com/sindresorhus/pure) does it), set
 
     AGKOZAK_LEFT_PROMPT_ONLY=1
 
@@ -401,15 +399,15 @@ If you would like to have the Git status displayed in the left prompt (with no r
 
 ### Custom Prompt Character
 
-The classic prompt for Bourne-style shells is `$`; for `csh` it is `%`, and Zsh borrows the latter because it inherits features from both types of shell. agkozak-zsh-prompt uses `%` to show where the prompt ends and where input should begin, although a superuser will see `#`, and either sort of user will see `:` when `vi` command mode is active. If you wish to change any or all of these symbols, you may do so using the array `AGKOZAK_PROMPT_CHAR`, whose three elements are 1) the normal prompt character; 2) the superuser prompt character; and 3) the `vi` command mode character. The default behavior of the prompt can be represented as
+The classic prompt for Bourne-style shells is `$`; for `csh` it is `%`, and Zsh borrows the latter because it inherits features from both types of shell. agkozak-zsh-prompt uses `%` to show where the prompt ends and where input should begin, although a superuser will see `#`, and either sort of user will see `:` when `vi` command mode is active. If you want to change any or all of these symbols, you can do so using the array `AGKOZAK_PROMPT_CHAR`, whose three elements are 1) the normal prompt character; 2) the superuser prompt character; and 3) the `vi` command mode character. The default behavior of the prompt can be represented as
 
     AGKOZAK_PROMPT_CHAR=( %# %# : )
 
-If you would like your prompt to look more like a `bash` prompt (i.e. terminating in `$`), you can simply put the following in your `.zshrc`:
+If you want your prompt to look more like a `bash` prompt (i.e. terminating in `$`), you can simply put the following in your `.zshrc`:
 
     AGKOZAK_PROMPT_CHAR=( $ %# : )
 
-Some people prefer to spruce up their prompts with unicode characters. You could approximate the appearance of the popular [pure](https://github.com/sindresorhus/pure) prompt by using
+Some people prefer to spruce up their prompts with unicode characters. You can approximate the appearance of the popular [pure](https://github.com/sindresorhus/pure) prompt by using
 
     AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
 
@@ -418,21 +416,21 @@ Closer still to pure would be
     AGKOZAK_PROMPT_CHAR=( ❯ ❯ ❮ )
     AGKOZAK_COLORS_PROMPT_CHAR='magenta'
 
-which would be the equivalent of
+which is the equivalent of
 
     AGKOZAK_PROMPT_CHAR=( '%F{magenta}❯%f' '%F{magenta}❯%f' '%F{magenta}❮%f' )
 
-Note that you could change one of those `%F{magenta}...%f` strings to another foreground color for a more striking visual reminder of what you are doing at any given moment.
+Note that you can change one of those `%F{magenta}...%f` strings to another foreground color for a more striking visual reminder of what you are doing at any given moment.
 
 ![AGKOZAK_PROMPT_CHAR demo](img/AGKOZAK_PROMPT_CHAR.gif)
 
 ### Custom Git Symbols
 
-If, through the use of another prompt, your muscle memory has been trained to react immediately to a particular set of Git status symbols, or if you have an aesthetic preference for symbols other than the default ASCII ones, you may specify them in the array `AGKOZAK_CUSTOM_SYMBOLS`. The default set is
+If, through the use of another prompt, your muscle memory has been trained to react immediately to a particular set of Git status symbols, or if you have an aesthetic preference for symbols other than the default ASCII ones, you can specify them in the array `AGKOZAK_CUSTOM_SYMBOLS`. The default set is
 
     AGKOZAK_CUSTOM_SYMBOLS=( '&*' '&' '*' '+' 'x' '!' '>' '?' '$')
 
-If you prefer the [pure](https://github.com/sindresorhus/pure) symbols for the "diverged," "behind," and "ahead" states, you could use the following settings:
+If you prefer the [pure](https://github.com/sindresorhus/pure) symbols for the "diverged," "behind," and "ahead" states, you can use the following settings:
 
     AGKOZAK_CUSTOM_SYMBOLS=( '⇣⇡' '⇣' '⇡' '+' 'x' '!' '>' '?' 'S')
 
@@ -442,24 +440,24 @@ If you prefer the [pure](https://github.com/sindresorhus/pure) symbols for the "
 
 ![AGKOZAK_USER_HOST_DISPLAY demo](img/AGKOZAK_USER_HOST_DISPLAY.gif)
 
-For a more streamlined prompt, you may choose to suppress the display of the username and hostname by setting
+For a more streamlined prompt, you can choose to suppress the display of the username and hostname by setting
 
     AGKOZAK_USER_HOST_DISPLAY=0
 
 #### `AGKOZAK_BRANCH_STATUS_SEPARATOR`
 
-By default, when you set `AGKOZAK_LEFT_PROMPT_ONLY=1`, a space precedes the Git branch status indicator, typically right between it and the directory name. You may eliminate the space by setting
+By default, when you set `AGKOZAK_LEFT_PROMPT_ONLY=1`, a space precedes the Git branch status indicator, typically right between it and the directory name. You can eliminate the space by setting
 
     AGKOZAK_BRANCH_STATUS_SEPARATOR=''
 
-Alternatively, you may set `AGKOZAK_BRANCH_STATUS_SEPARATOR` to any other character or characters that you prefer.
+Alternatively, you can set `AGKOZAK_BRANCH_STATUS_SEPARATOR` to any other character or characters that you prefer.
 
 #### `AGKOZAK_SHOW_STASH`
 
-If you prefer not to have stashed changes displayed, you may set `AGKOZAK_SHOW_STASH=0`.
+If you prefer not to have stashed changes displayed, you can set `AGKOZAK_SHOW_STASH=0`.
 
 ### Advanced Customization
-If you would like to make further customizations to your prompt, you may use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as
+If you want to make further customizations to your prompt, you can use the variables `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT` to specify the exact strings to be used for the left and right prompts. The default prompts, with the default settings, can be expressed as
 
 ```sh
 # The left prompt
@@ -485,7 +483,7 @@ AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.)'
 ```
 
-In general, you will not need to change these settings to achieve a custom prompt. If, for example, you would like to move the Git status into the left prompt, you may do so simply with `AGKOZAK_LEFT_PROMPT_ONLY=1`. If you want to make it your favorite shade of grey, you may add `AGKOZAK_COLORS_BRANCH_STATUS=243`.
+In general, you will not need to change these settings to achieve a custom prompt. If, for example, you want to move the Git status into the left prompt, you can do so simply with `AGKOZAK_LEFT_PROMPT_ONLY=1`. If you want to make it your favorite shade of grey, you can add `AGKOZAK_COLORS_BRANCH_STATUS=243`.
 
 If you made those customizations, however,  the right prompt would no longer do anything, so you could use the `AGKOZAK_CUSTOM_RPROMPT` variable to have it do something new, such as to display the time:
 
@@ -551,7 +549,7 @@ AGKOZAK_CUSTOM_PROMPT+='%(4V.:.%#) '
 AGKOZAK_CUSTOM_RPROMPT='%(3V.%F{yellow}%3v%f.)'
 ```
 
-*Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, it may override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.*
+*Note that once `AGKOZAK_CUSTOM_PROMPT` or `AGKOZAK_CUSTOM_RPROMPT` is set, it can override the simpler settings such as `AGKOZAK_LEFT_PROMPT_ONLY`.*
 
 For some examples of prompt configurations that people have created using `AGKOZAK_CUSTOM_PROMPT` and `AGKOZAK_CUSTOM_RPROMPT`, see ["Using AGKOZAK_CUSTOM_PROMPT and AGKOZAK_CUSTOM_RPROMPT"](#using-agkozak_custom_prompt-and-agkozak_custom_rprompt).
 
@@ -775,7 +773,8 @@ AGKOZAK_CUSTOM_PROMPT+='$(krbprinc) '
 
 AGKOZAK_CUSTOM_RPROMPT=''
 ```
-# Options Index
+
+## Options Index
 
 Option | Default | Meaning
 --- | --- | ---
@@ -803,23 +802,23 @@ Option | Default | Meaning
 [`AGKOZAK_PROMPT_DEBUG`](#asynchronous-methods) | `0` | Show debugging information
 [`AGKOZAK_PROMPT_DIRTRIM`](#abbreviated-paths) | `2` | Number of directory elements to display; `0` turns off directory trimming
 [`AGKOZAK_PROMPT_DIRTRIM_STRING`](#abbreviated-paths) | `...` | Ellipsis string used in directory trimming
-[`AGKOZAK_SHOW_BG`](#background-jobs-status) | `1` | Display the number of background jobs you hav running
+[`AGKOZAK_SHOW_BG`](#background-jobs-status) | `1` | Display the number of background jobs you have running
 [`AGKOZAK_SHOW_STASH`](#agkozak_show_stash) | `1` | Display stashed changes
 [`AGKOZAK_SHOW_VIRTUALENV`](#virtual-environments) | `1` | Display virtual environments
 [`AGKOZAK_USER_HOST_DISPLAY`](#agkozak_user_host_display) | `1` | Display the username and hostname
 [`AGKOZAK_VIRTUALENV_CHARS`](#virtual-environments) | `( '[' ']' )` | Characters to put around the virtual environment name
 
-# `psvar` Index
+## `psvar` Index
 
 `psvar` Element | Prompt String Equivalent | Usage
 --- | --- | ---
-`psvar[1]` | `%1v` | "@" sign and abbreviated hostname, displayed for SSH connection (e.g. `@machine`)
+`psvar[1]` | `%1v` | "@" sign and abbreviated hostname, displayed for SSH connection (e.g., `@machine`)
 `psvar[2]` | `%2v` | Working directory or abbreviation thereof
-`psvar[3]` | `%3v` | Working Git branch and indicator of changes made, surrounded by parentheses and preceded by `AGKOZAK_PRE_PROMPT_CHAR` (usually a space), e.g. ` (master !?)`
+`psvar[3]` | `%3v` | Working Git branch and indicator of changes made, surrounded by parentheses and preceded by `AGKOZAK_PRE_PROMPT_CHAR` (usually a space), e.g., ` (master !?)`
 `psvar[4]` | `%4v` | `vicmd` when vi command mode is enabled; otherwise empty
 `psvar[5]` | `%5v` | Empty only when `AGKOZAK_USER_HOST_DISPLAY` is `0` (deprecated; kept for legacy custom prompts)
-`psvar[6]` | `%6v` | Just the Git branch name, e.g. `master`
-`psvar[7]` | `%7v` | Just the Git symbols, e.g. `!?`
+`psvar[6]` | `%6v` | Just the Git branch name, e.g., `master`
+`psvar[7]` | `%7v` | Just the Git symbols, e.g., `!?`
 `psvar[8]` | `%8v` | Previous command's execution time in seconds; only set if `AGKOZAK_CMD_EXEC_TIME` > 0 and if the execution time exceeded `AGKOZAK_CMD_EXEC_TIME`
 `psvar[9]` | `%9v` | `psvar[8]` pretty-printed as days, hours, minutes, and seconds, thus: `1d 2h 3m 4s`
 `psvar[10]` | `%10v` | Name of any virtual environment that has been activated

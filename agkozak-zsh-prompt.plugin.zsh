@@ -1049,7 +1049,7 @@ prompt_agkozak-zsh-prompt_setup() {
     PROMPT='%(?..(%?%) )'
     PROMPT+='%n%1v '
     PROMPT+='$(_agkozak_prompt_dirtrim "${AGKOZAK_PROMPT_DIRTRIM:-2}")'
-    PROMPT+='$(_agkozak_branch_status) '
+    PROMPT+='${$(_agkozak_branch_status)//\%/%%} '
     PROMPT+='%# '
   else
     # Avoid continuation lines in Emacs term and ansi-term
